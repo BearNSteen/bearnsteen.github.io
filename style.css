@@ -2,5 +2,6 @@ div {
     font-size:14px;
 }
 * {
-    background-color:darkred
+    background-color:darkred;
+    color:white;
 }
