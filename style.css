@@ -9,4 +9,10 @@ h1 {
 h3 {
     text-align: center;
 }
-
+#plant  {
+    float: right;    
+     margin: 0 0 0 15px;
+    }
+#link {
+    font-size: 18px;
+}
