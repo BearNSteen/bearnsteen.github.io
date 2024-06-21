@@ -1,101 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Portfolio</title>
-  <style>
-    /* Reset default styles */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    /* Basic layout */
-    body {
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-      background-color: #f4f4f4;
-    }
-
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    /* Header styles */
-    header {
-      background-color: #333;
-      color: #fff;
-      padding: 20px;
-      text-align: center;
-    }
-
-    header h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-
-    /* Main content styles */
-    main {
-      background-color: #fff;
-      padding: 20px;
-      margin-top: 20px;
-    }
-
-    /* Responsive styles */
-    @media (max-width: 768px) {
-      .container {
-        padding: 10px;
-      }
-
-      header h1 {
-        font-size: 2rem;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Name - Portfolio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        h2 {
+            color: #3498db;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .project {
+            background-color: #f4f4f4;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .contact-info {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
     <nav style="position: fixed; top: 10px; right: 10px; z-index: 1000;">
-        <a href="index_alt.html" style="text-decoration: none;">
-            <button style="padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
-            Alternate Version
-            </button>
+        <a href="index.html" style="text-decoration: none;">
+          <!--button style="padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Original Version
+          </button!-->
         </a>
-        </nav>
-  <header>
-    <div class="container">
-      <h1>Your Name</h1>
-      <p>AI Developer | Software Engineer | Computer Science Educator</p>
-    </div>
-  </header>
+      </nav>
+    <header>
+        <h1>Your Name</h1>
+        <p>AI Developer | Software Engineer | Computer Science Educator</p>
+    </header>
 
-  <main>
-    <div class="container">
-      <h2>Welcome to My Portfolio</h2>
-      <p>Here you can find information about me, my skills, and my projects.</p>
+    <section class="section">
+        <h2>About Me</h2>
+        <p>Welcome to my portfolio! I'm a passionate AI developer and software engineer with experience in both industry and academia. With a strong foundation in computer science and a knack for problem-solving, I bring innovative solutions to every project I undertake.</p>
+    </section>
 
-      <h3>About Me</h3>
-      <p>I'm a passionate AI developer and software engineer with experience in both industry and academia. With a strong foundation in computer science and a knack for problem-solving, I bring innovative solutions to every project I undertake.</p>
+    <section class="section">
+        <h2>Skills</h2>
+        <ul>
+            <li>Python (5 years experience)</li>
+            <li>Java (2 years experience)</li>
+            <li>GDScript (Godot 4) (6 months experience)</li>
+            <li>Machine Learning and AI</li>
+            <li>Software Development</li>
+            <li>Git, GitHub</li>
+            <li>HTML5, CSS3, JavaScript</li>
+            <li>SQL, Database Management</li>
+        </ul>
+    </section>
 
-      <h3>Skills</h3>
-      <ul>
-        <li>Python (5 years experience)</li>
-        <li>Java (2 years experience)</li>
-        <li>GDScript (Godot 4) (6 months experience)</li>
-        <li>Machine Learning and AI</li>
-        <li>Software Development</li>
-        <li>Git, GitHub</li>
-        <li>HTML5, CSS3, JavaScript</li>
-        <li>SQL, Database Management</li>
-      </ul>
+    <section class="section">
+        <h2>Experience</h2>
+        <div class="project">
+            <h3>AI Developer, Confidential</h3>
+            <p>January 2024 - Present</p>
+            <p>Working on cutting-edge AI technologies and applications.</p>
+        </div>
+        <div class="project">
+            <h3>Software Development Engineer Intern, Amazon</h3>
+            <p>June 2022 - September 2022</p>
+            <p>Contributed to large-scale software development projects in a fast-paced environment.</p>
+        </div>
+        <div class="project">
+            <h3>Computer Science TA, Oregon State University</h3>
+            <p>September 2021 - June 2022</p>
+            <p>Assisted in teaching computer science concepts and programming skills to university students.</p>
+        </div>
+    </section>
 
-      <h3>Projects</h3>
-      <p>AI-Powered Application: Developed an AI application using Python and machine learning libraries. This project showcased my skills in AI development and problem-solving.</p>
-      <p>Game Development with Godot: Created a game using Godot engine and GDScript, demonstrating my ability to quickly learn and apply new technologies.</p>
-    </div>
-  </main>
+    <section class="section">
+        <h2>Projects</h2>
+        <div class="project">
+            <h3>AI-Powered Application</h3>
+            <p>Developed an AI application using Python and machine learning libraries. This project showcased my skills in AI development and problem-solving.</p>
+        </div>
+        <div class="project">
+            <h3>Game Development with Godot</h3>
+            <p>Created a game using Godot engine and GDScript, demonstrating my ability to quickly learn and apply new technologies.</p>
+        </div>
+    </section>
+
+    <section class="section contact-info">
+        <h2>Get In Touch</h2>
+        <p>Email: your.email@example.com</p>
+        <p>LinkedIn: linkedin.com/in/yourprofile</p>
+        <p>GitHub: github.com/yourusername</p>
+    </section>
 </body>
 </html>
