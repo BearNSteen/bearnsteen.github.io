@@ -1,32 +1,92 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Monduli.Github.IO</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-            <div class="container-fluid">
-              <a class="navbar-brand" href="/">Monduli.Github.IO</a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-              <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                  <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="/projects">Projects</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-        </nav>
-        <h1>Welcome to Monduli.github.io!</h1>
-        <div id="intro">Hi there! My name is Dan Glendon. I've been programming for years, but I've only really recently become what I would consider a "software professional". I had dabbled in various languages, making small Python programs as a kid, and I won Lua programming competitions in the online game Roblox in 2007, before it became a global phenomenon like it is today. In fact, one time I won the same competition two times under two separate aliases!</div>
-        <div id="intro">Straight out of high school, I went for obtaining my first degree in Criminal Justice. I enjoyed the subject matter, as there wasn't a "Law" major at the college I attended, but in the end, I didn't really want to become a police officer or a corrections officer (because I really wanted to study law, not police history!). So I came back to school in order to earn my second Bachelor's of Science in Computer Science, which is what I'm really passionate about. I have a respect for my studies of law, and I realize it partially made me the person I am today, but I would rather work with computers instead of criminals directly.</div>
-        <a class="nav-link" aria-current="page" href="/projects" id="plink">Here are my projects!</a>
-        <h3>Thank you for reading!</h3>
-    </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Portfolio</title>
+  <style>
+    /* Reset default styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Basic layout */
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Header styles */
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    /* Main content styles */
+    main {
+      background-color: #fff;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+
+      header h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Your Name</h1>
+      <p>Web Developer | Designer | [Your Profession]</p>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <h2>Welcome to My Portfolio</h2>
+      <p>Here you can find information about me, my skills, and my projects.</p>
+
+      <!-- Add your content here -->
+      <h3>About Me</h3>
+      <p>Brief introduction about yourself, your background, and your goals.</p>
+
+      <h3>Skills</h3>
+      <ul>
+        <li>List your skills here</li>
+        <li>HTML, CSS, JavaScript</li>
+        <li>React, Node.js</li>
+        <!-- Add more skills as needed -->
+      </ul>
+
+      <h3>Projects</h3>
+      <p>Showcase some of your recent projects with descriptions and links.</p>
+
+      <!-- Add more sections as needed -->
+    </div>
+  </main>
+</body>
 </html>
