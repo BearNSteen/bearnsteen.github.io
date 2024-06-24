@@ -38,16 +38,102 @@
             padding: 20px;
             border-radius: 5px;
         }
+        .project-link {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        
+        .project-link:hover {
+            background-color: #2980b9;
+        }
+
+        .navbar {
+            background-color: #3498db;
+            overflow: visible;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+    
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+    
+        .navbar .dropdown {
+            float: left;
+            overflow: visible; /* Changed from hidden to visible */
+        }
+    
+        .dropdown .dropbtn {
+            font-size: 16px;
+            border: none;
+            outline: none;
+            color: white;
+            padding: 14px 16px;
+            background-color: inherit;
+            font-family: inherit;
+            margin: 0;
+            cursor: pointer;
+        }
+    
+        .navbar a:hover, .dropdown:hover .dropbtn {
+            background-color: #2980b9;
+        }
+    
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1001;
+        }
+    
+        .dropdown-content a {
+            float: none;
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+        }
+    
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+    
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+    
+        body {
+            margin-top: 60px;
+        }
     </style>
 </head>
 <body>
-    <nav style="position: fixed; top: 10px; right: 10px; z-index: 1000;">
-        <a href="index.html" style="text-decoration: none;">
-          <!--button style="padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
-            Original Version
-          </button!-->
-        </a>
-      </nav>
+    <div class="navbar">
+        <a href="#">Home</a>
+        <div class="dropdown">
+            <button class="dropbtn">We're Watching</button>
+            <div class="dropdown-content">
+                <a href="watching" target="_blank">Play</a>
+                <a href="watching/about.html" target="_blank">About</a>
+            </div>
+        </div>
+    </div>
     <header>
         <h1>Your Name</h1>
         <p>AI Developer | Software Engineer | Computer Science Educator</p>
@@ -94,12 +180,17 @@
     <section class="section">
         <h2>Projects</h2>
         <div class="project">
+            <h3>Creatures of Habbitt (Godot Rhythm RPG)</h3>
+            <p>Created a Rhythm RPG using Godot engine (GDScript, which is like Python), demonstrating my ability to quickly learn and apply new technologies.</p>
+        </div>
+        <div class="project">
             <h3>AI-Powered Application</h3>
             <p>Developed an AI application using Python and machine learning libraries. This project showcased my skills in AI development and problem-solving.</p>
         </div>
         <div class="project">
-            <h3>Game Development with Godot</h3>
-            <p>Created a game using Godot engine and GDScript, demonstrating my ability to quickly learn and apply new technologies.</p>
+            <h3>We're Watching (Reality Show Simulator)</h3>
+            <p>Developed a web-based simulator for the fake "We're Watching" reality TV show using JavaScript and HTML/CSS. This project demonstrates my skills in web development and game logic implementation.</p>
+            <a href="watching/game.html" class="project-link">Link</a>
         </div>
     </section>
 
