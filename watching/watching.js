@@ -1,14 +1,16 @@
-class HouseGuest {
+class Agent {
     constructor(name) {
         this.name = name;
         this.age = Math.floor(Math.random() * 20) + 21; // 21-40
         this.profession = this.randomProfession();
-        this.HOH = false;
-        this.nominee = false;
-        this.veto = false;
+        this.OVR = false;
+        this.flagged = false;
+        this.POD = false;
         this.target = null;
         this.impressions = {};
         this.vetoed = false;
+        this.winner = null;
+        this.runnerUp = null;
 
         this.friendliness = Math.floor(Math.random() * 5) + 1;
         this.loyalty = Math.floor(Math.random() * 5) + 1;
@@ -31,17 +33,16 @@ class HouseGuest {
     }
 }
 
-class BigBrother {
+class WeAreWatching {
     constructor() {
         this.numPlayers = 12;
-        this.houseguests = [];
-        this.evictedHouseguests = [];
-        this.prevHOH = null;
+        this.agents = [];
+        this.purgedAgents = [];
         this.endState = 0;
         this.events = [];
         this.alliances = {};
         this.seasonNum = 1;
-        this.prevHOH = null;
+        this.prevOVR = null;
         this.showmances = [];
         this.stepIndex = 0;
         this.stepByStepMode = false;
@@ -52,8 +53,14 @@ class BigBrother {
     }
 
     createPlayers() {
-        for (let i = 0; i < this.numPlayers; i++) {
-            this.houseguests.push(new HouseGuest(this.randomName()));
+        const usedNames = new Set();
+        while (this.agents.length < this.numPlayers) {
+            let name;
+            do {
+                name = this.randomName();
+            } while (usedNames.has(name));
+            usedNames.add(name);
+            this.agents.push(new Agent(name));
         }
     }
 
@@ -64,10 +71,10 @@ class BigBrother {
     }
 
     doImpressions() {
-        for (let hg1 of this.houseguests) {
-            for (let hg2 of this.houseguests) {
-                if (hg1 !== hg2) {
-                    hg1.impressions[hg2.name] = Math.floor(Math.random() * 11); // 0-10
+        for (let ag1 of this.agents) {
+            for (let ag2 of this.agents) {
+                if (ag1 !== ag2) {
+                    ag1.impressions[ag2.name] = Math.floor(Math.random() * 11); // 0-10
                 }
             }
         }
@@ -79,199 +86,226 @@ class BigBrother {
             this.nextStep();
         } else {
             this.clearTextBox();
-            this.week = this.numPlayers - this.houseguests.length + 1;
+            this.week = this.numPlayers - this.agents.length + 1;
             this.printText(`Week ${this.week}:`);
-
+    
             if (this.endState === 1) {
-                // Game over logic
                 return;
             }
-
-            if (this.houseguests.length > 2) {
-                this.selectHOH();
+    
+            // Reset colors of all agents
+            for (let ag of this.agents) {
+                ag.OVR = false;
+                ag.flagged = false;
+                ag.vetoed = false;
+                ag.POD = false;
+            }
+    
+            if (this.agents.length > 2) {
+                this.selectOVR();
                 this.eventSpawner();
-                const nominees = this.selectNoms();
+                const flagged = this.selectFlagged();
                 this.eventSpawner();
-                const potentialPlayers = this.playVeto(nominees);
+                const potentialPlayers = this.playDisruptionAcquisition(flagged);
                 this.eventSpawner();
-                this.vetoCeremony(nominees, potentialPlayers);
+                this.PODCeremony(flagged, potentialPlayers);
                 this.eventSpawner();
-                this.eviction(nominees);
+                this.purging(flagged);
                 this.eventSpawner();
             } else {
                 this.finale();
             }
-
+    
             this.updateUI();
         }
     }
 
-    selectHOH() {
-        this.printText("The houseguests compete in the HOH competition.");
+    selectOVR() {
+        this.printText("The agents compete to become the Overseer.");
         
-        let potentialHOHs = this.houseguests.filter(hg => hg !== this.prevHOH);
-        if (potentialHOHs.length === 0) potentialHOHs = this.houseguests;
-
-        this.HOH = this.randomChoice(potentialHOHs);
-        this.HOH.HOH = true;
-        this.prevHOH = this.HOH;
-
-        this.printText(`<span style="color: yellow;">${this.HOH.name}</span> is the new Head of Household`);
-        this.updateLabel('hohLabel', this.HOH.name, 'yellow');
+        let potentialOVRs = this.agents.filter(ag => ag !== this.prevOVR);
+        if (potentialOVRs.length === 0) potentialOVRs = this.agents;
+    
+        this.OVR = this.randomChoice(potentialOVRs);
+        this.OVR.OVR = true;
+        this.prevOVR = this.OVR;
+    
+        this.printText(`<span style="color: yellow;">${this.OVR.name}</span> is the new Overseer`);
+        this.updateLabel('ovrLabel', this.OVR.name, 'yellow');
     }
 
-    selectNoms() {
-        const nominees = [];
-        const worstImpressions = Object.entries(this.HOH.impressions)
+    selectFlagged() {
+        const flagged = [];
+        const worstImpressions = Object.entries(this.OVR.impressions)
             .sort(([,a],[,b]) => a-b)
-            .filter(([name,]) => this.houseguests.some(hg => hg.name === name))
+            .filter(([name,]) => this.agents.some(ag => ag.name === name))
             .slice(0, 2);
 
         for (let [name,] of worstImpressions) {
-            nominees.push(this.houseguests.find(hg => hg.name === name));
+            flagged.push(this.agents.find(ag => ag.name === name));
         }
 
-        if (nominees.length < 2) {
-            let potentialNominees = this.houseguests.filter(hg => hg !== this.HOH && !nominees.includes(hg));
-            while (nominees.length < 2 && potentialNominees.length > 0) {
-                const nominee = this.randomChoice(potentialNominees);
-                nominees.push(nominee);
-                potentialNominees = potentialNominees.filter(hg => hg !== nominee);
+        if (flagged.length < 2) {
+            let potentialFlagged = this.agents.filter(ag => ag !== this.OVR && !flagged.includes(ag));
+            while (flagged.length < 2 && potentialFlagged.length > 0) {
+                const flaggedAG = this.randomChoice(potentialFlagged);
+                flagged.push(flaggedAG);
+                potentialFlagged = potentialFlagged.filter(ag => ag !== flaggedAG);
             }
         }
 
-        nominees.forEach(nominee => nominee.nominee = true);
+        flagged.forEach(flaggedAG => flaggedAG.flagged = true);
 
-        const nomineesText = nominees.map(n => n.name).join(' and ');
-        this.printText(`<span style="color: yellow;">${this.HOH.name}</span> has nominated <span style="color: purple;">${nomineesText}</span> for eviction.`);
-        this.updateLabel('nomineesLabel', nomineesText, 'purple');
+        const flaggedText = flagged.map(n => n.name).join(' and ');
+        this.printText(`<span style="color: yellow;">${this.OVR.name}</span> has flagged <span style="color: purple;">${flaggedText}</span> for removal.`);
+        this.updateLabel('flaggedLabel', flaggedText, 'purple');
 
-        return nominees;
+        return flagged;
     }
 
-    playVeto(nominees) {
-        this.printText("The houseguests compete in the Veto competition.");
+    playDisruptionAcquisition(flagged) {
+        this.printText("The agents compete in the disruption acquisition.");
         
-        const NUM_VETO_PLAYERS = 6;
-        let potentialPlayers = this.houseguests.filter(hg => !nominees.includes(hg) && hg !== this.HOH);
+        const NUM_POD_PLAYERS = 6;
+        let potentialPlayers = this.agents.filter(ag => !flagged.includes(ag) && ag !== this.OVR);
         
-        if (this.houseguests.length > 3) {
-            let vetoPlayers = this.randomSample(potentialPlayers, Math.min(potentialPlayers.length, NUM_VETO_PLAYERS - 3));
-            vetoPlayers = vetoPlayers.concat(nominees, [this.HOH]);
-            this.vetoWinner = this.randomChoice(vetoPlayers);
-            this.printText(`${this.vetoWinner.name} has won the Power of Veto!`);
+        if (this.agents.length > 3) {
+            let PODPlayers = this.randomSample(potentialPlayers, Math.min(potentialPlayers.length, NUM_POD_PLAYERS - 3));
+            PODPlayers = PODPlayers.concat(flagged, [this.OVR]);
+            this.PODWinner = this.randomChoice(PODPlayers);
         } else {
-            this.vetoWinner = null;
+            this.PODWinner = null;
         }
-
-        if (this.vetoWinner) {
-            this.printText(`<span style="color: orange;">${this.vetoWinner.name}</span> has won the Power of Veto!`);
-            this.updateLabel('vetoHolderLabel', this.vetoWinner.name, 'orange');
+    
+        if (this.PODWinner) {
+            this.printText(`<span style="color: orange;">${this.PODWinner.name}</span> has won the Power of Disruption!`);
+            this.updateLabel('PODHolderLabel', this.PODWinner.name, 'orange');
         }
-
+    
         return potentialPlayers;
     }
 
-    vetoCeremony(nominees, potentialPlayers) {
-        if (this.vetoWinner) {
-            this.updateLabel('vetoHolderLabel', this.vetoWinner.name);
+    PODCeremony(flagged, potentialPlayers) {
+        if (this.PODWinner) {
+            this.updateLabel('PODHolderLabel', this.PODWinner.name);
             
-            if (nominees.includes(this.vetoWinner)) {
-                this.printText(`${this.colorText(this.vetoWinner.name, 'orange')} has automatically used the Veto on themselves.`);
-                const nomineeSaved = this.vetoWinner;
-                nomineeSaved.vetoed = true;
-                nominees = nominees.filter(n => n !== nomineeSaved);
+            if (flagged.includes(this.PODWinner)) {
+                this.printText(`${this.colorText(this.PODWinner.name, 'orange')} has automatically used the Power of Disruption on themselves.`);
+                const flaggedSaved = this.PODWinner;
+                flaggedSaved.vetoed = true;
+                flagged = flagged.filter(n => n !== flaggedSaved);
+    
+                let replacementFlagged;
+                if (this.OVR.target && this.agents.includes(this.OVR.target) && !this.OVR.target.vetoed) {
+                    replacementFlagged = this.OVR.target;
+                } else {
+                    replacementFlagged = this.randomChoice(potentialPlayers.filter(p => p !== flaggedSaved && !flagged.includes(p)));
+                }
+                if (replacementFlagged) {
+                    flagged.push(replacementFlagged);
+                    this.printText(`<span style="color: yellow;">${this.OVR.name}</span> has flagged <span style="color: blue;">${replacementFlagged.name}</span> as the replacement.`);
+                    this.updateLabel('replacementFlaggedLabel', replacementFlagged.name, 'blue');
+                }
             } else {
-                const vetoUsed = Math.random() < 0.5;
-                if (vetoUsed) {
-                    const nomineeSaved = this.randomChoice(nominees);
-                    this.printText(`${this.colorText(this.vetoWinner.name, 'orange')} has chosen to use the Power of Veto on ${this.colorText(nomineeSaved.name, 'purple')}.`);
-                    nominees = nominees.filter(n => n !== nomineeSaved);
-                    nomineeSaved.vetoed = true;
-
-                    let replacementNom;
-                    if (this.vetoWinner.target && this.houseguests.includes(this.vetoWinner.target) && !this.vetoWinner.target.vetoed) {
-                        replacementNom = this.vetoWinner.target;
+                const PODUsed = Math.random() < 0.5;
+                if (PODUsed) {
+                    const flaggedSaved = this.randomChoice(flagged);
+                    this.printText(`${this.colorText(this.PODWinner.name, 'orange')} has chosen to use the Power of Disruption on ${this.colorText(flaggedSaved.name, 'purple')}.`);
+                    flagged = flagged.filter(n => n !== flaggedSaved);
+                    flaggedSaved.vetoed = true;
+    
+                    let replacementFlagged;
+                    if (this.PODWinner.target && this.agents.includes(this.PODWinner.target) && !this.PODWinner.target.vetoed) {
+                        replacementFlagged = this.PODWinner.target;
                     } else {
-                        replacementNom = this.randomChoice(potentialPlayers.filter(p => p !== nomineeSaved));
+                        replacementFlagged = this.randomChoice(potentialPlayers.filter(p => p !== flaggedSaved && !flagged.includes(p)));
                     }
-                    if (replacementNom) {
-                        nominees.push(replacementNom);
-                        this.printText(`<span style="color: yellow;">${this.HOH.name}</span> has nominated <span style="color: blue;">${replacementNom.name}</span> as the replacement nominee.`);
-                        this.updateLabel('replacementNomineesLabel', replacementNom.name, 'blue');
+                    if (replacementFlagged) {
+                        flagged.push(replacementFlagged);
+                        this.printText(`<span style="color: yellow;">${this.OVR.name}</span> has flagged <span style="color: blue;">${replacementFlagged.name}</span> as the replacement.`);
+                        this.updateLabel('replacementFlaggedLabel', replacementFlagged.name, 'blue');
                     }
                 } else {
-                    this.printText(`${this.colorText(this.vetoWinner.name, 'orange')} has chosen not to use the Power of Veto.`);
+                    this.printText(`${this.colorText(this.PODWinner.name, 'orange')} has chosen not to use the Power of Disruption.`);
                 }
             }
             
-            this.updateLabel('replacementNomineesLabel', nominees.map(n => n.name).join(', '));
+            this.updateLabel('replacementFlaggedLabel', flagged.map(n => n.name).join(', '));
         } else {
-            this.updateLabel('vetoHolderLabel', 'The Veto is not played this week.');
-            this.updateLabel('replacementNomineesLabel', 'Nominees cannot be replaced this week.');
+            this.updateLabel('PODHolderLabel', 'The Power of Disruption may not be acquired this week.');
+            this.updateLabel('replacementFlaggedLabel', 'Flagged agents cannot be replaced this week.');
         }
     }
 
-    eviction(nominees) {
+    purging(flagged) {
         const votes = {};
-        for (let houseguest of this.houseguests.filter(hg => hg !== this.HOH)) {
-            votes[houseguest.name] = this.randomChoice(nominees).name;
+        for (let agent of this.agents.filter(ag => ag !== this.OVR)) {
+            votes[agent.name] = this.randomChoice(flagged).name;
         }
-        
-        const evictedName = Object.entries(votes)
+    
+        const purgedName = Object.entries(votes)
             .reduce((acc, [voter, votedFor]) => {
                 acc[votedFor] = (acc[votedFor] || 0) + 1;
                 return acc;
             }, {});
-        
-        const evicted = nominees.find(n => n.name === Object.keys(evictedName).reduce((a, b) => evictedName[a] > evictedName[b] ? a : b));
     
-        this.printText(`<span style="color: red;">${evicted.name}</span> has been evicted from the Big Brother house.`);
-        this.updateLabel('evictedLabel', evicted.name, 'red');
-        this.evictedHouseguests.push(evicted);
-        this.houseguests = this.houseguests.filter(hg => hg !== evicted);
-
+        const purged = flagged.find(n => n.name === Object.keys(purgedName).reduce((a, b) => purgedName[a] > purgedName[b] ? a : b));
+    
+        this.printText(`<span style="color: red;">${purged.name}</span> has been purged from the We Are Watching house.`);
+        this.updateLabel('purgedLabel', purged.name, 'red');
+        this.purgedAgents.push(purged);
+        this.agents = this.agents.filter(ag => ag !== purged);
+    
         // Update targets
-        for (let hg of this.houseguests) {
-            if (hg.target === evicted.name) {
-                hg.target = null;
+        for (let ag of this.agents) {
+            if (ag.target === purged.name) {
+                ag.target = null;
             }
         }
-
+    
         // Reset "vetoed" status
-        for (let hg of this.houseguests) {
-            hg.vetoed = false;
+        for (let ag of this.agents) {
+            ag.vetoed = false;
         }
-
-        this.updateHouseguestList();
+    
+        this.updateAgentList();
     }
 
     finale() {
-        this.printText(`Final 2: ${this.houseguests[0].name} and ${this.houseguests[1].name}`);
-        this.printText(`${this.houseguests[0].name} pleads their case...`);
-        this.printText(`${this.houseguests[1].name} pleads their case...`);
-
+        const finalAgents = [...this.agents];
+        this.printText(`Final 2: ${finalAgents[0].summary()} and ${finalAgents[1].summary()}`);
+        this.printText(`${finalAgents[0].name} pleads their case...`);
+        this.printText(`${finalAgents[1].name} pleads their case...`);
+    
         const votes = {};
-        for (let guest of this.evictedHouseguests) {
-            votes[guest.name] = this.randomChoice(this.houseguests).name;
+        for (let guest of this.purgedAgents) {
+            votes[guest.name] = this.randomChoice(finalAgents).name;
         }
-
+    
         let votes1 = 0, votes2 = 0;
         for (let [voter, votedFor] of Object.entries(votes)) {
-            this.printText(`${voter} votes for ${votedFor} to win Big Brother!`);
-            if (votedFor === this.houseguests[0].name) votes1++;
+            this.printText(`${voter} votes for ${votedFor} to win!`);
+            if (votedFor === finalAgents[0].name) votes1++;
             else votes2++;
         }
+    
+        const winner = votes1 > votes2 ? finalAgents[0] : (votes2 > votes1 ? finalAgents[1] : this.randomChoice(finalAgents));
+        const runnerUp = winner === finalAgents[0] ? finalAgents[1] : finalAgents[0];
 
-        const winner = votes1 > votes2 ? this.houseguests[0] : (votes2 > votes1 ? this.houseguests[1] : this.randomChoice(this.houseguests));
+        this.winner = winner;
+        this.runnerUp = runnerUp;
 
-        this.printText(`${winner.name} wins Big Brother!`);
-        this.updateLabel('hohLabel', `${winner.name} wins!`);
-        this.updateLabel('nomineesLabel', `Votes for ${winner.name}: ${Math.max(votes1, votes2)}`);
-        this.updateLabel('vetoHolderLabel', `Votes for ${winner.name === this.houseguests[0].name ? this.houseguests[1].name : this.houseguests[0].name}: ${Math.min(votes1, votes2)}`);
-        this.updateLabel('replacementNomineesLabel', '');
+        this.printText(`${this.colorText(winner.name, 'green')} wins We Are Watching!`);
+        this.printText(`${this.colorText(runnerUp.name, 'blue')} is the runner-up.`);
+    
+        this.updateLabel('ovrLabel', winner.name, 'green');
+        this.updateLabel('flaggedLabel', `Votes for ${winner.name}: ${Math.max(votes1, votes2)}`);
+        this.updateLabel('PODHolderLabel', `Votes for ${runnerUp.name}: ${Math.min(votes1, votes2)}`);
+        this.updateLabel('replacementFlaggedLabel', '');
         this.updateLabel('evictedLabel', 'Thanks for watching!');
-
+    
+        this.updateAgentList();
+    
         document.getElementById('continueBtn').textContent = 'Finish';
         this.endState = 1;
     }
@@ -282,70 +316,70 @@ class BigBrother {
             const eventIndex = Math.floor(Math.random() * 4);
             switch(eventIndex) {
                 case 0:
-                    if (this.houseguests.length >= 3) {
-                        const [hg1, hg2, hg3] = this.randomSample(this.houseguests, 3);
-                        this.event1(hg1, hg2, hg3);
+                    if (this.agents.length >= 3) {
+                        const [ag1, ag2, ag3] = this.randomSample(this.agents, 3);
+                        this.event1(ag1, ag2, ag3);
                     }
                     break;
                 case 1:
-                    const [hg1, hg2] = this.randomSample(this.houseguests, 2);
-                    this.event2(hg1, hg2);
+                    const [ag1, ag2] = this.randomSample(this.agents, 2);
+                    this.event2(ag1, ag2);
                     break;
                 case 2:
-                    if (this.houseguests.length >= 2) {
-                        const [hg1, hg2] = this.randomSample(this.houseguests, 2);
-                        const alliance = this.randomSample(this.houseguests, Math.floor(Math.random() * 3) + 2);
-                        this.event3(hg1, hg2, alliance);
+                    if (this.agents.length >= 2) {
+                        const [ag1, ag2] = this.randomSample(this.agents, 2);
+                        const alliance = this.randomSample(this.agents, Math.floor(Math.random() * 3) + 2);
+                        this.event3(ag1, ag2, alliance);
                     }
                     break;
                 case 3:
-                    const [hg3, hg4] = this.randomSample(this.houseguests, 2);
-                    this.event4(hg3, hg4);
+                    const [ag3, ag4] = this.randomSample(this.agents, 2);
+                    this.event4(ag3, ag4);
                     break;
             }
         }
     }
 
-    event1(hg1, hg2, hg3) {
-        if (hg1.manipulativeness >= Math.floor(Math.random() * (hg2.emotionality + 1))) {
-            hg2.target = hg3.name;
-            this.printText(`${hg2.name} was swayed!`);
+    event1(ag1, ag2, ag3) {
+        if (ag1.manipulativeness >= Math.floor(Math.random() * (ag2.emotionality + 1))) {
+            ag2.target = ag3.name;
+            this.printText(`${ag2.name} was swayed!`);
         }
 
-        if (hg1.impressions[hg3.name] >= 5) {
-            hg1.impressions[hg3.name] = Math.min(10, hg1.impressions[hg3.name] + 1);
-            hg2.impressions[hg3.name] = Math.max(0, Math.min(10, hg2.impressions[hg3.name] + 2));
+        if (ag1.impressions[ag3.name] >= 5) {
+            ag1.impressions[ag3.name] = Math.min(10, ag1.impressions[ag3.name] + 1);
+            ag2.impressions[ag3.name] = Math.max(0, Math.min(10, ag2.impressions[ag3.name] + 2));
         } else {
-            hg1.impressions[hg3.name] = Math.max(0, hg1.impressions[hg3.name] - 1);
-            hg2.impressions[hg3.name] = Math.max(0, hg2.impressions[hg3.name] - 2);
+            ag1.impressions[ag3.name] = Math.max(0, ag1.impressions[ag3.name] - 1);
+            ag2.impressions[ag3.name] = Math.max(0, ag2.impressions[ag3.name] - 2);
         }
 
-        this.printText(`${hg1.name} pulls ${hg2.name} aside to talk about ${hg3.name}.`);
+        this.printText(`${ag1.name} pulls ${ag2.name} aside to talk about ${ag3.name}.`);
     }
 
-    event2(hg1, hg2) {
-        if (hg1.friendliness < hg2.emotionality) {
-            hg1.target = hg2.name;
-            hg2.target = hg1.name;
-            this.printText(`${hg1.name} and ${hg2.name} were swayed!`);
+    event2(ag1, ag2) {
+        if (ag1.friendliness < ag2.emotionality) {
+            ag1.target = ag2.name;
+            ag2.target = ag1.name;
+            this.printText(`${ag1.name} and ${ag2.name} were swayed!`);
         }
 
         if (Math.random() < 0.8) {
-            hg1.impressions[hg2.name] = Math.max(0, hg1.impressions[hg2.name] - 3);
-            hg2.impressions[hg1.name] = Math.max(0, hg2.impressions[hg1.name] - 3);
+            ag1.impressions[ag2.name] = Math.max(0, ag1.impressions[ag2.name] - 3);
+            ag2.impressions[ag1.name] = Math.max(0, ag2.impressions[ag1.name] - 3);
         }
 
         const topics = ["the dishes", "who ate the last slice of pizza", "who flirts too much", "who snores"];
         const topic = this.randomChoice(topics);
-        this.printText(`${hg1.name} gets in a fight with ${hg2.name} over ${topic}!`);
+        this.printText(`${ag1.name} gets in a fight with ${ag2.name} over ${topic}!`);
     }
 
-    event3(hg1, hg2, alliance) {
-        if (!alliance.includes(hg2) && !alliance.includes(hg1)) {
+    event3(ag1, ag2, alliance) {
+        if (!alliance.includes(ag2) && !alliance.includes(ag1)) {
             for (let member of alliance) {
-                if (member.loyalty > hg1.manipulativeness) {
-                    member.target = hg2.name;
-                    member.impressions[hg2.name] = Math.max(0, member.impressions[hg2.name] - 2);
+                if (member.loyalty > ag1.manipulativeness) {
+                    member.target = ag2.name;
+                    member.impressions[ag2.name] = Math.max(0, member.impressions[ag2.name] - 2);
                     this.printText(`${member.name} was swayed!`);
                 }
             }
@@ -353,13 +387,13 @@ class BigBrother {
 
         const allianceNames = ["Wolves", "Dragons", "Lions", "Snakes", "Eagles"];
         const allianceName = "The " + this.randomChoice(allianceNames);
-        this.printText(`${hg1.name} makes plans with ${allianceName} to evict ${hg2.name}.`);
+        this.printText(`${ag1.name} makes plans with ${allianceName} to evict ${ag2.name}.`);
     }
 
-    event4(hg1, hg2) {
-        hg1.impressions[hg2.name] = Math.min(10, hg1.impressions[hg2.name] + 3);
-        hg2.impressions[hg1.name] = Math.min(10, hg2.impressions[hg1.name] + 3);
-        this.printText(`${hg1.name} has a casual conversation with ${hg2.name}.`);
+    event4(ag1, ag2) {
+        ag1.impressions[ag2.name] = Math.min(10, ag1.impressions[ag2.name] + 3);
+        ag2.impressions[ag1.name] = Math.min(10, ag2.impressions[ag1.name] + 3);
+        this.printText(`${ag1.name} has a casual conversation with ${ag2.name}.`);
     }
 
     // Utility methods
@@ -408,26 +442,58 @@ class BigBrother {
     }
 
     updateUI() {
-        this.updateHouseguestList();
+        this.updateAgentList();
     }
 
-    updateHouseguestList() {
-        const houseguestsDiv = document.getElementById('houseguests');
-        houseguestsDiv.innerHTML = '';
-        for (let hg of this.houseguests) {
-            const hgElement = document.createElement('div');
-            hgElement.className = 'houseguest';
-            hgElement.textContent = hg.name;
-            hgElement.addEventListener('dblclick', () => this.editHouseguestName(hg));
-            houseguestsDiv.appendChild(hgElement);
+    updateAgentList() {
+        const agentsDiv = document.getElementById('agents');
+        agentsDiv.innerHTML = '';
+    
+        // Create a new array with the desired order
+        let orderedAgents = [];
+    
+        // Add winner and runner-up if they exist
+        if (this.winner) orderedAgents.push(this.winner);
+        if (this.runnerUp) orderedAgents.push(this.runnerUp);
+    
+        // Add remaining agents (excluding winner and runner-up)
+        orderedAgents = orderedAgents.concat(
+            this.agents.filter(ag => ag !== this.winner && ag !== this.runnerUp)
+        );
+    
+        // Add purged agents in reverse order
+        orderedAgents = orderedAgents.concat(this.purgedAgents.slice().reverse());
+    
+        for (let ag of orderedAgents) {
+            const agElement = document.createElement('div');
+            agElement.className = 'agent';
+            let agName = ag.name;
+    
+            if (ag === this.winner) {
+                agElement.classList.add('winner');
+            } else if (ag === this.runnerUp) {
+                agElement.classList.add('runner-up');
+            } else if (this.purgedAgents.includes(ag)) {
+                agElement.classList.add('purged');
+            } else if (ag.OVR) {
+                agElement.classList.add('overseer');
+            } else if (ag.flagged) {
+                agElement.classList.add(ag.vetoed ? 'flagged-saved' : 'flagged');
+            } else if (ag === this.PODWinner) {
+                agElement.classList.add('pod-winner');
+            }
+    
+            agElement.textContent = agName;
+            agElement.addEventListener('dblclick', () => this.editAgentName(ag));
+            agentsDiv.appendChild(agElement);
         }
     }
 
-    editHouseguestName(houseguest) {
-        const newName = prompt(`Enter new name for ${houseguest.name}:`, houseguest.name);
-        if (newName && newName !== houseguest.name) {
-            houseguest.name = newName;
-            this.updateHouseguestList();
+    editAgentName(agent) {
+        const newName = prompt(`Enter new name for ${agent.name}:`, agent.name);
+        if (newName && newName !== agent.name) {
+            agent.name = newName;
+            this.updateAgentList();
         }
     }
 
@@ -437,58 +503,48 @@ class BigBrother {
     }
 
     reset() {
-        this.houseguests = [];
-        this.evictedHouseguests = [];
-        this.prevHOH = null;
+        this.agents = [];
+        this.evictedAgents = [];
+        this.prevOVR = null;
         this.endState = 0;
         this.showmances = [];
         this.alliances = {};
         this.seasonNum++;
-
+        this.winner = null;
+        this.runnerUp = null;
+    
         this.createPlayers();
         this.doImpressions();
-
+    
         this.clearTextBox();
         this.updateUI();
-        this.updateLabel('hohLabel', '');
-        this.updateLabel('nomineesLabel', '');
-        this.updateLabel('vetoHolderLabel', '');
-        this.updateLabel('replacementNomineesLabel', '');
+        this.updateLabel('ovrLabel', '');
+        this.updateLabel('flaggedLabel', '');
+        this.updateLabel('PODHolderLabel', '');
+        this.updateLabel('replacementFlaggedLabel', '');
         this.updateLabel('evictedLabel', '');
-
+    
         document.getElementById('continueBtn').textContent = 'Continue';
     }
 
-    updateHouseguestList() {
-        const houseguestsDiv = document.getElementById('houseguests');
-        houseguestsDiv.innerHTML = '';
-        for (let hg of game.houseguests) {
-            const hgElement = document.createElement('div');
-            hgElement.className = 'houseguest';
-            hgElement.textContent = hg.name;
-            hgElement.addEventListener('dblclick', () => editHouseguestName(hg));
-            houseguestsDiv.appendChild(hgElement);
-        }
-    }
-    
-    introduceHouseguests() {
+    introduceAgents() {
         const textBox = document.getElementById('textBox');
-        textBox.innerHTML = `Meet the ${game.houseguests.length} houseguests:<br>`;
-        for (let hg of game.houseguests) {
-            textBox.innerHTML += hg.summary() + '<br>';
+        textBox.innerHTML = `Meet the ${game.agents.length} agents:<br>`;
+        for (let ag of game.agents) {
+            textBox.innerHTML += ag.summary() + '<br>';
         }
     }
     
-    editHouseguestName(houseguest) {
-        const newName = prompt(`Enter new name for ${houseguest.name}:`, houseguest.name);
-        if (newName && newName !== houseguest.name) {
-            houseguest.name = newName;
-            updateHouseguestList();
+    editAgentName(agent) {
+        const newName = prompt(`Enter new name for ${agent.name}:`, agent.name);
+        if (newName && newName !== agent.name) {
+            agent.name = newName;
+            updateAgentList();
         }
     }
 
     preSeasonIntroduction() {
-        this.printText("Welcome to the Big Brother house! The houseguests are about to meet each other for the first time.");
+        this.printText("Welcome to We Are Watching! The agents are about to meet each other for the first time.");
     
         // Simulate 20-30 interactions
         for (let i = 0; i < 20; i++) {
@@ -503,61 +559,31 @@ class BigBrother {
     nextStep() {
         switch (this.stepIndex) {
             case 0:
-                this.selectHOH();
+                this.selectOVR();
                 break;
             case 1:
-                this.selectNoms();
+                this.selectFlagged();
                 break;
             case 2:
-                this.playVeto();
+                this.playDisruptionAcquisition();
                 break;
             case 3:
-                this.vetoCeremony();
+                this.PODCeremony();
                 break;
             case 4:
-                this.eviction();
-                this.stepIndex = -1; // Reset for next week
+                this.purging();
+                this.stepIndex = -1;
                 break;
         }
         this.stepIndex++;
         this.updateUI();
     }
 
-    finale() {
-        this.printText(`Final 2: ${this.houseguests[0].name} and ${this.houseguests[1].name}`);
-        this.printText(`${this.houseguests[0].name} pleads their case...`);
-        this.printText(`${this.houseguests[1].name} pleads their case...`);
-    
-        const votes = {};
-        for (let guest of this.evictedHouseguests) {
-            votes[guest.name] = this.randomChoice(this.houseguests).name;
-        }
-    
-        let votes1 = 0, votes2 = 0;
-        for (let [voter, votedFor] of Object.entries(votes)) {
-            this.printText(`${voter} votes for ${votedFor} to win Big Brother!`);
-            if (votedFor === this.houseguests[0].name) votes1++;
-            else votes2++;
-        }
-    
-        const winner = votes1 > votes2 ? this.houseguests[0] : (votes2 > votes1 ? this.houseguests[1] : this.randomChoice(this.houseguests));
-    
-        this.printText(`${winner.name} wins Big Brother!`);
-        this.updateLabel('hohLabel', `${winner.name} wins!`);
-        this.updateLabel('nomineesLabel', `Votes for ${winner.name}: ${Math.max(votes1, votes2)}`);
-        this.updateLabel('vetoHolderLabel', `Votes for ${winner.name === this.houseguests[0].name ? this.houseguests[1].name : this.houseguests[0].name}: ${Math.min(votes1, votes2)}`);
-        this.updateLabel('replacementNomineesLabel', '');
-        this.updateLabel('evictedLabel', 'Thanks for watching!');
-    
-        document.getElementById('continueBtn').textContent = 'Finish';
-        this.endState = 1;
-    }
-
     createAlliance() {
-        if (this.houseguests.length > 5) {
-            const members = this.randomSample(this.houseguests, Math.floor(Math.random() * 3) + 2);
+        if (this.agents.length > 5) {
+            const members = this.randomSample(this.agents, Math.floor(Math.random() * 3) + 2);
             const allianceName = "The " + this.randomChoice(["Wolves", "Dragons", "Lions", "Snakes", "Eagles"]);
-            this.alliances[allianceName] = members.map(hg => hg.name);
+            this.alliances[allianceName] = members.map(ag => ag.name);
             this.printText(`${allianceName} alliance forms between ${members.map(m => m.name).join(', ')}.`);
         }
     }
@@ -577,7 +603,7 @@ class BigBrother {
     }
 }
 
-const game = new BigBrother();
+const game = new WeAreWatching();
 
 document.addEventListener('DOMContentLoaded', function() {
     // Set up event listeners
@@ -594,8 +620,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('resetBtn').addEventListener('click', () => game.reset());
 
     // Initial setup
-    game.updateHouseguestList();
-    game.introduceHouseguests();
+    game.updateAgentList();
+    game.introduceAgents();
 });
 
 function showGameButtons() {

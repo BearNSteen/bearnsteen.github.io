@@ -10,17 +10,48 @@ body {
     padding: 20px;
 }
 
-#houseguests {
+#agents {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 20px;
 }
 
-.houseguest {
+.agent {
     background-color: #2D2D2D;
     padding: 5px 10px;
     border-radius: 5px;
+}
+
+.winner {
+    background-color: #00FF00; /* Green */
+    color: black;
+}
+
+.runner-up {
+    background-color: #0000FF; /* Blue */
+    color: black;
+}
+
+.purged {
+    background-color: #FF4136; /* Red (unchanged as requested) */
+}
+
+.overseer {
+    background-color: #000000; /* Black */
+    color: #FFD700; /* Gold */
+}
+
+.flagged {
+    background-color: #800080; /* Purple */
+}
+
+.flagged-saved {
+    background-color: #008080; /* Teal */
+}
+
+.pod-winner {
+    background-color: #FFA500; /* Orange */
 }
 
 button {
