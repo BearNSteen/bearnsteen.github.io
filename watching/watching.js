@@ -250,7 +250,7 @@ class WeAreWatching {
             }, {});
     
         const purged = flagged.find(n => n.name === Object.keys(purgedName).reduce((a, b) => purgedName[a] > purgedName[b] ? a : b));
-    
+
         this.printText(`<span style="color: red;">${purged.name}</span> has been purged from the We Are Watching house.`);
         this.updateLabel('purgedLabel', purged.name, 'red');
         this.purgedAgents.push(purged);
@@ -297,17 +297,59 @@ class WeAreWatching {
 
         this.printText(`${this.colorText(winner.name, 'green')} wins We Are Watching!`);
         this.printText(`${this.colorText(runnerUp.name, 'blue')} is the runner-up.`);
-    
+
+        // Update the label column
+        document.querySelector('.label-column .info-row:nth-child(1) .label-text').textContent = 'Winner';
+        document.querySelector('.label-column .info-row:nth-child(2) .label-text').textContent = 'Runner-Up';
+        document.querySelector('.label-column .info-row:nth-child(3) .label-text').textContent = `Votes for ${winner.name}`;
+        document.querySelector('.label-column .info-row:nth-child(4) .label-text').textContent = `Votes for ${runnerUp.name}`;
+        document.querySelector('.label-column .info-row:nth-child(5) .label-text').textContent = 'Thanks for watching!';
+
+        // Update the value column
         this.updateLabel('ovrLabel', winner.name, 'green');
-        this.updateLabel('flaggedLabel', `Votes for ${winner.name}: ${Math.max(votes1, votes2)}`);
-        this.updateLabel('PODHolderLabel', `Votes for ${runnerUp.name}: ${Math.min(votes1, votes2)}`);
-        this.updateLabel('replacementFlaggedLabel', '');
-        this.updateLabel('evictedLabel', 'Thanks for watching!');
-    
+        this.updateLabel('flaggedLabel', runnerUp.name, 'blue');
+        this.updateLabel('PODHolderLabel', Math.max(votes1, votes2).toString(), 'green');
+        this.updateLabel('replacementFlaggedLabel', Math.min(votes1, votes2).toString(), 'blue');
+        this.updateLabel('purgedLabel', 'Tune in next season!');
+
+        //this.refreshGameInfo();
+
         this.updateAgentList();
-    
-        document.getElementById('continueBtn').textContent = 'Finish';
+
+        const continueBtn = document.getElementById('continueBtn');
+        continueBtn.textContent = 'Finish';
+        continueBtn.onclick = () => this.finishGame();
+
+        // Hide the reset button
+        document.getElementById('resetBtn').style.display = 'none';
+
         this.endState = 1;
+    }
+
+    refreshGameInfo() {
+        const gameInfo = document.getElementById('gameInfo');
+        gameInfo.style.display = 'flex';
+        gameInfo.style.justifyContent = 'space-between';
+        
+        document.querySelectorAll('.info-row').forEach(row => {
+            row.style.display = 'flex';
+        });
+    }
+
+    finishGame() {
+        this.reset();
+        this.updateAgentList();
+        
+        const continueBtn = document.getElementById('continueBtn');
+        continueBtn.textContent = 'Continue';
+        
+        // Remove existing event listeners and add new one
+        const newContinueBtn = continueBtn.cloneNode(true);
+        continueBtn.parentNode.replaceChild(newContinueBtn, continueBtn);
+        newContinueBtn.addEventListener('click', () => this.playWeek());
+    
+        // Unhide the reset button
+        document.getElementById('resetBtn').style.display = 'block';
     }
 
     eventSpawner() {
@@ -433,10 +475,9 @@ class WeAreWatching {
                 if (color) {
                     element.style.color = color;
                 }
-                element.parentElement.style.display = 'block';
-                document.getElementById('gameInfo').style.display = 'block';
+                element.closest('.info-row').style.display = 'flex';
             } else {
-                element.parentElement.style.display = 'none';
+                element.closest('.info-row').style.display = 'none';
             }
         }
     }
@@ -503,8 +544,9 @@ class WeAreWatching {
     }
 
     reset() {
+        // Reset game state
         this.agents = [];
-        this.evictedAgents = [];
+        this.purgedAgents = [];
         this.prevOVR = null;
         this.endState = 0;
         this.showmances = [];
@@ -512,26 +554,51 @@ class WeAreWatching {
         this.seasonNum++;
         this.winner = null;
         this.runnerUp = null;
+        this.PODWinner = null;
+        this.OVR = null;
+        this.week = 0;
     
+        // Recreate players and impressions
         this.createPlayers();
         this.doImpressions();
     
+        // Clear UI
         this.clearTextBox();
         this.updateUI();
-        this.updateLabel('ovrLabel', '');
-        this.updateLabel('flaggedLabel', '');
-        this.updateLabel('PODHolderLabel', '');
-        this.updateLabel('replacementFlaggedLabel', '');
-        this.updateLabel('evictedLabel', '');
     
-        document.getElementById('continueBtn').textContent = 'Continue';
+        // Restore original labels
+        document.querySelectorAll('.label-column .info-row .label-text').forEach(label => label.textContent = '');
+        
+        document.querySelector('.label-column .info-row:nth-child(1) .label-text').textContent = 'Overseer';
+        document.querySelector('.label-column .info-row:nth-child(2) .label-text').textContent = 'Flagged';
+        document.querySelector('.label-column .info-row:nth-child(3) .label-text').textContent = 'Disruptor';
+        document.querySelector('.label-column .info-row:nth-child(4) .label-text').textContent = 'Post-Disruption Flags';
+        document.querySelector('.label-column .info-row:nth-child(5) .label-text').textContent = 'Purged';
+    
+        // Clear value labels
+        document.querySelectorAll('.value-column .info-row .value-text').forEach(value => value.textContent = '');
+    
+        // Reset button text and functionality
+        const continueBtn = document.getElementById('continueBtn');
+        continueBtn.textContent = 'Continue';
+        continueBtn.onclick = () => this.playWeek();
+    
+        // Reintroduce agents
+        this.introduceAgents();
+        this.preSeasonIntroduction();
+    
+        // Show start button and hide game buttons
+        document.getElementById('startBtn').style.display = 'block';
+        document.getElementById('gameButtons').style.display = 'none';
+        // Show the label text again
+        document.querySelectorAll('.label-text.finaleHide').forEach(el => el.classList.remove('hidden'));
     }
 
     introduceAgents() {
-        const textBox = document.getElementById('textBox');
-        textBox.innerHTML = `Meet the ${game.agents.length} agents:<br>`;
-        for (let ag of game.agents) {
-            textBox.innerHTML += ag.summary() + '<br>';
+        this.clearTextBox();
+        this.printText(`Meet the ${this.agents.length} agents:`);
+        for (let ag of this.agents) {
+            this.printText(ag.summary());
         }
     }
     
@@ -548,12 +615,10 @@ class WeAreWatching {
     
         // Simulate 20-30 interactions
         for (let i = 0; i < 20; i++) {
-            this.events.eventSpawner(true); // Assuming you've implemented an Events class
+            this.eventSpawner();
         }
     
         this.printText("The first week is about to begin!");
-    
-        
     }
 
     nextStep() {
@@ -611,13 +676,22 @@ document.addEventListener('DOMContentLoaded', function() {
         game.playWeek();
         showGameButtons();
     });
-    document.getElementById('continueBtn').addEventListener('click', () => game.playWeek());
+    document.getElementById('continueBtn').addEventListener('click', () => {
+        if (game.endState === 1) {
+            game.finishGame();
+        } else {
+            game.playWeek();
+        }
+    });
     document.getElementById('impressionsBtn').addEventListener('click', () => game.showImpressions());
     document.getElementById('showmancesBtn').addEventListener('click', () => game.showShowmances());
     document.getElementById('alliancesBtn').addEventListener('click', () => game.showAlliances());
     document.getElementById('stepByStepBtn').addEventListener('click', () => game.toggleStepByStepMode());
     document.getElementById('preferencesBtn').addEventListener('click', () => game.showPreferences());
-    document.getElementById('resetBtn').addEventListener('click', () => game.reset());
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        game.reset();
+        game.updateAgentList();
+    });
 
     // Initial setup
     game.updateAgentList();

@@ -4,8 +4,22 @@ body {
     color: white;
 }
 
+@font-face {
+    font-family: 'VCR.001';
+    src: url('../VCR.001.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    background-color: #353535;
+    font-family: 'VCR.001', Arial, sans-serif;
+}
+
 #app {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
 }
@@ -15,6 +29,7 @@ body {
     flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 20px;
+    justify-content: center;
 }
 
 .agent {
@@ -72,7 +87,7 @@ button:hover {
     background-color: #2D2D2D;
     padding: 10px;
     margin-top: 20px;
-    height: 200px;
+    flex: 1;
     overflow-y: auto;
 }
 
@@ -81,3 +96,42 @@ button:hover {
 .orange { color: orange; }
 .blue { color: blue; }
 .red { color: red; }
+
+.label-text.hidden {
+    display: none;
+}
+
+#controls, #gameButtons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#gameInfo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-width: 600px;
+    margin: 0 auto 20px;
+}
+
+.label-column, .value-column {
+    display: flex;
+    flex-direction: column;
+    min-height: 100px; /* Adjust this value as needed */
+}
+
+.label-column {
+    align-items: flex-end;
+    margin-right: 20px;
+}
+
+.value-column {
+    align-items: flex-start;
+}
+
+.info-row {
+    min-height: 20px; /* Adjust this value as needed */
+}

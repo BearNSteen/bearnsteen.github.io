@@ -107,12 +107,21 @@
         <img src="wearewatchinglogo.png" alt="We Are Watching" id="titleImage">
         <!--h5>Live from Igbay Rotherbay!</h5!-->
         <div id="agents"></div>
-        <div id="gameInfo" style="display: none;">
-            <p>Overseer: <span id="ovrLabel"></span></p>
-            <p>Flagged: <span id="flaggedLabel"></span></p>
-            <p>Disruptor: <span id="PODHolderLabel"></span></p>
-            <p>Post-Disruption Flags: <span id="replacementFlaggedLabel"></span></p>
-            <p>Purged: <span id="evictedLabel"></span></p>
+        <div id="gameInfo">
+            <div class="label-column">
+                <div class="info-row"><span class="label-text">Overseer</span></div>
+                <div class="info-row"><span class="label-text">Flagged</span></div>
+                <div class="info-row"><span class="label-text">Disruptor</span></div>
+                <div class="info-row"><span class="label-text">Post-Disruption Flags</span></div>
+                <div class="info-row"><span class="label-text">Purged</span></div>
+            </div>
+            <div class="value-column">
+                <div class="info-row"><span id="ovrLabel" class="value-text"></span></div>
+                <div class="info-row"><span id="flaggedLabel" class="value-text"></span></div>
+                <div class="info-row"><span id="PODHolderLabel" class="value-text"></span></div>
+                <div class="info-row"><span id="replacementFlaggedLabel" class="value-text"></span></div>
+                <div class="info-row"><span id="purgedLabel" class="value-text"></span></div>
+            </div>
         </div>
         <div id="controls">
             <button id="startBtn">Start</button>
