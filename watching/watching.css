@@ -50,6 +50,7 @@ html, body {
 
 .purged {
     background-color: #FF4136; /* Red (unchanged as requested) */
+    color: black;
 }
 
 .overseer {
@@ -59,10 +60,17 @@ html, body {
 
 .flagged {
     background-color: #800080; /* Purple */
+    color: red;
+}
+
+.replacement-flagged {
+    background-color: #0000FF; /* Blue */
+    color: red;
 }
 
 .flagged-saved {
-    background-color: #008080; /* Teal */
+    background-color: black; /* Teal */
+    color: orange;
 }
 
 .pod-winner {

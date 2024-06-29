@@ -5,6 +5,7 @@ class Agent {
         this.profession = this.randomProfession();
         this.OVR = false;
         this.flagged = false;
+        this.replacementFlagged = false;
         this.POD = false;
         this.target = null;
         this.impressions = {};
@@ -202,6 +203,7 @@ class WeAreWatching {
                     replacementFlagged = this.randomChoice(potentialPlayers.filter(p => p !== flaggedSaved && !flagged.includes(p)));
                 }
                 if (replacementFlagged) {
+                    replacementFlagged.replacementFlagged = true;
                     flagged.push(replacementFlagged);
                     this.printText(`<span style="color: yellow;">${this.OVR.name}</span> has flagged <span style="color: blue;">${replacementFlagged.name}</span> as the replacement.`);
                     this.updateLabel('replacementFlaggedLabel', replacementFlagged.name, 'blue');
@@ -221,6 +223,7 @@ class WeAreWatching {
                         replacementFlagged = this.randomChoice(potentialPlayers.filter(p => p !== flaggedSaved && !flagged.includes(p)));
                     }
                     if (replacementFlagged) {
+                        replacementFlagged.replacementFlagged = true;
                         flagged.push(replacementFlagged);
                         this.printText(`<span style="color: yellow;">${this.OVR.name}</span> has flagged <span style="color: blue;">${replacementFlagged.name}</span> as the replacement.`);
                         this.updateLabel('replacementFlaggedLabel', replacementFlagged.name, 'blue');
@@ -396,7 +399,7 @@ class WeAreWatching {
             ag2.impressions[ag3.name] = Math.max(0, ag2.impressions[ag3.name] - 2);
         }
 
-        this.printText(`${ag1.name} pulls ${ag2.name} aside to talk about ${ag3.name}.`);
+        this.printText(`${this.colorAgentName(ag1.name)} pulls ${this.colorAgentName(ag2.name)} aside to talk about ${this.colorAgentName(ag3.name)}.`);
     }
 
     event2(ag1, ag2) {
@@ -413,7 +416,7 @@ class WeAreWatching {
 
         const topics = ["the dishes", "who ate the last slice of pizza", "who flirts too much", "who snores"];
         const topic = this.randomChoice(topics);
-        this.printText(`${ag1.name} gets in a fight with ${ag2.name} over ${topic}!`);
+        this.printText(`${this.colorAgentName(ag1.name)} gets in a fight with ${this.colorAgentName(ag2.name)} over ${topic}!`);
     }
 
     event3(ag1, ag2, alliance) {
@@ -429,13 +432,13 @@ class WeAreWatching {
 
         const allianceNames = ["Wolves", "Dragons", "Lions", "Snakes", "Eagles"];
         const allianceName = "The " + this.randomChoice(allianceNames);
-        this.printText(`${ag1.name} makes plans with ${allianceName} to evict ${ag2.name}.`);
+        this.printText(`${this.colorAgentName(ag1.name)} makes plans with ${allianceName} to evict ${this.colorAgentName(ag2.name)}.`);
     }
 
     event4(ag1, ag2) {
         ag1.impressions[ag2.name] = Math.min(10, ag1.impressions[ag2.name] + 3);
         ag2.impressions[ag1.name] = Math.min(10, ag2.impressions[ag1.name] + 3);
-        this.printText(`${ag1.name} has a casual conversation with ${ag2.name}.`);
+        this.printText(`${this.colorAgentName(ag1.name)} has a casual conversation with ${this.colorAgentName(ag2.name)}.`);
     }
 
     // Utility methods
@@ -490,25 +493,20 @@ class WeAreWatching {
         const agentsDiv = document.getElementById('agents');
         agentsDiv.innerHTML = '';
     
-        // Create a new array with the desired order
         let orderedAgents = [];
     
-        // Add winner and runner-up if they exist
         if (this.winner) orderedAgents.push(this.winner);
         if (this.runnerUp) orderedAgents.push(this.runnerUp);
     
-        // Add remaining agents (excluding winner and runner-up)
         orderedAgents = orderedAgents.concat(
             this.agents.filter(ag => ag !== this.winner && ag !== this.runnerUp)
         );
     
-        // Add purged agents in reverse order
         orderedAgents = orderedAgents.concat(this.purgedAgents.slice().reverse());
     
         for (let ag of orderedAgents) {
             const agElement = document.createElement('div');
             agElement.className = 'agent';
-            let agName = ag.name;
     
             if (ag === this.winner) {
                 agElement.classList.add('winner');
@@ -518,16 +516,50 @@ class WeAreWatching {
                 agElement.classList.add('purged');
             } else if (ag.OVR) {
                 agElement.classList.add('overseer');
+            } else if (ag.flagged && ag.vetoed) {
+                agElement.classList.add('flagged-saved');
+            } else if (ag.replacementFlagged) {
+                agElement.classList.add('replacement-flagged');
             } else if (ag.flagged) {
-                agElement.classList.add(ag.vetoed ? 'flagged-saved' : 'flagged');
+                agElement.classList.add('flagged');
             } else if (ag === this.PODWinner) {
                 agElement.classList.add('pod-winner');
             }
     
-            agElement.textContent = agName;
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = ag.name;
+            if ((ag.flagged && !ag.vetoed) || ag.replacementFlagged) {
+                nameSpan.classList.add('flagged-text');
+            }
+    
+            agElement.appendChild(nameSpan);
             agElement.addEventListener('dblclick', () => this.editAgentName(ag));
             agentsDiv.appendChild(agElement);
         }
+    }
+
+    colorAgentName(name) {
+        const agent = this.agents.find(a => a.name === name) || this.purgedAgents.find(a => a.name === name);
+        if (!agent) return name;
+    
+        let color = 'inherit';
+        
+        // Check purged status first
+        if (this.purgedAgents.includes(agent)) {
+            color = 'red';
+        } else if (agent === this.OVR) {
+            color = 'yellow';
+        } else if (agent.flagged) {
+            color = 'purple';
+        } else if (agent === this.PODWinner) {
+            color = 'orange';
+        } else if (agent === this.winner) {
+            color = 'green';
+        } else if (agent === this.runnerUp) {
+            color = 'blue';
+        }
+    
+        return this.colorText(name, color);
     }
 
     editAgentName(agent) {
@@ -664,7 +696,7 @@ class WeAreWatching {
     }
 
     colorText(text, color) {
-        return `<span style="color: ${color};">${text}</span>`;
+        return `<span class="agent-name" style="color: ${color || 'inherit'};">${text}</span>`;
     }
 }
 
