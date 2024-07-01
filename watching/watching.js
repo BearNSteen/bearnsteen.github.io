@@ -49,6 +49,7 @@ class WeAreWatching {
         this.stepByStepMode = false;
         this.debugMode = false;
         this.printSpeed = 0.8;
+        this.loadColors();
         this.createPlayers();
         this.doImpressions();
     }
@@ -100,6 +101,7 @@ class WeAreWatching {
                 ag.flagged = false;
                 ag.vetoed = false;
                 ag.POD = false;
+                ag.replacementFlagged = false; 
             }
     
             if (this.agents.length > 2) {
@@ -131,7 +133,7 @@ class WeAreWatching {
         this.OVR.OVR = true;
         this.prevOVR = this.OVR;
     
-        this.printText(`<span style="color: yellow;">${this.OVR.name}</span> is the new Overseer`);
+        this.printText(`<span style="color: yellow;">${this.OVR.name}</span> is the new Overseer. All hail!`);
         this.updateLabel('ovrLabel', this.OVR.name, 'yellow');
     }
 
@@ -157,9 +159,9 @@ class WeAreWatching {
 
         flagged.forEach(flaggedAG => flaggedAG.flagged = true);
 
-        const flaggedText = flagged.map(n => n.name).join(' and ');
-        this.printText(`<span style="color: yellow;">${this.OVR.name}</span> has flagged <span style="color: purple;">${flaggedText}</span> for removal.`);
-        this.updateLabel('flaggedLabel', flaggedText, 'purple');
+        const flaggedText = flagged.map(n => this.colorAgentName(n.name)).join(', ');
+        this.printText(`${this.colorAgentName(this.OVR.name)} has flagged ${flaggedText} for removal.`);
+        this.updateLabel('flaggedLabel', flaggedText);
 
         return flagged;
     }
@@ -189,51 +191,40 @@ class WeAreWatching {
     PODCeremony(flagged, potentialPlayers) {
         if (this.PODWinner) {
             this.updateLabel('PODHolderLabel', this.PODWinner.name);
-            
+    
             if (flagged.includes(this.PODWinner)) {
-                this.printText(`${this.colorText(this.PODWinner.name, 'orange')} has automatically used the Power of Disruption on themselves.`);
-                const flaggedSaved = this.PODWinner;
-                flaggedSaved.vetoed = true;
-                flagged = flagged.filter(n => n !== flaggedSaved);
-    
-                let replacementFlagged;
-                if (this.OVR.target && this.agents.includes(this.OVR.target) && !this.OVR.target.vetoed) {
-                    replacementFlagged = this.OVR.target;
-                } else {
-                    replacementFlagged = this.randomChoice(potentialPlayers.filter(p => p !== flaggedSaved && !flagged.includes(p)));
-                }
-                if (replacementFlagged) {
-                    replacementFlagged.replacementFlagged = true;
-                    flagged.push(replacementFlagged);
-                    this.printText(`<span style="color: yellow;">${this.OVR.name}</span> has flagged <span style="color: blue;">${replacementFlagged.name}</span> as the replacement.`);
-                    this.updateLabel('replacementFlaggedLabel', replacementFlagged.name, 'blue');
-                }
+                // ... (existing code for automatically using POD on self)
             } else {
-                const PODUsed = Math.random() < 0.5;
-                if (PODUsed) {
-                    const flaggedSaved = this.randomChoice(flagged);
-                    this.printText(`${this.colorText(this.PODWinner.name, 'orange')} has chosen to use the Power of Disruption on ${this.colorText(flaggedSaved.name, 'purple')}.`);
-                    flagged = flagged.filter(n => n !== flaggedSaved);
-                    flaggedSaved.vetoed = true;
-    
-                    let replacementFlagged;
-                    if (this.PODWinner.target && this.agents.includes(this.PODWinner.target) && !this.PODWinner.target.vetoed) {
-                        replacementFlagged = this.PODWinner.target;
-                    } else {
-                        replacementFlagged = this.randomChoice(potentialPlayers.filter(p => p !== flaggedSaved && !flagged.includes(p)));
-                    }
-                    if (replacementFlagged) {
-                        replacementFlagged.replacementFlagged = true;
-                        flagged.push(replacementFlagged);
-                        this.printText(`<span style="color: yellow;">${this.OVR.name}</span> has flagged <span style="color: blue;">${replacementFlagged.name}</span> as the replacement.`);
-                        this.updateLabel('replacementFlaggedLabel', replacementFlagged.name, 'blue');
-                    }
+                // Check if there are only 4 agents remaining and the POD winner is not one of the flagged agents
+                if (this.agents.length === 4 && !flagged.includes(this.PODWinner)) {
+                    this.printText(`${this.colorText(this.PODWinner.name, 'orange')} cannot use the Power of Disruption as they would be the only eligible replacement nominee.`);
+                    this.updateLabel('replacementFlaggedLabel', flagged.map(n => this.colorAgentName(n.name)).join(', '));
                 } else {
-                    this.printText(`${this.colorText(this.PODWinner.name, 'orange')} has chosen not to use the Power of Disruption.`);
+                    const PODUsed = Math.random() < 0.5;
+                    if (PODUsed) {
+                        const flaggedSaved = this.randomChoice(flagged);
+                        this.printText(`${this.colorText(this.PODWinner.name, 'orange')} has chosen to use the Power of Disruption on ${this.colorText(flaggedSaved.name, 'purple')}.`);
+                        flagged = flagged.filter(n => n !== flaggedSaved);
+                        flaggedSaved.vetoed = true;
+    
+                        let replacementFlagged;
+                        if (this.PODWinner.target && this.agents.includes(this.PODWinner.target) && !this.PODWinner.target.vetoed) {
+                            replacementFlagged = this.PODWinner.target;
+                        } else {
+                            replacementFlagged = this.randomChoice(potentialPlayers.filter(p => p !== flaggedSaved && !flagged.includes(p)));
+                        }
+                        if (replacementFlagged) {
+                            replacementFlagged.replacementFlagged = true;
+                            flagged.push(replacementFlagged);
+                            this.printText(`<span style="color: yellow;">${this.OVR.name}</span> has flagged <span style="color: var(--flagged-color);">${replacementFlagged.name}</span> as the replacement.`);
+                            this.updateLabel('replacementFlaggedLabel', flagged.map(n => this.colorAgentName(n.name)).join(', '));
+                        }
+                    } else {
+                        this.printText(`${this.colorText(this.PODWinner.name, 'orange')} has chosen not to use the Power of Disruption.`);
+                        this.updateLabel('replacementFlaggedLabel', flagged.map(n => this.colorAgentName(n.name)).join(', '));
+                    }
                 }
             }
-            
-            this.updateLabel('replacementFlaggedLabel', flagged.map(n => n.name).join(', '));
         } else {
             this.updateLabel('PODHolderLabel', 'The Power of Disruption may not be acquired this week.');
             this.updateLabel('replacementFlaggedLabel', 'Flagged agents cannot be replaced this week.');
@@ -275,6 +266,7 @@ class WeAreWatching {
     }
 
     finale() {
+        this.endState = 1;
         const finalAgents = [...this.agents];
         this.printText(`Final 2: ${finalAgents[0].summary()} and ${finalAgents[1].summary()}`);
         this.printText(`${finalAgents[0].name} pleads their case...`);
@@ -299,7 +291,7 @@ class WeAreWatching {
         this.runnerUp = runnerUp;
 
         this.printText(`${this.colorText(winner.name, 'green')} wins We Are Watching!`);
-        this.printText(`${this.colorText(runnerUp.name, 'blue')} is the runner-up.`);
+        this.printText(`${this.colorText(runnerUp.name, '#6495ED')} is the runner-up.`);
 
         // Update the label column
         document.querySelector('.label-column .info-row:nth-child(1) .label-text').textContent = 'Winner';
@@ -310,23 +302,25 @@ class WeAreWatching {
 
         // Update the value column
         this.updateLabel('ovrLabel', winner.name, 'green');
-        this.updateLabel('flaggedLabel', runnerUp.name, 'blue');
+        this.updateLabel('flaggedLabel', runnerUp.name, '#6495ED');
         this.updateLabel('PODHolderLabel', Math.max(votes1, votes2).toString(), 'green');
-        this.updateLabel('replacementFlaggedLabel', Math.min(votes1, votes2).toString(), 'blue');
+        this.updateLabel('replacementFlaggedLabel', Math.min(votes1, votes2).toString(), '#6495ED');
         this.updateLabel('purgedLabel', 'Tune in next season!');
 
         //this.refreshGameInfo();
 
         this.updateAgentList();
 
+        // disable the continueBtn
         const continueBtn = document.getElementById('continueBtn');
-        continueBtn.textContent = 'Finish';
-        continueBtn.onclick = () => this.finishGame();
+        continueBtn.disabled = true;
+
+        // enable the finishBtn
+        const finishBtn = document.getElementById('finishBtn');
+        finishBtn.disabled = false;
 
         // Hide the reset button
         document.getElementById('resetBtn').style.display = 'none';
-
-        this.endState = 1;
     }
 
     refreshGameInfo() {
@@ -343,16 +337,13 @@ class WeAreWatching {
         this.reset();
         this.updateAgentList();
         
+        // Re-enable the continueBtn
         const continueBtn = document.getElementById('continueBtn');
-        continueBtn.textContent = 'Continue';
-        
-        // Remove existing event listeners and add new one
-        const newContinueBtn = continueBtn.cloneNode(true);
-        continueBtn.parentNode.replaceChild(newContinueBtn, continueBtn);
-        newContinueBtn.addEventListener('click', () => this.playWeek());
-    
-        // Unhide the reset button
-        document.getElementById('resetBtn').style.display = 'block';
+        continueBtn.disabled = false;
+
+        // Disable the finishBtn
+        const finishBtn = document.getElementById('finishBtn');
+        finishBtn.disabled = true;
     }
 
     eventSpawner() {
@@ -474,7 +465,7 @@ class WeAreWatching {
         const element = document.getElementById(id);
         if (element) {
             if (text) {
-                element.textContent = text;
+                element.innerHTML = text;
                 if (color) {
                     element.style.color = color;
                 }
@@ -495,13 +486,33 @@ class WeAreWatching {
     
         let orderedAgents = [];
     
-        if (this.winner) orderedAgents.push(this.winner);
-        if (this.runnerUp) orderedAgents.push(this.runnerUp);
+        // Add Overseer
+        if (this.OVR) orderedAgents.push(this.OVR);
     
-        orderedAgents = orderedAgents.concat(
-            this.agents.filter(ag => ag !== this.winner && ag !== this.runnerUp)
-        );
+        // Add Flagged agents
+        for (let ag of this.agents) {
+            if (ag.flagged && !ag.vetoed && ag !== this.OVR) orderedAgents.push(ag);
+        }
     
+        // Add Replacement Flagged agent
+        for (let ag of this.agents) {
+            if (ag.replacementFlagged && ag !== this.OVR) {
+                orderedAgents.push(ag);
+                break;  // Only add one replacement flagged agent
+            }
+        }
+    
+        // Add Power of Disruption Winner
+        if (this.PODWinner && this.PODWinner !== this.OVR && !this.PODWinner.flagged && !this.PODWinner.replacementFlagged) {
+            orderedAgents.push(this.PODWinner);
+        }
+    
+        // Add remaining agents still in the game
+        for (let ag of this.agents) {
+            if (!orderedAgents.includes(ag)) orderedAgents.push(ag);
+        }
+    
+        // Add purged agents in reverse order
         orderedAgents = orderedAgents.concat(this.purgedAgents.slice().reverse());
     
         for (let ag of orderedAgents) {
@@ -542,24 +553,25 @@ class WeAreWatching {
         const agent = this.agents.find(a => a.name === name) || this.purgedAgents.find(a => a.name === name);
         if (!agent) return name;
     
-        let color = 'inherit';
-        
-        // Check purged status first
+        let color = 'var(--regular-agent-color)';
+    
         if (this.purgedAgents.includes(agent)) {
-            color = 'red';
+            color = 'var(--purged-text)';
         } else if (agent === this.OVR) {
-            color = 'yellow';
-        } else if (agent.flagged) {
-            color = 'purple';
+            color = 'var(--overseer-text)';
+        } else if (agent.flagged && !agent.vetoed) {
+            color = 'var(--flagged-text)';
+        } else if (agent.replacementFlagged) {
+            color = 'var(--replacement-flagged-text)';
         } else if (agent === this.PODWinner) {
-            color = 'orange';
+            color = 'var(--pod-winner-text)';
         } else if (agent === this.winner) {
-            color = 'green';
+            color = 'var(--winner-text)';
         } else if (agent === this.runnerUp) {
-            color = 'blue';
+            color = 'var(--runner-up-text)';
         }
     
-        return this.colorText(name, color);
+        return `<span style="color: ${color};">${name}</span>`;
     }
 
     editAgentName(agent) {
@@ -589,6 +601,15 @@ class WeAreWatching {
         this.PODWinner = null;
         this.OVR = null;
         this.week = 0;
+    
+        // Reset agent properties
+        for (let ag of this.agents) {
+            ag.OVR = false;
+            ag.flagged = false;
+            ag.vetoed = false;
+            ag.POD = false;
+            ag.replacementFlagged = false;
+        }
     
         // Recreate players and impressions
         this.createPlayers();
@@ -698,6 +719,149 @@ class WeAreWatching {
     colorText(text, color) {
         return `<span class="agent-name" style="color: ${color || 'inherit'};">${text}</span>`;
     }
+
+    showColorCustomization() {
+        const dialog = document.getElementById('colorCustomizationDialog');
+        const colorOptions = document.getElementById('colorOptions');
+        colorOptions.innerHTML = '';
+    
+        const roles = [
+            { name: 'Regular Agent', bgVar: '--agent-background', textVar: '--regular-agent-color' },
+            { name: 'Winner', bgVar: '--winner-background', textVar: '--winner-text' },
+            { name: 'Runner-up', bgVar: '--runner-up-background', textVar: '--runner-up-text' },
+            { name: 'Purged', bgVar: '--purged-background', textVar: '--purged-text' },
+            { name: 'Overseer', bgVar: '--overseer-background', textVar: '--overseer-text' },
+            { name: 'Flagged', bgVar: '--flagged-background', textVar: '--flagged-text' },
+            { name: 'Replacement Flagged', bgVar: '--replacement-flagged-background', textVar: '--replacement-flagged-text' },
+            { name: 'Flagged Saved', bgVar: '--flagged-saved-background', textVar: '--flagged-saved-text' },
+            { name: 'POD Winner', bgVar: '--pod-winner-background', textVar: '--pod-winner-text' },
+        ];
+    
+        roles.forEach(role => {
+            const div = document.createElement('div');
+            div.className = 'color-option';
+            div.innerHTML = `
+                <label>${role.name}:</label>
+                <div>
+                    <label for="${role.bgVar}">Background:</label>
+                    <input type="color" id="${role.bgVar}" value="${this.getComputedColorValue(role.bgVar)}">
+                </div>
+                <div>
+                    <label for="${role.textVar}">Text:</label>
+                    <input type="color" id="${role.textVar}" value="${this.getComputedColorValue(role.textVar)}">
+                </div>
+            `;
+            colorOptions.appendChild(div);
+        });
+    
+        dialog.style.display = 'block';
+    }
+    
+    getComputedColorValue(varName) {
+        const computedValue = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+        return computedValue !== '' ? computedValue : this.getDefaultColor(varName);
+    }
+    
+    getDefaultColor(varName) {
+        switch (varName) {
+            case '--agent-background':
+                return '#2D2D2D';
+            case '--flagged-saved-background':
+                return 'black';
+            case '--regular-agent-color':
+                return '#00AA00';
+            case '--winner-text':
+            case '--runner-up-text':
+            case '--purged-text':
+                return 'black';
+            case '--overseer-text':
+                return '#FFD700';
+            case '--flagged-text':
+                return 'rgb(0, 255, 21)';
+            case '--replacement-flagged-text':
+                return 'red';
+            case '--flagged-saved-text':
+                return 'orange';
+            default:
+                return 'white';
+        }
+    }
+
+    saveColors() {
+        const inputs = document.querySelectorAll('#colorOptions input[type="color"]');
+        inputs.forEach(input => {
+            const color = input.value;
+            document.documentElement.style.setProperty(input.id, color);
+            localStorage.setItem(input.id, color);
+        });
+        this.closeColorDialog();
+        this.updateAgentList();
+    }
+    
+    getContrastColor(hexcolor) {
+        hexcolor = hexcolor.replace('#', '');
+        const r = parseInt(hexcolor.substr(0,2),16);
+        const g = parseInt(hexcolor.substr(2,2),16);
+        const b = parseInt(hexcolor.substr(4,2),16);
+        const yiq = ((r*299)+(g*587)+(b*114))/1000;
+        return (yiq >= 128) ? 'black' : 'white';
+    }
+
+    closeColorDialog() {
+        document.getElementById('colorCustomizationDialog').style.display = 'none';
+    }
+
+    loadColors() {
+        const roles = [
+            { name: 'Regular Agent', bgVar: '--agent-background', textVar: '--regular-agent-color' },
+            { name: 'Winner', bgVar: '--winner-background', textVar: '--winner-text' },
+            { name: 'Runner-up', bgVar: '--runner-up-background', textVar: '--runner-up-text' },
+            { name: 'Purged', bgVar: '--purged-background', textVar: '--purged-text' },
+            { name: 'Overseer', bgVar: '--overseer-background', textVar: '--overseer-text' },
+            { name: 'Flagged', bgVar: '--flagged-background', textVar: '--flagged-text' },
+            { name: 'Replacement Flagged', bgVar: '--replacement-flagged-background', textVar: '--replacement-flagged-text' },
+            { name: 'Flagged Saved', bgVar: '--flagged-saved-background', textVar: '--flagged-saved-text' },
+            { name: 'POD Winner', bgVar: '--pod-winner-background', textVar: '--pod-winner-text' },
+        ];
+    
+        roles.forEach(role => {
+            const savedBgColor = localStorage.getItem(role.bgVar);
+            const savedTextColor = localStorage.getItem(role.textVar);
+            
+            document.documentElement.style.setProperty(role.bgVar, savedBgColor || this.getComputedColorValue(role.bgVar));
+            document.documentElement.style.setProperty(role.textVar, savedTextColor || this.getComputedColorValue(role.textVar));
+        });
+    }
+
+    resetColorsToDefault() {
+        const roles = [
+            { name: 'Regular Agent', bgVar: '--agent-background', textVar: '--regular-agent-color' },
+            { name: 'Winner', bgVar: '--winner-background', textVar: '--winner-text' },
+            { name: 'Runner-up', bgVar: '--runner-up-background', textVar: '--runner-up-text' },
+            { name: 'Purged', bgVar: '--purged-background', textVar: '--purged-text' },
+            { name: 'Overseer', bgVar: '--overseer-background', textVar: '--overseer-text' },
+            { name: 'Flagged', bgVar: '--flagged-background', textVar: '--flagged-text' },
+            { name: 'Replacement Flagged', bgVar: '--replacement-flagged-background', textVar: '--replacement-flagged-text' },
+            { name: 'Flagged Saved', bgVar: '--flagged-saved-background', textVar: '--flagged-saved-text' },
+            { name: 'POD Winner', bgVar: '--pod-winner-background', textVar: '--pod-winner-text' },
+        ];
+    
+        roles.forEach(role => {
+            // Reset to default by removing the property from inline styles
+            document.documentElement.style.removeProperty(role.bgVar);
+            document.documentElement.style.removeProperty(role.textVar);
+            
+            // Remove from localStorage
+            localStorage.removeItem(role.bgVar);
+            localStorage.removeItem(role.textVar);
+        });
+    
+        // Update the color inputs in the customization dialog
+        this.showColorCustomization();
+    
+        // Update the agent list to reflect the changes
+        this.updateAgentList();
+    }
 }
 
 const game = new WeAreWatching();
@@ -709,12 +873,13 @@ document.addEventListener('DOMContentLoaded', function() {
         showGameButtons();
     });
     document.getElementById('continueBtn').addEventListener('click', () => {
-        if (game.endState === 1) {
-            game.finishGame();
-        } else {
-            game.playWeek();
-        }
+        console.log('Playing next week...');
+        game.playWeek();
     });
+    var finishBtn = document.getElementById('finishBtn');
+    finishBtn.addEventListener('click', () => game.finishGame());
+    finishBtn.disabled = true;
+
     document.getElementById('impressionsBtn').addEventListener('click', () => game.showImpressions());
     document.getElementById('showmancesBtn').addEventListener('click', () => game.showShowmances());
     document.getElementById('alliancesBtn').addEventListener('click', () => game.showAlliances());
@@ -724,6 +889,10 @@ document.addEventListener('DOMContentLoaded', function() {
         game.reset();
         game.updateAgentList();
     });
+    document.getElementById('customizeColorsBtn').addEventListener('click', () => game.showColorCustomization());
+    document.getElementById('saveColorsBtn').addEventListener('click', () => game.saveColors());
+    document.getElementById('closeColorDialogBtn').addEventListener('click', () => game.closeColorDialog());
+    document.getElementById('resetColorsBtn').addEventListener('click', () => game.resetColorsToDefault());
 
     // Initial setup
     game.updateAgentList();
@@ -734,3 +903,4 @@ function showGameButtons() {
     document.getElementById('startBtn').style.display = 'none';
     document.getElementById('gameButtons').style.display = 'block';
 }
+

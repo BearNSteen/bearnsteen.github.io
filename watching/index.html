@@ -127,12 +127,14 @@
             <button id="startBtn">Start</button>
             <div id="gameButtons" style="display: none;">
                 <button id="continueBtn">Continue</button>
+                <button id="finishBtn" disabled>Finish</button>
                 <button id="impressionsBtn">Impressions</button>
                 <button id="showmancesBtn">Romances</button>
                 <button id="alliancesBtn">Groups</button>
                 <button id="stepByStepBtn">Step-by-Step Mode</button>
                 <button id="preferencesBtn">Preferences</button>
                 <button id="resetBtn">Reset</button>
+                <button id="customizeColorsBtn">Colors</button>
             </div>
         </div>
         <div id="debugControls" style="display: none;">
@@ -145,5 +147,12 @@
         <!-- ... preferences dialog content ... -->
     </div>
     <script src="watching.js"></script>
+    <div id="colorCustomizationDialog" style="display: none;">
+        <h2>Customize Colors</h2>
+        <div id="colorOptions"></div>
+        <button id="saveColorsBtn">Save Colors</button>
+        <button id="resetColorsBtn">Reset to Default</button>
+        <button id="closeColorDialogBtn">Close</button>
+    </div>
 </body>
 </html>

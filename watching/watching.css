@@ -1,7 +1,39 @@
+:root {
+    --background-color: #353535;
+    --text-color: white;
+    --regular-agent-color: #00AA00;
+    --agent-background: #2D2D2D;
+    --button-background: #2D2D2D;
+    --button-hover-background: #3D3D3D;
+    --button-text: white;
+    --button-border: #555555;
+    --textbox-background: #2D2D2D;
+    --winner-background: #00FF00;
+    --winner-text: black;
+    --runner-up-background: #6495ED;
+    --runner-up-text: black;
+    --purged-background: #FF4136;
+    --purged-text: black;
+    --overseer-background: #000000;
+    --overseer-text: #FFD700;
+    --flagged-background: #800080;
+    --flagged-text: rgb(0, 255, 21);
+    --replacement-flagged-background: #8B0000;
+    --replacement-flagged-text: red;
+    --flagged-saved-background: black;
+    --flagged-saved-text: orange;
+    --pod-winner-background: #FFA500;
+    --yellow: yellow;
+    --purple: purple;
+    --orange: orange;
+    --blue: #6495ED;
+    --red: red;
+}
+
 body {
     font-family: Arial, sans-serif;
-    background-color: #353535;
-    color: white;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 @font-face {
@@ -14,7 +46,7 @@ body {
 html, body {
     height: 100%;
     margin: 0;
-    background-color: #353535;
+    background-color: var(--background-color);
     font-family: 'VCR.001', Arial, sans-serif;
 }
 
@@ -33,83 +65,102 @@ html, body {
 }
 
 .agent {
-    background-color: #2D2D2D;
+    background-color: var(--agent-background);
     padding: 5px 10px;
     border-radius: 5px;
 }
 
 .winner {
-    background-color: #00FF00; /* Green */
-    color: black;
+    background-color: var(--winner-background);
+    color: var(--winner-text);
 }
 
 .runner-up {
-    background-color: #0000FF; /* Blue */
-    color: black;
+    background-color: var(--runner-up-background);
+    color: var(--runner-up-text);
 }
 
 .purged {
-    background-color: #FF4136; /* Red (unchanged as requested) */
-    color: black;
+    background-color: var(--purged-background);
+    color: var(--purged-text);
 }
 
 .overseer {
-    background-color: #000000; /* Black */
-    color: #FFD700; /* Gold */
+    background-color: var(--overseer-background);
+    color: var(--overseer-text);
 }
 
 .flagged {
-    background-color: #800080; /* Purple */
-    color: red;
+    background-color: var(--flagged-background);
+    color: var(--flagged-text);
 }
 
 .replacement-flagged {
-    background-color: #0000FF; /* Blue */
-    color: red;
+    background-color: var(--replacement-flagged-background);
+    color: var(--replacement-flagged-text);
 }
 
 .flagged-saved {
-    background-color: black; /* Teal */
-    color: orange;
+    background-color: var(--flagged-saved-background);
+    color: var(--flagged-saved-text);
 }
 
 .pod-winner {
-    background-color: #FFA500; /* Orange */
+    background-color: var(--pod-winner-background);
 }
 
 button {
-    background-color: #2D2D2D;
-    color: white;
-    border: 1px solid #555555;
+    background-color: var(--button-background);
+    color: var(--button-text);
+    border: 1px solid var(--button-border);
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
     margin-right: 10px;
+    vertical-align: middle; /* Added to align buttons vertically */
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
 button:hover {
-    background-color: #3D3D3D;
+    background-color: var(--button-hover-background);
 }
 
 #textBox {
-    background-color: #2D2D2D;
+    background-color: var(--textbox-background);
     padding: 10px;
     margin-top: 20px;
     flex: 1;
     overflow-y: auto;
 }
 
-.yellow { color: yellow; }
-.purple { color: purple; }
-.orange { color: orange; }
-.blue { color: blue; }
-.red { color: red; }
+.yellow { color: var(--yellow); }
+.purple { color: var(--purple); }
+.orange { color: var(--orange); }
+.blue { color: var(--blue); }
+.red { color: var(--red); }
 
 .label-text.hidden {
     display: none;
 }
 
-#controls, #gameButtons {
+#gameButtons {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Added to vertically center the buttons */
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#gameButtons button {
+    flex: 0 0 auto;
+}
+
+#controls {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -142,4 +193,26 @@ button:hover {
 
 .info-row {
     min-height: 20px; /* Adjust this value as needed */
+}
+
+#colorCustomizationDialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--background-color);
+    border: 1px solid var(--button-border);
+    padding: 20px;
+    z-index: 1000;
+}
+
+.color-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.color-option label {
+    margin-right: 10px;
 }
