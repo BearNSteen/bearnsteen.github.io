@@ -8,21 +8,22 @@
     --button-text: white;
     --button-border: #555555;
     --textbox-background: #2D2D2D;
-    --winner-background: #00FF00;
-    --winner-text: black;
-    --runner-up-background: #6495ED;
-    --runner-up-text: black;
-    --purged-background: #FF4136;
-    --purged-text: black;
+    --winner-background: #006600;
+    --winner-text: #00FF00;
+    --runner-up-background: #1E90FF;
+    --runner-up-text: #87CEFA;
+    --purged-background: #4D4D4D;
+    --purged-text: #A9A9A9;
     --overseer-background: #000000;
     --overseer-text: #FFD700;
     --flagged-background: #800080;
-    --flagged-text: rgb(0, 255, 21);
-    --replacement-flagged-background: #8B0000;
-    --replacement-flagged-text: red;
+    --flagged-text: #FF69B4;
+    --replacement-flagged-background: #AA0000;
+    --replacement-flagged-text: #FF4136;
     --flagged-saved-background: black;
     --flagged-saved-text: orange;
-    --pod-winner-background: #FFA500;
+    --pod-winner-background: #2D2D2D;
+    --pod-winner-text: #FFA500;
     --yellow: yellow;
     --purple: purple;
     --orange: orange;
@@ -34,6 +35,7 @@ body {
     font-family: Arial, sans-serif;
     background-color: var(--background-color);
     color: var(--text-color);
+    margin-top: 60px;
 }
 
 @font-face {
@@ -50,9 +52,90 @@ html, body {
     font-family: 'VCR.001', Arial, sans-serif;
 }
 
+.navbar {
+    background-color: #8d1818;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.navbar a {
+    float: left;
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.dropdown {
+    float: left;
+    overflow: hidden;
+}
+
+.dropdown .dropbtn {
+    font-size: 16px;
+    border: none;
+    outline: none;
+    color: white;
+    padding: 14px 16px;
+    background-color: inherit;
+    font-family: inherit;
+    margin: 0;
+    cursor: pointer;
+}
+
+.navbar a:hover, .dropdown:hover .dropbtn {
+    background-color: #961f1fc9;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    float: none;
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+h1 {
+    text-align: center;
+}
+
+h5 {
+    text-align: center;
+}
+
+#titleImage {
+    display: block;
+    margin: 0 auto;
+    max-width: 35%;
+    height: auto;
+}
+
 #app {
     max-width: 1000px;
-    margin: 0 auto;
+    margin: 60px auto 0;
     padding: 20px;
 }
 
@@ -71,42 +154,43 @@ html, body {
 }
 
 .winner {
-    background-color: var(--winner-background);
+    background: linear-gradient(to bottom right, var(--winner-background) 0%, var(--winner-background) 50%, var(--agent-background) 50%, var(--agent-background) 100%);
     color: var(--winner-text);
 }
 
 .runner-up {
-    background-color: var(--runner-up-background);
+    background: linear-gradient(to bottom right, var(--runner-up-background) 0%, var(--runner-up-background) 50%, var(--agent-background) 50%, var(--agent-background) 100%);
     color: var(--runner-up-text);
 }
 
 .purged {
-    background-color: var(--purged-background);
+    background: var(--purged-background);
     color: var(--purged-text);
 }
 
 .overseer {
-    background-color: var(--overseer-background);
+    background: linear-gradient(to bottom right, var(--overseer-background) 0%, var(--overseer-background) 50%, var(--agent-background) 50%, var(--agent-background) 100%);
     color: var(--overseer-text);
 }
 
 .flagged {
-    background-color: var(--flagged-background);
+    background: linear-gradient(to bottom right, var(--flagged-background) 0%, var(--flagged-background) 50%, var(--agent-background) 50%, var(--agent-background) 100%);
     color: var(--flagged-text);
 }
 
 .replacement-flagged {
-    background-color: var(--replacement-flagged-background);
+    background: linear-gradient(to bottom right, var(--replacement-flagged-background) 0%, var(--replacement-flagged-background) 50%, var(--agent-background) 50%, var(--agent-background) 100%);
     color: var(--replacement-flagged-text);
 }
 
 .flagged-saved {
-    background-color: var(--flagged-saved-background);
+    background: linear-gradient(to bottom right, var(--flagged-saved-background) 0%, var(--flagged-saved-background) 50%, var(--agent-background) 50%, var(--agent-background) 100%);
     color: var(--flagged-saved-text);
 }
 
 .pod-winner {
-    background-color: var(--pod-winner-background);
+    background: linear-gradient(to bottom right, var(--pod-winner-background) 0%, var(--pod-winner-background) 50%, var(--agent-background) 50%, var(--agent-background) 100%);
+    color: var(--pod-winner-text);
 }
 
 button {
@@ -117,7 +201,7 @@ button {
     border-radius: 5px;
     cursor: pointer;
     margin-right: 10px;
-    vertical-align: middle; /* Added to align buttons vertically */
+    vertical-align: middle;
 }
 
 button:disabled {
@@ -149,11 +233,29 @@ button:hover {
 
 #gameButtons {
     display: flex;
+    flex-direction: column;
     justify-content: center;
-    align-items: center; /* Added to vertically center the buttons */
-    flex-wrap: wrap;
+    align-items: center;
     gap: 10px;
     margin-bottom: 20px;
+}
+
+.button-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.button-row button {
+    flex: 0 0 auto;
+}
+
+.button-divider {
+    width: 100%;
+    border: none;
+    border-top: 1px solid var(--button-border);
+    margin: 10px 0;
 }
 
 #gameButtons button {
@@ -179,7 +281,7 @@ button:hover {
 .label-column, .value-column {
     display: flex;
     flex-direction: column;
-    min-height: 100px; /* Adjust this value as needed */
+    min-height: 100px;
 }
 
 .label-column {
@@ -192,7 +294,7 @@ button:hover {
 }
 
 .info-row {
-    min-height: 20px; /* Adjust this value as needed */
+    min-height: 20px;
 }
 
 #colorCustomizationDialog {
@@ -215,4 +317,14 @@ button:hover {
 
 .color-option label {
     margin-right: 10px;
+}
+
+#startScreen {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+#startScreen button {
+    margin: 0 10px;
 }

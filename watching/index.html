@@ -5,91 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>We're Watching</title>
     <link rel="stylesheet" href="watching.css">
-    <style>
-        .navbar {
-            background-color: #8d1818;
-            overflow: hidden;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-    
-        .navbar a {
-            float: left;
-            display: block;
-            color: white;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-        }
-    
-        .dropdown {
-            float: left;
-            overflow: hidden;
-        }
-    
-        .dropdown .dropbtn {
-            font-size: 16px;
-            border: none;
-            outline: none;
-            color: white;
-            padding: 14px 16px;
-            background-color: inherit;
-            font-family: inherit;
-            margin: 0;
-            cursor: pointer;
-        }
-    
-        .navbar a:hover, .dropdown:hover .dropbtn {
-            background-color: #961f1fc9;
-        }
-    
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
-        }
-    
-        .dropdown-content a {
-            float: none;
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            text-align: left;
-        }
-    
-        .dropdown-content a:hover {
-            background-color: #ddd;
-        }
-    
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        h1 {
-            text-align: center;
-        }
-        h5 {
-            text-align: center;
-        }
-
-        #titleImage {
-            display: block;
-            margin: 0 auto;
-            max-width: 35%;
-            height: auto;
-        }
-    
-        body {
-            margin-top: 60px;
-        }
-    </style>
 </head>
 <body>
     <div class="navbar">
@@ -124,17 +39,32 @@
             </div>
         </div>
         <div id="controls">
-            <button id="startBtn">Start</button>
-            <div id="gameButtons" style="display: none;">
-                <button id="continueBtn">Continue</button>
-                <button id="finishBtn" disabled>Finish</button>
-                <button id="impressionsBtn">Impressions</button>
-                <button id="showmancesBtn">Romances</button>
-                <button id="alliancesBtn">Groups</button>
-                <button id="stepByStepBtn">Step-by-Step Mode</button>
+            <div id="startScreen">
+                <button id="startBtn">Start Game</button>
                 <button id="preferencesBtn">Preferences</button>
-                <button id="resetBtn">Reset</button>
-                <button id="customizeColorsBtn">Colors</button>
+            </div>
+            
+            <div id="preferencesDialog" class="dialog" style="display: none;">
+                <h2>Preferences</h2>
+                <div id="nameTypeOptions"></div>
+                <button id="savePreferencesBtn">Save Preferences</button>
+                <button id="closePreferencesDialogBtn">Close</button>
+            </div>
+            <div id="gameButtons" style="display: none;">
+                <div class="button-row">
+                    <button id="continueBtn">Continue</button>
+                    <button id="stepBtn">Step</button>
+                    <button id="finishBtn" disabled>Finish</button>
+                    <button id="resetBtn">Reset</button>
+                </div>
+                <hr class="button-divider">
+                <div class="button-row">
+                    <button id="impressionsBtn">Impressions</button>
+                    <button id="showmancesBtn">Romances</button>
+                    <button id="alliancesBtn">Groups</button>
+                    <!--button id="preferencesBtn">Preferences</button!-->
+                    <button id="customizeColorsBtn">Colors</button>
+                </div>
             </div>
         </div>
         <div id="debugControls" style="display: none;">
@@ -142,9 +72,6 @@
             <button id="stopContinuousBtn">Stop Continuous Play</button>
         </div>
         <div id="textBox"></div>
-    </div>
-    <div id="preferencesDialog" style="display: none;">
-        <!-- ... preferences dialog content ... -->
     </div>
     <script src="watching.js"></script>
     <div id="colorCustomizationDialog" style="display: none;">
