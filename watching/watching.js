@@ -1,40 +1,3 @@
-class Agent {
-    constructor(name) {
-        this.fullName = name;
-        this.firstName = name.split(' ')[0];
-        this.age = Math.floor(Math.random() * 20) + 21; // 21-40
-        this.profession = this.randomProfession();
-        this.OVR = false;
-        this.flagged = false;
-        this.replacementFlagged = false;
-        this.POD = false;
-        this.target = null;
-        this.impressions = {};
-        this.vetoed = false;
-        this.winner = null;
-        this.runnerUp = null;
-
-        this.friendliness = Math.floor(Math.random() * 5) + 1;
-        this.loyalty = Math.floor(Math.random() * 5) + 1;
-        this.manipulativeness = Math.floor(Math.random() * 5) + 1;
-        this.emotionality = Math.floor(Math.random() * 5) + 1;
-        this.competitiveness = Math.floor(Math.random() * 5) + 1;
-    }
-
-    randomProfession() {
-        const professions = [
-            "Accountant", "Actor", "Athlete", "Author", "Chef",
-            "Engineer", "Entrepreneur", "Nurse", "Photographer",
-            "Scientist", "Teacher"
-        ];
-        return professions[Math.floor(Math.random() * professions.length)];
-    }
-
-    summary() {
-        return `${this.fullName} - ${this.age}, ${this.profession}`;
-    }
-}
-
 class WeAreWatching {
     constructor() {
         this.numPlayers = 12;
@@ -54,6 +17,9 @@ class WeAreWatching {
         this.sillyNamesEnabled = false;
         this.sciFiNamesEnabled = false;
         this.lastPurgedAgent = null;
+        this.alliances = {};
+        this.eventManager = new EventManager(this, Alliance);
+
         this.loadColors();
         this.createPlayers();
         this.doImpressions();
@@ -237,15 +203,15 @@ class WeAreWatching {
     
             if (this.agents.length > 2) {
                 this.selectOVR();
-                this.eventSpawner();
+                this.eventManager.eventSpawner();
                 const flagged = this.selectFlagged();
-                this.eventSpawner();
+                this.eventManager.eventSpawner();
                 const potentialPlayers = this.playDisruptionAcquisition(flagged);
-                this.eventSpawner();
+                this.eventManager.eventSpawner();
                 this.PODCeremony(flagged, potentialPlayers);
-                this.eventSpawner();
+                this.eventManager.eventSpawner();
                 this.purging(flagged);
-                this.eventSpawner();
+                this.eventManager.eventSpawner();
             } else {
                 this.finale();
             }
@@ -502,91 +468,7 @@ class WeAreWatching {
         finishBtn.disabled = true;
     }
 
-    eventSpawner() {
-        const MAX_EVENTS = 1;
-        for (let i = 0; i < Math.floor(Math.random() * (MAX_EVENTS + 1)); i++) {
-            const eventIndex = Math.floor(Math.random() * 4);
-            switch(eventIndex) {
-                case 0:
-                    if (this.agents.length >= 3) {
-                        const [ag1, ag2, ag3] = this.randomSample(this.agents, 3);
-                        this.event1(ag1, ag2, ag3);
-                    }
-                    break;
-                case 1:
-                    const [ag1, ag2] = this.randomSample(this.agents, 2);
-                    this.event2(ag1, ag2);
-                    break;
-                case 2:
-                    if (this.agents.length >= 2) {
-                        const [ag1, ag2] = this.randomSample(this.agents, 2);
-                        const alliance = this.randomSample(this.agents, Math.floor(Math.random() * 3) + 2);
-                        this.event3(ag1, ag2, alliance);
-                    }
-                    break;
-                case 3:
-                    const [ag3, ag4] = this.randomSample(this.agents, 2);
-                    this.event4(ag3, ag4);
-                    break;
-            }
-        }
-    }
-
-    event1(ag1, ag2, ag3) {
-        if (ag1.manipulativeness >= Math.floor(Math.random() * (ag2.emotionality + 1))) {
-            ag2.target = ag3.firstName;
-            this.printText(`${ag2.firstName} was swayed!`);
-        }
-
-        if (ag1.impressions[ag3.firstName] >= 5) {
-            ag1.impressions[ag3.firstName] = Math.min(10, ag1.impressions[ag3.firstName] + 1);
-            ag2.impressions[ag3.firstName] = Math.max(0, Math.min(10, ag2.impressions[ag3.firstName] + 2));
-        } else {
-            ag1.impressions[ag3.firstName] = Math.max(0, ag1.impressions[ag3.firstName] - 1);
-            ag2.impressions[ag3.firstName] = Math.max(0, ag2.impressions[ag3.firstName] - 2);
-        }
-
-        this.printText(`${this.colorAgentName(ag1.firstName)} pulls ${this.colorAgentName(ag2.firstName)} aside to talk about ${this.colorAgentName(ag3.firstName)}.`);
-    }
-
-    event2(ag1, ag2) {
-        if (ag1.friendliness < ag2.emotionality) {
-            ag1.target = ag2.firstName;
-            ag2.target = ag1.firstName;
-            this.printText(`${ag1.firstName} and ${ag2.firstName} were swayed!`);
-        }
-
-        if (Math.random() < 0.8) {
-            ag1.impressions[ag2.firstName] = Math.max(0, ag1.impressions[ag2.firstName] - 3);
-            ag2.impressions[ag1.firstName] = Math.max(0, ag2.impressions[ag1.firstName] - 3);
-        }
-
-        const topics = ["the dishes", "who ate the last slice of pizza", "who flirts too much", "who snores"];
-        const topic = this.randomChoice(topics);
-        this.printText(`${this.colorAgentName(ag1.firstName)} gets in a fight with ${this.colorAgentName(ag2.firstName)} over ${topic}!`);
-    }
-
-    event3(ag1, ag2, alliance) {
-        if (!alliance.includes(ag2) && !alliance.includes(ag1)) {
-            for (let member of alliance) {
-                if (member.loyalty > ag1.manipulativeness) {
-                    member.target = ag2.firstName;
-                    member.impressions[ag2.firstName] = Math.max(0, member.impressions[ag2.firstName] - 2);
-                    this.printText(`${member.firstName} was swayed!`);
-                }
-            }
-        }
-
-        const allianceNames = ["Wolves", "Dragons", "Lions", "Snakes", "Eagles"];
-        const allianceName = "The " + this.randomChoice(allianceNames);
-        this.printText(`${this.colorAgentName(ag1.firstName)} makes plans with ${allianceName} to evict ${this.colorAgentName(ag2.firstName)}.`);
-    }
-
-    event4(ag1, ag2) {
-        ag1.impressions[ag2.firstName] = Math.min(10, ag1.impressions[ag2.firstName] + 3);
-        ag2.impressions[ag1.firstName] = Math.min(10, ag2.impressions[ag1.firstName] + 3);
-        this.printText(`${this.colorAgentName(ag1.firstName)} has a casual conversation with ${this.colorAgentName(ag2.firstName)}.`);
-    }
+    
 
     // Utility methods
     randomChoice(array) {
@@ -817,7 +699,6 @@ class WeAreWatching {
     
         // Reintroduce agents
         this.introduceAgents();
-        this.preSeasonIntroduction();
     
         // Show start screen and hide game buttons
         document.getElementById('startScreen').style.display = 'block';
@@ -840,17 +721,6 @@ class WeAreWatching {
             agent.firstName = newName;
             updateAgentList();
         }
-    }
-
-    preSeasonIntroduction() {
-        this.printText("Welcome to We Are Watching! The agents are about to meet each other for the first time.");
-    
-        // Simulate 20-30 interactions
-        for (let i = 0; i < 20; i++) {
-            this.eventSpawner();
-        }
-    
-        this.printText("The first week is about to begin!");
     }
 
     nextStep() {
@@ -1060,17 +930,37 @@ class WeAreWatching {
     
         nameTypes.forEach(type => {
             const div = document.createElement('div');
-            div.className = 'name-type-option';
+            div.className = 'color-option';
             div.innerHTML = `
-                <label>
-                    <input type="checkbox" id="${type.toLowerCase()}NameType" ${this[type.toLowerCase() + 'NamesEnabled'] ? 'checked' : ''}>
-                    ${type} Names
-                </label>
+                <label>${type} Names:</label>
+                <div>
+                    <label class="switch">
+                        <input type="checkbox" id="${type.toLowerCase()}NameType" ${this[type.toLowerCase() + 'NamesEnabled'] ? 'checked' : ''}>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
             `;
             nameTypeOptions.appendChild(div);
+    
+            const checkbox = div.querySelector('input[type="checkbox"]');
+            checkbox.addEventListener('change', () => this.updateNameTypeCheckboxes());
         });
     
+        this.updateNameTypeCheckboxes(); // Initial update
         dialog.style.display = 'block';
+    }
+    
+    updateNameTypeCheckboxes() {
+        const checkboxes = document.querySelectorAll('#nameTypeOptions input[type="checkbox"]');
+        const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+    
+        checkboxes.forEach(checkbox => {
+            if (checkedCount === 1 && checkbox.checked) {
+                checkbox.disabled = true;
+            } else {
+                checkbox.disabled = false;
+            }
+        });
     }
 
     savePreferences() {
@@ -1088,6 +978,24 @@ class WeAreWatching {
     closePreferencesDialog() {
         document.getElementById('preferencesDialog').style.display = 'none';
     }
+
+    preSeasonIntroduction() {
+        this.clearTextBox();
+        this.printText("Welcome to We Are Watching! The agents are about to meet each other for the first time.");
+    
+        // Simulate 20-30 interactions
+        for (let i = 0; i < Math.floor(Math.random() * 11) + 20; i++) {
+            this.eventManager.eventSpawner();
+        }
+    
+        this.printText("The first week is about to begin!");
+        
+        // Update UI
+        this.updateUI();
+        
+        // Enable the continue button
+        document.getElementById('continueBtn').disabled = false;
+    }
 }
 
 const game = new WeAreWatching();
@@ -1095,7 +1003,7 @@ const game = new WeAreWatching();
 document.addEventListener('DOMContentLoaded', function() {
     // Set up event listeners
     document.getElementById('startBtn').addEventListener('click', () => {
-        game.playWeek();
+        game.preSeasonIntroduction();
         showGameButtons();
     });
     document.getElementById('continueBtn').addEventListener('click', () => {
