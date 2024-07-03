@@ -14,18 +14,16 @@
     --runner-up-text: #87CEFA;
     --purged-background: #4D4D4D;
     --purged-text: #A9A9A9;
-    --overseer-background: #715e00;
+    --overseer-background: #000000;
     --overseer-text: #FFD700;
     --flagged-background: #800080;
     --flagged-text: #FF69B4;
-    --replacement-flagged-background: #550000;
-    --replacement-flagged-text: #ff0d00;
+    --replacement-flagged-background: #AA0000;
+    --replacement-flagged-text: #FF4136;
     --flagged-saved-background: black;
     --flagged-saved-text: orange;
-    --pod-winner-background: #7b5200;
+    --pod-winner-background: #2D2D2D;
     --pod-winner-text: #FFA500;
-    --recently-purged-background: #2F4F4F; /* Dark slate gray */
-    --recently-purged-text: #79A0A0; /* Medium slate gray with green tinge */
     --yellow: yellow;
     --purple: purple;
     --orange: orange;
@@ -156,12 +154,12 @@ h5 {
 }
 
 .winner {
-    background: linear-gradient(to bottom right, var(--winner-background) 0%, var(--winner-background) 30%, var(--agent-background) 70%, var(--agent-background) 100%);
+    background: linear-gradient(to bottom right, var(--winner-background) 0%, var(--winner-background) 50%, var(--agent-background) 50%, var(--agent-background) 100%);
     color: var(--winner-text);
 }
 
 .runner-up {
-    background: linear-gradient(to bottom right, var(--runner-up-background), var(--agent-background));
+    background: linear-gradient(to bottom right, var(--runner-up-background) 0%, var(--runner-up-background) 50%, var(--agent-background) 50%, var(--agent-background) 100%);
     color: var(--runner-up-text);
 }
 
@@ -170,33 +168,28 @@ h5 {
     color: var(--purged-text);
 }
 
-.recently-purged {
-    background: linear-gradient(to bottom right, var(--recently-purged-background), var(--agent-background));
-    color: var(--recently-purged-text);
-}
-
 .overseer {
-    background: linear-gradient(to bottom right, var(--overseer-background), var(--agent-background));
+    background: linear-gradient(to bottom right, var(--overseer-background) 0%, var(--overseer-background) 50%, var(--agent-background) 50%, var(--agent-background) 100%);
     color: var(--overseer-text);
 }
 
 .flagged {
-    background: linear-gradient(to bottom right, var(--flagged-background), var(--agent-background));
+    background: linear-gradient(to bottom right, var(--flagged-background) 0%, var(--flagged-background) 50%, var(--agent-background) 50%, var(--agent-background) 100%);
     color: var(--flagged-text);
 }
 
 .replacement-flagged {
-    background: linear-gradient(to bottom right, var(--replacement-flagged-background), var(--agent-background));
+    background: linear-gradient(to bottom right, var(--replacement-flagged-background) 0%, var(--replacement-flagged-background) 50%, var(--agent-background) 50%, var(--agent-background) 100%);
     color: var(--replacement-flagged-text);
 }
 
 .flagged-saved {
-    background: linear-gradient(to bottom right, var(--flagged-saved-background), var(--agent-background));
+    background: linear-gradient(to bottom right, var(--flagged-saved-background) 0%, var(--flagged-saved-background) 50%, var(--agent-background) 50%, var(--agent-background) 100%);
     color: var(--flagged-saved-text);
 }
 
 .pod-winner {
-    background: linear-gradient(to bottom right, var(--pod-winner-background), var(--agent-background));
+    background: linear-gradient(to bottom right, var(--pod-winner-background) 0%, var(--pod-winner-background) 50%, var(--agent-background) 50%, var(--agent-background) 100%);
     color: var(--pod-winner-text);
 }
 
@@ -334,11 +327,4 @@ button:hover {
 
 #startScreen button {
     margin: 0 10px;
-}
-
-.agent-divider {
-    width: 100%;
-    height: 2px;
-    background-color: #555;
-    margin: 10px 0;
 }

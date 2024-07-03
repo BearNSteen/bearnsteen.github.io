@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>We're Watching</title>
+    <link rel="stylesheet" href="watching.css">
+</head>
+<body>
+    <div class="navbar">
+        <a href="../index.html" target="_blank">Home</a>
+        <div class="dropdown">
+            <button class="dropbtn">We Are Watching</button>
+            <div class="dropdown-content">
+                <a href="#">Play</a>
+                <a href="about.html" target="_blank">About</a>
+            </div>
+        </div>
+    </div>
+    <div id="app">
+        <!--h1>We're Watching</h1!-->
+        <img src="wearewatchinglogo.png" alt="We Are Watching" id="titleImage">
+        <!--h5>Live from Igbay Rotherbay!</h5!-->
+        <div id="agents"></div>
+        <div id="gameInfo">
+            <div class="label-column">
+                <div class="info-row"><span class="label-text">Overseer</span></div>
+                <div class="info-row"><span class="label-text">Flagged</span></div>
+                <div class="info-row"><span class="label-text">Disruptor</span></div>
+                <div class="info-row"><span class="label-text">Post-Disruption Flags</span></div>
+                <div class="info-row"><span class="label-text">Purged</span></div>
+            </div>
+            <div class="value-column">
+                <div class="info-row"><span id="ovrLabel" class="value-text"></span></div>
+                <div class="info-row"><span id="flaggedLabel" class="value-text"></span></div>
+                <div class="info-row"><span id="PODHolderLabel" class="value-text"></span></div>
+                <div class="info-row"><span id="replacementFlaggedLabel" class="value-text"></span></div>
+                <div class="info-row"><span id="purgedLabel" class="value-text"></span></div>
+            </div>
+        </div>
+        <div id="controls">
+            <div id="startScreen">
+                <button id="startBtn">Start Game</button>
+                <button id="preferencesBtn">Preferences</button>
+            </div>
+            
+            <div id="preferencesDialog" class="dialog" style="display: none;">
+                <h2>Preferences</h2>
+                <div id="nameTypeOptions"></div>
+                <button id="savePreferencesBtn">Save Preferences</button>
+                <button id="closePreferencesDialogBtn">Close</button>
+            </div>
+            <div id="gameButtons" style="display: none;">
+                <div class="button-row">
+                    <button id="continueBtn">Continue</button>
+                    <button id="stepBtn">Step</button>
+                    <button id="finishBtn" disabled>Finish</button>
+                    <button id="resetBtn">Reset</button>
+                </div>
+                <hr class="button-divider">
+                <div class="button-row">
+                    <button id="impressionsBtn">Impressions</button>
+                    <button id="showmancesBtn">Romances</button>
+                    <button id="alliancesBtn">Groups</button>
+                    <!--button id="preferencesBtn">Preferences</button!-->
+                    <button id="customizeColorsBtn">Colors</button>
+                </div>
+            </div>
+        </div>
+        <div id="debugControls" style="display: none;">
+            <button id="playContinuouslyBtn">Play Continuously (Debug)</button>
+            <button id="stopContinuousBtn">Stop Continuous Play</button>
+        </div>
+        <div id="textBox"></div>
+    </div>
+    <script src="watching.js"></script>
+    <div id="colorCustomizationDialog" style="display: none;">
+        <h2>Customize Colors</h2>
+        <div id="colorOptions"></div>
+        <button id="saveColorsBtn">Save Colors</button>
+        <button id="resetColorsBtn">Reset to Default</button>
+        <button id="closeColorDialogBtn">Close</button>
+    </div>
+</body>
+</html>

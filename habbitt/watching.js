@@ -53,17 +53,15 @@ class WeAreWatching {
         this.americanNamesEnabled = true;
         this.sillyNamesEnabled = false;
         this.sciFiNamesEnabled = false;
-        this.lastPurgedAgent = null;
         this.loadColors();
         this.createPlayers();
         this.doImpressions();
     }
 
     createPlayers() {
-        const usedFirstNames = new Set();
+        const usedNames = new Set();
         while (this.agents.length < this.numPlayers) {
             let name;
-            let firstName;
             do {
                 const enabledNameTypes = [];
                 if (this.americanNamesEnabled) enabledNameTypes.push('randomName');
@@ -72,10 +70,8 @@ class WeAreWatching {
     
                 const randomNameType = this.randomChoice(enabledNameTypes);
                 name = this[randomNameType]();
-                firstName = name.split(' ')[0];
-            } while (usedFirstNames.has(firstName));
-            
-            usedFirstNames.add(firstName);
+            } while (usedNames.has(name));
+            usedNames.add(name);
             this.agents.push(new Agent(name));
         }
     }
@@ -232,7 +228,6 @@ class WeAreWatching {
                 ag.vetoed = false;
                 ag.POD = false;
                 ag.replacementFlagged = false; 
-                this.lastPurgedAgent = null; 
             }
     
             if (this.agents.length > 2) {
@@ -400,9 +395,8 @@ class WeAreWatching {
     
         const purged = eligibleForEviction.find(n => n.firstName === Object.keys(purgedName).reduce((a, b) => purgedName[a] > purgedName[b] ? a : b));
     
-        this.printText(`<span style="color: var(--recently-purged-text);">${purged.firstName}</span> has been purged from the We Are Watching house.`);
-        this.updateLabel('purgedLabel', purged.firstName, 'var(--recently-purged-text)');
-        this.lastPurgedAgent = purged;
+        this.printText(`<span style="color: var(--purged-text);">${purged.firstName}</span> has been purged from the We Are Watching house.`);
+        this.updateLabel('purgedLabel', purged.firstName, 'var(--purged-text)');
         this.purgedAgents.push(purged);
         this.agents = this.agents.filter(ag => ag !== purged);
     
@@ -654,7 +648,7 @@ class WeAreWatching {
         for (let ag of this.agents) {
             if (ag.replacementFlagged && ag !== this.OVR) {
                 orderedAgents.push(ag);
-                break;
+                break;  // Only add one replacement flagged agent
             }
         }
     
@@ -668,64 +662,38 @@ class WeAreWatching {
             if (!orderedAgents.includes(ag)) orderedAgents.push(ag);
         }
     
-        // Add last purged agent if it exists and is not null
-        if (this.lastPurgedAgent) {
-            orderedAgents.push(this.lastPurgedAgent);
-        }
+        // Add purged agents in reverse order
+        orderedAgents = orderedAgents.concat(this.purgedAgents.slice().reverse());
     
-        // Add active agents and last purged agent to the display
         for (let ag of orderedAgents) {
-            const agElement = this.createAgentElement(ag);
+            const agElement = document.createElement('div');
+            agElement.className = 'agent';
+    
+            if (ag === this.winner) {
+                agElement.classList.add('winner');
+            } else if (ag === this.runnerUp) {
+                agElement.classList.add('runner-up');
+            } else if (this.purgedAgents.includes(ag)) {
+                agElement.classList.add('purged');
+            } else if (ag.OVR) {
+                agElement.classList.add('overseer');
+            } else if (ag.flagged && ag.vetoed) {
+                agElement.classList.add('flagged-saved');
+            } else if (ag.replacementFlagged) {
+                agElement.classList.add('replacement-flagged');
+            } else if (ag.flagged) {
+                agElement.classList.add('flagged');
+            } else if (ag === this.PODWinner) {
+                agElement.classList.add('pod-winner');
+            }
+    
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = ag.fullName; // Display the full name
+    
+            agElement.appendChild(nameSpan);
+            agElement.addEventListener('dblclick', () => this.editAgentName(ag));
             agentsDiv.appendChild(agElement);
         }
-    
-        // Add divider if there are purged agents
-        if (this.purgedAgents.length > 0) {
-            const divider = document.createElement('div');
-            divider.className = 'agent-divider';
-            agentsDiv.appendChild(divider);
-        }
-    
-        // Add previously purged agents
-        for (let ag of this.purgedAgents.slice().reverse()) {
-            if (ag !== this.lastPurgedAgent) {  // Skip the last purged agent as it's already above the divider
-                const agElement = this.createAgentElement(ag);
-                agentsDiv.appendChild(agElement);
-            }
-        }
-    }
-    
-    createAgentElement(ag) {
-        const agElement = document.createElement('div');
-        agElement.className = 'agent';
-    
-        if (ag === this.winner) {
-            agElement.classList.add('winner');
-        } else if (ag === this.runnerUp) {
-            agElement.classList.add('runner-up');
-        } else if (ag === this.lastPurgedAgent) {
-            agElement.classList.add('recently-purged');
-        } else if (this.purgedAgents.includes(ag)) {
-            agElement.classList.add('purged');
-        } else if (ag.OVR) {
-            agElement.classList.add('overseer');
-        } else if (ag.flagged && ag.vetoed) {
-            agElement.classList.add('flagged-saved');
-        } else if (ag.replacementFlagged) {
-            agElement.classList.add('replacement-flagged');
-        } else if (ag.flagged) {
-            agElement.classList.add('flagged');
-        } else if (ag === this.PODWinner) {
-            agElement.classList.add('pod-winner');
-        }
-    
-        const nameSpan = document.createElement('span');
-        nameSpan.textContent = ag.fullName;
-    
-        agElement.appendChild(nameSpan);
-        agElement.addEventListener('dblclick', () => this.editAgentName(ag));
-    
-        return agElement;
     }
 
     colorAgentName(name) {
@@ -734,9 +702,7 @@ class WeAreWatching {
         
         let color = 'var(--regular-agent-color)';
         
-        if (agent === this.lastPurgedAgent) {
-            color = 'var(--recently-purged-text)';
-        } else if (this.purgedAgents.includes(agent)) {
+        if (this.purgedAgents.includes(agent)) {
             color = 'var(--purged-text)';
         } else if (agent === this.OVR) {
             color = 'var(--overseer-text)';
@@ -819,8 +785,8 @@ class WeAreWatching {
         this.introduceAgents();
         this.preSeasonIntroduction();
     
-        // Show start screen and hide game buttons
-        document.getElementById('startScreen').style.display = 'block';
+        // Show start button and hide game buttons
+        document.getElementById('startBtn').style.display = 'block';
         document.getElementById('gameButtons').style.display = 'none';
         // Show the label text again
         document.querySelectorAll('.label-text.finaleHide').forEach(el => el.classList.remove('hidden'));
@@ -914,7 +880,6 @@ class WeAreWatching {
             { name: 'Replacement Flagged', bgVar: '--replacement-flagged-background', textVar: '--replacement-flagged-text' },
             { name: 'Flagged Saved', bgVar: '--flagged-saved-background', textVar: '--flagged-saved-text' },
             { name: 'POD Winner', bgVar: '--pod-winner-background', textVar: '--pod-winner-text' },
-            { name: 'Recently Purged', bgVar: '--recently-purged-background', textVar: '--recently-purged-text' },
         ];
     
         roles.forEach(role => {
@@ -1129,7 +1094,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function showGameButtons() {
-    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('startBtn').style.display = 'none';
     document.getElementById('gameButtons').style.display = 'block';
 }
 
