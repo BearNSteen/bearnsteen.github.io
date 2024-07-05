@@ -1,0 +1,198 @@
+@font-face {
+    font-family: 'VCR';
+    src: url('../VCR.001.ttf') format('truetype');
+}
+
+body {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    font-family: 'VCR', monospace;
+    margin: 0;
+    padding: 20px;
+}
+
+#gameContainer {
+    display: flex;
+    flex-direction: column;
+    width: 800px;
+    margin: 0 auto;
+}
+
+#gameOutput {
+    height: 400px;
+    border: 1px solid #ffffff;
+    background-color: #2a2a2a;
+    overflow-y: scroll;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+#gameCanvas {
+    border: 1px solid #ffffff;
+    margin-bottom: 10px;
+    background-color: #2a2a2a;
+    width: 800px;
+    height: 200px;
+}
+
+#commandInput {
+    width: 80%;
+    margin-right: 10px;
+    padding: 5px;
+    background-color: #2a2a2a;
+    border: 1px solid #ffffff;
+    color: #ffffff;
+    font-family: 'VCR', monospace;
+    font-size: 16px;
+}
+
+#submitButton {
+    padding: 5px 10px;
+    background-color: #4a4a4a;
+    border: 1px solid #ffffff;
+    color: #ffffff;
+    font-family: 'VCR', monospace;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#submitButton:hover {
+    background-color: #5a5a5a;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #2a2a2a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #4a4a4a;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #5a5a5a;
+}
+
+.navbar {
+    background-color: #1e1e1e;
+    overflow: visible;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 20px;
+}
+
+.navbar a, .navbar .dropbtn {
+    display: block;
+    color: #e0e0e0;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 16px;
+    border: none;
+    background: none;
+    font-family: inherit;
+    margin: 0;
+    cursor: pointer;
+    line-height: 1.5;
+}
+
+.navbar .dropdown {
+    display: block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #1e1e1e;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
+    z-index: 1001;
+    top: 100%;
+}
+
+.dropdown-content a.dropdown-header {
+    color: #ff6b6b;
+    font-weight: bold;
+    cursor: default;
+    background-color: #2c2c2c;
+    text-align: center;
+    padding: 12px 20px;
+    margin: 0;
+}
+
+.navbar a:hover, .dropdown:hover .dropbtn {
+    background-color: #2c2c2c;
+}
+
+.dropdown-content a {
+    float: none;
+    color: #e0e0e0;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-content a:hover {
+    background-color: #2c2c2c;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo, .github-logo {
+    width: 24px;
+    height: 24px;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.github-link {
+    padding: 10px;
+}
+
+.navbar-item {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.navbar-item span {
+    margin-left: 8px;
+    line-height: 1;
+}
+
+.navbar-logo {
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+}
+
+.dropbtn {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+}

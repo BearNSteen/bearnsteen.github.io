@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Game</title>
+    <style>
+        #gameContainer {
+            display: flex;
+            flex-direction: column;
+            width: 800px;
+            margin: 0 auto;
+        }
+        #gameOutput {
+            height: 400px;
+            border: 1px solid black;
+            overflow-y: scroll;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        #gameCanvas {
+            border: 1px solid black;
+            margin-bottom: 10px;
+        }
+        #commandInput {
+            width: 80%;
+            margin-right: 10px;
+        }
+    </style>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <a href="../index.html" class="navbar-item">
+                <img src="../images/home.png" alt="Home" class="navbar-logo">
+                <span>Home</span>
+            </a>
+            <div class="dropdown">
+                <button class="dropbtn navbar-item">
+                    <img src="../images/wearewatchinglogo_navbar.png" alt="WAW" class="navbar-logo">
+                    <span>We Are Watching</span>
+                </button>
+                <div class="dropdown-content">
+                    <a href="#" class="dropdown-header" disabled>We Are Watching</a>
+                    <a href="../watching/index.html">Play</a>
+                    <a href="../watching/about.html">About</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <button class="dropbtn navbar-item">
+                    <img src="../images/bearlogo_navbar.png" alt="COH" class="navbar-logo">
+                    <span>Creatures of Habbitt</span>
+                </button>
+                <div class="dropdown-content">
+                    <a href="#" class="dropdown-header" disabled>Creatures of Habbitt</a>
+                    <a href="../habbitt/about.html">About</a>
+                    <a href="../habbitt/wiki.html">Wiki</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <button class="dropbtn navbar-item">
+                    <img src="../images/rpg_navbar.png" alt="RPG" class="navbar-logo">
+                    <span>RPG</span>
+                </button>
+                <div class="dropdown-content">
+                    <a href="#" class="dropdown-header" disabled>RPG</a>
+                    <a href="../text-rpg/index.html">Play</a>
+                </div>
+            </div>
+        </div>
+        <a href="https://github.com/bearnsteen" target="_blank" class="github-link">
+            <img src="../images/github-mark.png" alt="GitHub" class="github-logo">
+        </a>
+    </div>
+    <div id="gameContainer">
+        <div id="gameOutput"></div>
+        <canvas id="gameCanvas" width="800" height="200"></canvas>
+        <div>
+            <input type="text" id="commandInput" placeholder="Enter command">
+            <button id="submitButton" onclick="game.processCommand(document.getElementById('commandInput').value)">Submit</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>

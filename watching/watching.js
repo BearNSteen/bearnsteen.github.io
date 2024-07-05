@@ -1,6 +1,7 @@
 class WeAreWatching {
     constructor() {
         this.numPlayers = 12;
+        this.currentWeek = 1;
         this.agents = [];
         this.purgedAgents = [];
         this.endState = 0;
@@ -17,8 +18,11 @@ class WeAreWatching {
         this.sillyNamesEnabled = false;
         this.sciFiNamesEnabled = false;
         this.lastPurgedAgent = null;
+        this.postDisruptionFlags = null;
         this.alliances = {};
         this.eventManager = new EventManager(this, Alliance);
+        this.currentStep = 0;
+        this.stepsPerWeek = 6; // Adjust this based on the number of steps in your week
 
         this.loadColors();
         this.createPlayers();
@@ -180,7 +184,7 @@ class WeAreWatching {
 
     playWeek() {
         if (this.stepByStepMode) {
-            this.stepIndex = 0;
+            this.initializeWeek();
             this.nextStep();
         } else {
             this.clearTextBox();
@@ -343,6 +347,7 @@ class WeAreWatching {
             this.updateLabel('PODHolderLabel', 'Not Played');
             this.updateLabel('replacementFlaggedLabel', flagged.map(n => this.colorAgentName(n.firstName)).join(', '));
         }
+        this.postDisruptionFlags = [...flagged];
     }
 
     purging(flagged) {
@@ -439,7 +444,7 @@ class WeAreWatching {
 
         // enable the finishBtn
         const finishBtn = document.getElementById('finishBtn');
-        finishBtn.disabled = false;
+        finishBtn.style.display = 'inline-block';  // or 'block', depending on your layout
 
         // Hide the reset button
         document.getElementById('resetBtn').style.display = 'none';
@@ -462,10 +467,11 @@ class WeAreWatching {
         // Re-enable the continueBtn
         const continueBtn = document.getElementById('continueBtn');
         continueBtn.disabled = false;
-
-        // Disable the finishBtn
+    
+        // Hide the finishBtn and show the resetBtn
         const finishBtn = document.getElementById('finishBtn');
-        finishBtn.disabled = true;
+        finishBtn.style.display = 'none';
+        document.getElementById('resetBtn').style.display = 'inline-block';  // or 'block'
     }
 
     
@@ -512,10 +518,6 @@ class WeAreWatching {
                 element.closest('.info-row').style.display = 'none';
             }
         }
-    }
-
-    updateUI() {
-        this.updateAgentList();
     }
 
     updateAgentList() {
@@ -703,6 +705,7 @@ class WeAreWatching {
         // Show start screen and hide game buttons
         document.getElementById('startScreen').style.display = 'block';
         document.getElementById('gameButtons').style.display = 'none';
+        document.getElementById('finishBtn').style.display = 'none';
         // Show the label text again
         document.querySelectorAll('.label-text.finaleHide').forEach(el => el.classList.remove('hidden'));
     }
@@ -723,28 +726,110 @@ class WeAreWatching {
         }
     }
 
+    initializeWeek() {
+        console.log("In initializeWeek");
+        this.clearTextBox();
+        this.currentWeek = this.numPlayers - this.agents.length + 1;
+        this.printText(`Week ${this.currentWeek}:`);
+    
+        if (this.endState === 1 || this.agents.length <= 2) {
+            this.finale();
+            return;
+        }
+    
+        // Reset colors and statuses of all agents
+        for (let ag of this.agents) {
+            ag.OVR = false;
+            ag.flagged = false;
+            ag.vetoed = false;
+            ag.POD = false;
+            ag.replacementFlagged = false; 
+        }
+        this.lastPurgedAgent = null;
+    
+        this.stepIndex = 0;
+        this.flagged = [];
+        this.potentialPlayers = [];
+        this.PODWinner = null;
+        this.postDisruptionFlags = null;
+    
+        // Update the agent list to reflect the reset colors
+        this.updateAgentList();
+    
+        // Reset the game info labels
+        this.updateLabel('ovrLabel', '');
+        this.updateLabel('flaggedLabel', '');
+        this.updateLabel('PODHolderLabel', '');
+        this.updateLabel('replacementFlaggedLabel', '');
+        this.updateLabel('purgedLabel', '');
+    }
+
     nextStep() {
-        switch (this.stepIndex) {
+        if (this.currentStep === 0) {
+            this.initializeWeek();
+        }
+
+        // Perform the current step
+        switch (this.currentStep) {
             case 0:
                 this.selectOVR();
                 break;
             case 1:
-                this.selectFlagged();
+                this.flagged = this.selectFlagged();
                 break;
             case 2:
-                this.playDisruptionAcquisition();
+                this.potentialPlayers = this.playDisruptionAcquisition(this.flagged);
                 break;
             case 3:
-                this.PODCeremony();
+                this.PODCeremony(this.flagged, this.potentialPlayers);
                 break;
             case 4:
-                this.purging();
-                this.stepIndex = -1;
+                this.purging(this.flagged);
                 break;
         }
-        this.stepIndex++;
+
+        this.eventManager.eventSpawner();
         this.updateUI();
+
+        this.currentStep++;
+
+        // Check if we've completed all steps for this week
+        if (this.currentStep >= this.stepsPerWeek) {
+            this.currentStep = 0; // Reset for next week
+            this.currentWeek++; // Move to the next week
+            this.initializeWeek(); // Initialize the new week
+        } 
+        document.getElementById('stepBtn').disabled = false;
+
+        if (this.endState === 1 || this.agents.length <= 2) {
+            this.finale();
+        }
     }
+
+    updateUI() {
+        this.updateAgentList();
+        this.updateLabel('ovrLabel', this.OVR ? this.OVR.firstName : '', 'yellow');
+        this.updateLabel('flaggedLabel', this.flagged ? this.flagged.map(n => this.colorAgentName(n.firstName)).join(', ') : '');
+        this.updateLabel('PODHolderLabel', this.PODWinner ? this.PODWinner.firstName : '', 'orange');
+        this.updateLabel('replacementFlaggedLabel', this.postDisruptionFlags ? this.postDisruptionFlags.map(n => this.colorAgentName(n.firstName)).join(', ') : '');
+        this.updateLabel('purgedLabel', this.lastPurgedAgent ? this.lastPurgedAgent.firstName : '', 'var(--recently-purged-text)');
+    }
+
+    toggleStepByStepMode() {
+        this.stepByStepMode = !this.stepByStepMode;
+        const stepBtn = document.getElementById('stepBtn');
+        stepBtn.textContent = this.stepByStepMode ? "Continue Step" : "Enable Step-by-Step";
+        
+        if (this.stepByStepMode) {
+            document.getElementById('continueBtn').disabled = true;
+            this.initializeWeek(); // Initialize week when switching to step-by-step mode
+            this.currentStep = 0;
+        } else {
+            document.getElementById('continueBtn').disabled = false;
+            stepBtn.disabled = true;
+        }
+    }
+
 
     createAlliance() {
         if (this.agents.length > 5) {
@@ -1012,12 +1097,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     var finishBtn = document.getElementById('finishBtn');
     finishBtn.addEventListener('click', () => game.finishGame());
-    finishBtn.disabled = true;
 
     document.getElementById('impressionsBtn').addEventListener('click', () => game.showImpressions());
     document.getElementById('showmancesBtn').addEventListener('click', () => game.showShowmances());
     document.getElementById('alliancesBtn').addEventListener('click', () => game.showAlliances());
-    document.getElementById('stepBtn').addEventListener('click', () => game.toggleStepByStepMode());
+    document.getElementById('stepBtn').addEventListener('click', () => {
+        if (game.stepByStepMode) {
+            game.nextStep();
+        } else {
+            game.toggleStepByStepMode();
+        }
+    });
     document.getElementById('resetBtn').addEventListener('click', () => {
         game.reset();
         game.updateAgentList();
