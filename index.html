@@ -212,36 +212,93 @@
             <div class="project" style="background-image: url('images/black.png');">
                 <h3>Data Annotator, DataAnnotation</h3>
                 <p>January 2024 - Present</p>
-                <p>Working on cutting-edge AI technologies and applications.</p>
+                <ul>
+                    <li>Perform AI testing routines based on detailed instructions to ensure accurate and efficient AI learning</li>
+                    <li>Deliver consistent high-quality work, maintaining precision and attention to detail</li>
+                    <li>Label and categorize large datasets for machine learning model training</li>
+                    <li>Analyze and interpret complex data to identify patterns and trends</li>
+                    <li>Collaborate with AI developers to refine annotation guidelines and improve data quality</li>
+                    <li>Contribute to the development and improvement of AI models through accurate data annotation</li>
+                    <li>Adhere to strict confidentiality and data security protocols</li>
+                </ul>
             </div>
             <div class="project" style="background-image: url('images/amazonblack.png');">
                 <h3>Software Development Engineer Intern, Amazon</h3>
                 <p>June 2022 - September 2022</p>
-                <p>Contributed to large-scale software development projects in a fast-paced environment.</p>
+                <ul>
+                    <li>Developed a scalable solution for payment instrument verification for pre-orders and subscriptions</li>
+                    <li>Advised professional software engineers on their projects, demonstrating leadership skills</li>
+                    <li>Consistently delivered high-quality work according to SCRUM methodologies</li>
+                    <li>Implemented innovative solutions to complex problems, aligning with "Invent and Simplify" principle</li>
+                    <li>Collaborated effectively with cross-functional teams to ensure project success</li>
+                    <li>Contributed to code reviews and participated in technical discussions</li>
+                    <li>Adhered to Amazon's high bar for engineering excellence and best practices</li>
+                </ul>
             </div>
             <div class="project" style="background-image: url('images/orange.png');">
-                <h3>Computer Science TA, Oregon State University</h3>
+                <h3>Computer Science Teaching Assistant, Oregon State University</h3>
                 <p>September 2021 - June 2022</p>
-                <p>Assisted in teaching computer science concepts and programming skills to university students.</p>
+                <ul>
+                    <li>Assisted in teaching introductory Computer Science courses focusing on Python</li>
+                    <li>Guided students through fundamental CS concepts from basic algorithms to testing methodologies</li>
+                    <li>Conducted office hours to provide one-on-one support and clarification on course materials</li>
+                    <li>Graded assignments manually, providing detailed feedback to enhance student learning</li>
+                    <li>Facilitated problem-solving sessions, helping students develop critical thinking skills</li>
+                    <li>Collaborated with professors to improve course content and teaching strategies</li>
+                    <li>Mentored students, fostering their growth and interest in Computer Science</li>
+                </ul>
+            </div>
+            <div class="additional-experience">
+                <span>+4 more</span>
+                <div class="job-list">
+                    <div class="job" title="Freelance Web Developer">
+                        <img src="images/web-dev-icon.png" alt="Web Developer">
+                        <span>Web Dev</span>
+                    </div>
+                    <div class="job" title="Ballpark Suite Caterer">
+                        <img src="images/caterer-icon.png" alt="Caterer">
+                        <span>Caterer</span>
+                    </div>
+                    <div class="job" title="ASD Therapist">
+                        <img src="images/therapist-icon.png" alt="Therapist">
+                        <span>Therapist</span>
+                    </div>
+                    <div class="job" title="Lead Caterer / Lead Concessions">
+                        <img src="images/lead-caterer-icon.png" alt="Lead Caterer">
+                        <span>Lead Caterer</span>
+                    </div>
+                </div>
             </div>
         </div>
+        
     </section>
 
     <section class="section expandable" id="projectsSection">
         <h2 class="section-title">Projects <span class="toggle-icon">▼</span></h2>
         <div class="section-content">
-            <div class="project">
-                <h3>Creatures of Habbitt (Godot Rhythm RPG)</h3>
-                <p>Created a Rhythm RPG using Godot engine (GDScript, which is like Python), demonstrating my ability to quickly learn and apply new technologies.</p>
+            <div class="project expandable">
+                <h3 class="project-title">Creatures of Habbitt (Godot Rhythm RPG) <span class="toggle-icon">▼</span></h3>
+                <div class="project-content">
+                    <img src="path/to/creatures-of-habbitt-image.jpg" alt="Creatures of Habbitt" class="project-image">
+                    <a href="#" class="project-link">View Project</a>
+                    <p>Created a Rhythm RPG using Godot engine (GDScript, which is like Python), demonstrating my ability to quickly learn and apply new technologies.</p>
+                </div>
             </div>
-            <div class="project">
-                <h3>AI-Powered Application</h3>
-                <p>Developed an AI application using Python and machine learning libraries. This project showcased my skills in AI development and problem-solving.</p>
+            <div class="project expandable">
+                <h3 class="project-title">AI-Powered Application <span class="toggle-icon">▼</span></h3>
+                <div class="project-content">
+                    <img src="path/to/ai-application-image.jpg" alt="AI-Powered Application" class="project-image">
+                    <a href="#" class="project-link">View Project</a>
+                    <p>Developed an AI application using Python and machine learning libraries. This project showcased my skills in AI development and problem-solving.</p>
+                </div>
             </div>
-            <div class="project">
-                <h3>We're Watching (Reality Show Simulator)</h3>
-                <p>Developed a web-based simulator for the fake "We're Watching" reality TV show using JavaScript and HTML/CSS. This project demonstrates my skills in web development and game logic implementation.</p>
-                <a href="watching/game.html" class="project-link">Link</a>
+            <div class="project expandable">
+                <h3 class="project-title">We're Watching (Reality Show Simulator) <span class="toggle-icon">▼</span></h3>
+                <div class="project-content">
+                    <img src="path/to/were-watching-image.jpg" alt="We're Watching" class="project-image">
+                    <a href="watching/game.html" class="project-link">Play Game</a>
+                    <p>Developed a web-based simulator for the fake "We're Watching" reality TV show using JavaScript and HTML/CSS. This project demonstrates my skills in web development and game logic implementation.</p>
+                </div>
             </div>
         </div>
     </section>
@@ -250,23 +307,41 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const expandableSections = document.querySelectorAll('.expandable');
+        const expandableSections = document.querySelectorAll('.section.expandable');
+        
+        expandableSections.forEach(section => {
+            const title = section.querySelector('.section-title');
+            const content = section.querySelector('.section-content');
+            const icon = title.querySelector('.toggle-icon');
             
-            expandableSections.forEach(section => {
-                const title = section.querySelector('.section-title');
-                const content = section.querySelector('.section-content');
-                const icon = section.querySelector('.toggle-icon');
-                
-                title.addEventListener('click', () => {
-                    content.style.display = content.style.display === 'none' ? 'block' : 'none';
-                    icon.textContent = content.style.display === 'none' ? '▼' : '▲';
-                });
-
-                // Start with sections collapsed
-                content.style.display = 'none';
-                icon.textContent = '▼';
+            title.addEventListener('click', () => {
+                content.style.display = content.style.display === 'none' ? 'block' : 'none';
+                icon.textContent = content.style.display === 'none' ? '▼' : '▲';
             });
+
+            /// Start with sections collapsed
+            content.style.display = 'none';
+            icon.textContent = '▼';
         });
+
+        const expandableProjects = document.querySelectorAll('.project.expandable');
+        
+        expandableProjects.forEach(project => {
+            const title = project.querySelector('.project-title');
+            const content = project.querySelector('.project-content');
+            const icon = title.querySelector('.toggle-icon');
+
+            title.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent triggering parent section's click event
+                content.style.display = content.style.display === 'none' ? 'block' : 'none';
+                icon.textContent = content.style.display === 'none' ? '▼' : '▲';
+            });
+
+            // Start with project content collapsed
+            content.style.display = 'none';
+            icon.textContent = '▼';
+        });
+    });
     </script>
 </body>
 </html>
