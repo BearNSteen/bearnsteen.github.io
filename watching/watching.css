@@ -465,3 +465,93 @@ input:checked + .slider:before {
 #finishBtn {
     display: none;
 }
+
+#colorCustomizationDialog {
+    width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+#colorOptions {
+    display: flex;
+    flex-direction: column;
+}
+
+.color-header, .color-option {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.color-header {
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.color-option span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.color-option div {
+    display: flex;
+    align-items: center;
+}
+
+.color-option label {
+    margin-right: 5px;
+}
+
+.color-option input[type="color"] {
+    width: 40px;
+    height: 25px;
+}
+
+#colorTitle {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.tab {
+    background-color: var(--button-background);
+    border: 1px solid var(--button-border);
+}
+
+.tab button {
+    background-color: inherit;
+    color: var(--button-text);
+}
+
+.tab button:hover {
+    background-color: var(--button-hover-background);
+}
+
+.tab button.active {
+    background-color: var(--button-hover-background);
+}
+
+.tabcontent {
+    background-color: var(--background-color);
+    border: 1px solid var(--button-border);
+    color: var(--text-color);
+}
+
+.impression-header {
+    background-color: var(--button-background);
+    color: var(--button-text);
+}
+
+#informationDialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--background-color);
+    max-width: 80%;
+    max-height: 80%;
+    overflow-y: auto;
+    border: 1px solid var(--button-border);
+}

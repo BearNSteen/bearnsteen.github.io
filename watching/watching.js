@@ -857,7 +857,13 @@ class WeAreWatching {
     showColorCustomization() {
         const dialog = document.getElementById('colorCustomizationDialog');
         const colorOptions = document.getElementById('colorOptions');
-        colorOptions.innerHTML = '';
+        colorOptions.innerHTML = `
+            <div class="color-header">
+                <span>Role</span>
+                <span>Background</span>
+                <span>Text</span>
+            </div>
+        `;
     
         const roles = [
             { name: 'Regular Agent', bgVar: '--agent-background', textVar: '--regular-agent-color' },
@@ -876,7 +882,7 @@ class WeAreWatching {
             const div = document.createElement('div');
             div.className = 'color-option';
             div.innerHTML = `
-                <label>${role.firstName}:</label>
+                <span>${role.name}</span>
                 <div>
                     <label for="${role.bgVar}">Background:</label>
                     <input type="color" id="${role.bgVar}" value="${this.getComputedColorValue(role.bgVar)}">
@@ -1081,6 +1087,86 @@ class WeAreWatching {
         // Enable the continue button
         document.getElementById('continueBtn').disabled = false;
     }
+
+    showInformation() {
+        const dialog = document.getElementById('informationDialog');
+        
+        // Update Alliances
+        const alliancesContent = document.getElementById('alliancesContent');
+        alliancesContent.innerHTML = '';
+        for (const [allianceName, alliance] of Object.entries(this.alliances)) {
+            alliancesContent.innerHTML += `<p>${allianceName}: ${alliance.members.map(m => m.firstName).join(', ')}</p>`;
+        }
+    
+        // Update Impressions
+        const impressionsContent = document.getElementById('impressionsContent');
+        impressionsContent.innerHTML = '';
+        impressionsContent.appendChild(this.createImpressionMatrix());
+    
+        // Update Showmances
+        const showmancesContent = document.getElementById('showmancesContent');
+        showmancesContent.innerHTML = '';
+        for (const [agent1, agent2] of this.showmances) {
+            showmancesContent.innerHTML += `<p>${agent1.firstName} & ${agent2.firstName}</p>`;
+        }
+    
+        // Display the dialog
+        dialog.style.display = 'block';
+        
+        // Open the Alliances tab by default
+        document.querySelector('.tablinks').click();
+    }
+    
+    createImpressionMatrix() {
+        const matrix = document.createElement('div');
+        matrix.className = 'impression-matrix';
+    
+        const agents = this.agents;
+        const size = agents.length + 1;
+    
+        matrix.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+    
+        // Add empty top-left cell
+        matrix.appendChild(this.createCell('', 'impression-header'));
+    
+        // Add column headers
+        agents.forEach(agent => {
+            matrix.appendChild(this.createCell(agent.firstName, 'impression-header'));
+        });
+    
+        // Add rows
+        agents.forEach(agent1 => {
+            matrix.appendChild(this.createCell(agent1.firstName, 'impression-header'));
+            agents.forEach(agent2 => {
+                if (agent1 === agent2) {
+                    matrix.appendChild(this.createCell('X', 'impression-cell', 'gray'));
+                } else {
+                    const impression = agent1.impressions[agent2.firstName];
+                    matrix.appendChild(this.createCell(impression, 'impression-cell', this.getImpressionColor(impression)));
+                }
+            });
+        });
+    
+        return matrix;
+    }
+    
+    createCell(content, className, backgroundColor = null) {
+        const cell = document.createElement('div');
+        cell.className = className;
+        cell.textContent = content;
+        if (backgroundColor) {
+            cell.style.backgroundColor = backgroundColor;
+        }
+        return cell;
+    }
+    
+    getImpressionColor(value) {
+        const colors = [
+            "#D10A0A", "#fe5f00", "#fe8b00", "#ffb000", "#fcd303",
+            "#cfcd00", "#a2c600", "#70bd00", "#30b200", "#45FF00"
+        ];
+        return colors[value - 1] || '#FFFFFF';
+    }
 }
 
 const game = new WeAreWatching();
@@ -1098,9 +1184,10 @@ document.addEventListener('DOMContentLoaded', function() {
     var finishBtn = document.getElementById('finishBtn');
     finishBtn.addEventListener('click', () => game.finishGame());
 
-    document.getElementById('impressionsBtn').addEventListener('click', () => game.showImpressions());
-    document.getElementById('showmancesBtn').addEventListener('click', () => game.showShowmances());
-    document.getElementById('alliancesBtn').addEventListener('click', () => game.showAlliances());
+    document.getElementById('informationBtn').addEventListener('click', () => game.showInformation());
+    document.getElementById('closeInfoDialogBtn').addEventListener('click', () => {
+        document.getElementById('informationDialog').style.display = 'none';
+    });
     document.getElementById('stepBtn').addEventListener('click', () => {
         if (game.stepByStepMode) {
             game.nextStep();
@@ -1131,3 +1218,16 @@ function showGameButtons() {
     document.getElementById('gameButtons').style.display = 'block';
 }
 
+function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+}

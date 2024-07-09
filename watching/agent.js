@@ -14,6 +14,7 @@ class Agent {
         this.winner = null;
         this.runnerUp = null;
         this.alliances = [];
+        this.impressions = {};
 
         this.friendliness = Math.floor(Math.random() * 5) + 1;
         this.loyalty = Math.floor(Math.random() * 5) + 1;

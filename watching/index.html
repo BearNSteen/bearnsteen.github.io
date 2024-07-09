@@ -68,9 +68,7 @@
                 </div>
                 <hr class="button-divider">
                 <div class="button-row">
-                    <button id="impressionsBtn">Impressions</button>
-                    <button id="showmancesBtn">Romances</button>
-                    <button id="alliancesBtn">Groups</button>
+                    <button id="informationBtn">Information</button>
                     <button id="customizeColorsBtn">Colors</button>
                 </div>
             </div>
@@ -112,11 +110,36 @@
     <script src="events.js"></script>
     <script src="watching.js"></script>
     <div id="colorCustomizationDialog" style="display: none;">
-        <h2>Customize Colors</h2>
+        <h2 id="colorTitle">Customize Colors</h2>
         <div id="colorOptions"></div>
         <button id="saveColorsBtn">Save Colors</button>
         <button id="resetColorsBtn">Reset to Default</button>
         <button id="closeColorDialogBtn">Close</button>
+    </div>
+    <div id="informationDialog" class="dialog" style="display: none;">
+        <h2>Game Information</h2>
+        <div class="tab">
+            <button class="tablinks" onclick="openTab(event, 'Alliances')">Alliances</button>
+            <button class="tablinks" onclick="openTab(event, 'Impressions')">Impressions</button>
+            <button class="tablinks" onclick="openTab(event, 'Showmances')">Showmances</button>
+        </div>
+    
+        <div id="Alliances" class="tabcontent">
+            <h3>Alliances</h3>
+            <div id="alliancesContent"></div>
+        </div>
+    
+        <div id="Impressions" class="tabcontent">
+            <h3>Impressions</h3>
+            <div id="impressionsContent"></div>
+        </div>
+    
+        <div id="Showmances" class="tabcontent">
+            <h3>Showmances</h3>
+            <div id="showmancesContent"></div>
+        </div>
+    
+        <button id="closeInfoDialogBtn">Close</button>
     </div>
 </body>
 </html>
