@@ -9,24 +9,48 @@ body {
     font-family: 'VCR', monospace;
     margin: 0;
     padding: 20px;
+    padding-top: 80px; /* Add this line */
 }
 
 #gameContainer {
     display: flex;
     flex-direction: column;
-    width: 800px;
+    width: 100%;
+    max-width: 800px;
     margin: 0 auto;
 }
 
-#gameOutput {
-    height: 400px;
-    border: 1px solid #ffffff;
-    background-color: #2a2a2a;
+#gameOutput, #rightOutput {
+    height: 200px;
+    border: 1px solid black;
     overflow-y: scroll;
     padding: 10px;
     margin-bottom: 10px;
-    font-size: 16px;
-    line-height: 1.4;
+}
+
+#gameCanvas {
+    border: 1px solid black;
+    margin-bottom: 10px;
+}
+
+#commandInput {
+    width: 80%;
+    margin-right: 10px;
+}
+
+#rightOutput {
+    font-family: monospace;
+    white-space: pre;
+}
+
+#commandInput {
+    width: 80%;
+    margin-right: 10px;
+}
+
+#leftPanel, #rightPanel {
+    flex: 1;
+    padding: 10px;
 }
 
 #gameCanvas {
@@ -35,17 +59,6 @@ body {
     background-color: #2a2a2a;
     width: 800px;
     height: 200px;
-}
-
-#commandInput {
-    width: 80%;
-    margin-right: 10px;
-    padding: 5px;
-    background-color: #2a2a2a;
-    border: 1px solid #ffffff;
-    color: #ffffff;
-    font-family: 'VCR', monospace;
-    font-size: 16px;
 }
 
 #submitButton {
@@ -195,4 +208,27 @@ body {
     background: none;
     border: none;
     cursor: pointer;
+}
+
+#rightPanel {
+    display: flex;
+    height: 200px;
+    margin-bottom: 10px;
+}
+
+#mapOutput, #legendOutput {
+    flex: 1;
+    border: 1px solid black;
+    overflow-y: scroll;
+    padding: 10px;
+    font-family: monospace;
+    white-space: pre;
+}
+
+#mapOutput {
+    margin-right: 5px;
+}
+
+#legendOutput {
+    margin-left: 5px;
 }

@@ -93,6 +93,20 @@
                 </div>
             </div>
             <div id="textBox"></div>
+            <label for="showInfoCheckbox" class="checkbox-label">
+                <input type="checkbox" id="showInfoCheckbox">
+                Show Information
+            </label>
+            <div id="bottomInfoDisplay" style="display: none;">
+                <div class="tab">
+                    <button class="tablinks" onclick="openBottomTab(event, 'BottomAlliances')">Alliances</button>
+                    <button class="tablinks" onclick="openBottomTab(event, 'BottomImpressions')">Impressions</button>
+                    <button class="tablinks" onclick="openBottomTab(event, 'BottomShowmances')">Showmances</button>
+                </div>
+                <div id="BottomAlliances" class="tabcontent"></div>
+                <div id="BottomImpressions" class="tabcontent"></div>
+                <div id="BottomShowmances" class="tabcontent"></div>
+            </div>
         </div>
     </div>
     <div id="preferencesDialog" class="dialog" style="display: none;">
@@ -117,13 +131,13 @@
         <button id="closeColorDialogBtn">Close</button>
     </div>
     <div id="informationDialog" class="dialog" style="display: none;">
-        <h2>Game Information</h2>
+        <h2 id="infoDialogTitle">Game Information</h2>
         <div class="tab">
             <button class="tablinks" onclick="openTab(event, 'Alliances')">Alliances</button>
             <button class="tablinks" onclick="openTab(event, 'Impressions')">Impressions</button>
             <button class="tablinks" onclick="openTab(event, 'Showmances')">Showmances</button>
         </div>
-    
+        <div id="infoDialogContent">
         <div id="Alliances" class="tabcontent">
             <h3>Alliances</h3>
             <div id="alliancesContent"></div>
@@ -138,7 +152,7 @@
             <h3>Showmances</h3>
             <div id="showmancesContent"></div>
         </div>
-    
+        </div>
         <button id="closeInfoDialogBtn">Close</button>
     </div>
 </body>

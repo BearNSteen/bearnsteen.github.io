@@ -176,7 +176,7 @@ class WeAreWatching {
         for (let ag1 of this.agents) {
             for (let ag2 of this.agents) {
                 if (ag1 !== ag2) {
-                    ag1.impressions[ag2.firstName] = Math.floor(Math.random() * 11); // 0-10
+                    ag1.impressions[ag2.firstName] = Math.floor(Math.random() * 10) + 1; // 1-10
                 }
             }
         }
@@ -221,6 +221,9 @@ class WeAreWatching {
             }
     
             this.updateUI();
+            if (document.getElementById('showInfoCheckbox').checked) {
+                this.updateBottomInfoDisplay();
+            }
         }
     }
 
@@ -1124,7 +1127,7 @@ class WeAreWatching {
         const agents = this.agents;
         const size = agents.length + 1;
     
-        matrix.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+        matrix.style.gridTemplateColumns = `repeat(${size}, minmax(30px, 1fr))`;
     
         // Add empty top-left cell
         matrix.appendChild(this.createCell('', 'impression-header'));
@@ -1167,6 +1170,31 @@ class WeAreWatching {
         ];
         return colors[value - 1] || '#FFFFFF';
     }
+
+    updateBottomInfoDisplay() {
+        const bottomAlliancesContent = document.getElementById('BottomAlliances');
+        const bottomImpressionsContent = document.getElementById('BottomImpressions');
+        const bottomShowmancesContent = document.getElementById('BottomShowmances');
+
+        // Update Alliances
+        bottomAlliancesContent.innerHTML = '';
+        for (const [allianceName, alliance] of Object.entries(this.alliances)) {
+            bottomAlliancesContent.innerHTML += `<p>${allianceName}: ${alliance.members.map(m => m.firstName).join(', ')}</p>`;
+        }
+
+        // Update Impressions
+        bottomImpressionsContent.innerHTML = '';
+        bottomImpressionsContent.appendChild(this.createImpressionMatrix());
+
+        // Update Showmances
+        bottomShowmancesContent.innerHTML = '';
+        for (const [agent1, agent2] of this.showmances) {
+            bottomShowmancesContent.innerHTML += `<p>${agent1.firstName} & ${agent2.firstName}</p>`;
+        }
+
+        // Open the Alliances tab by default
+        document.querySelector('#bottomInfoDisplay .tablinks').click();
+    }
 }
 
 const game = new WeAreWatching();
@@ -1208,6 +1236,18 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('savePreferencesBtn').addEventListener('click', () => game.savePreferences());
     document.getElementById('closePreferencesDialogBtn').addEventListener('click', () => game.closePreferencesDialog());
 
+    const showInfoCheckbox = document.getElementById('showInfoCheckbox');
+    const bottomInfoDisplay = document.getElementById('bottomInfoDisplay');
+
+    showInfoCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            bottomInfoDisplay.style.display = 'block';
+            game.updateBottomInfoDisplay();
+        } else {
+            bottomInfoDisplay.style.display = 'none';
+        }
+    });
+
     // Initial setup
     game.updateAgentList();
     game.introduceAgents();
@@ -1225,6 +1265,21 @@ function openTab(evt, tabName) {
         tabcontent[i].style.display = "none";
     }
     tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+
+// Add these functions outside of the class
+function openBottomTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.querySelectorAll("#bottomInfoDisplay .tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.querySelectorAll("#bottomInfoDisplay .tablinks");
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
