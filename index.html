@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="construction-banner">
-        <p>🚧 7/5/24 - This site is under construction. Some features may not be available. 🚧</p>
+        <p id="constructionBanner">🚧 7/5/24 - This site is under construction. Some features may not be available. 🚧</p>
     </div>
 
     <div class="navbar">
@@ -56,7 +56,7 @@
     </div>
 
     <header>
-        <h1>Redacted</h1>
+        <h1 id="myname">Redacted</h1>
         <p>Game Developer | AI Developer | Software Engineer | Computer Science Educator</p>
     </header>
 
@@ -209,45 +209,7 @@
     <section class="section expandable" id="experienceSection">
         <h2 class="section-title">Experience <span class="toggle-icon">▼</span></h2>
         <div class="section-content">
-            <div class="project" style="background-image: url('images/black.png');">
-                <h3>Data Annotator, DataAnnotation</h3>
-                <p>January 2024 - Present</p>
-                <ul>
-                    <li>Perform AI testing routines based on detailed instructions to ensure accurate and efficient AI learning</li>
-                    <li>Deliver consistent high-quality work, maintaining precision and attention to detail</li>
-                    <li>Label and categorize large datasets for machine learning model training</li>
-                    <li>Analyze and interpret complex data to identify patterns and trends</li>
-                    <li>Collaborate with AI developers to refine annotation guidelines and improve data quality</li>
-                    <li>Contribute to the development and improvement of AI models through accurate data annotation</li>
-                    <li>Adhere to strict confidentiality and data security protocols</li>
-                </ul>
-            </div>
-            <div class="project" style="background-image: url('images/amazonblack.png');">
-                <h3>Software Development Engineer Intern, Amazon</h3>
-                <p>June 2022 - September 2022</p>
-                <ul>
-                    <li>Developed a scalable solution for payment instrument verification for pre-orders and subscriptions</li>
-                    <li>Advised professional software engineers on their projects, demonstrating leadership skills</li>
-                    <li>Consistently delivered high-quality work according to SCRUM methodologies</li>
-                    <li>Implemented innovative solutions to complex problems, aligning with "Invent and Simplify" principle</li>
-                    <li>Collaborated effectively with cross-functional teams to ensure project success</li>
-                    <li>Contributed to code reviews and participated in technical discussions</li>
-                    <li>Adhered to Amazon's high bar for engineering excellence and best practices</li>
-                </ul>
-            </div>
-            <div class="project" style="background-image: url('images/orange.png');">
-                <h3>Computer Science Teaching Assistant, Oregon State University</h3>
-                <p>September 2021 - June 2022</p>
-                <ul>
-                    <li>Assisted in teaching introductory Computer Science courses focusing on Python</li>
-                    <li>Guided students through fundamental CS concepts from basic algorithms to testing methodologies</li>
-                    <li>Conducted office hours to provide one-on-one support and clarification on course materials</li>
-                    <li>Graded assignments manually, providing detailed feedback to enhance student learning</li>
-                    <li>Facilitated problem-solving sessions, helping students develop critical thinking skills</li>
-                    <li>Collaborated with professors to improve course content and teaching strategies</li>
-                    <li>Mentored students, fostering their growth and interest in Computer Science</li>
-                </ul>
-            </div>
+            <div id="projects-container"></div>
             <div class="additional-experience">
                 <span>+4 more</span>
                 <div class="job-list">
@@ -303,7 +265,16 @@
         </div>
     </section>
 
-    
+    <section class="section expandable" id="contactSection">
+        <h2 class="section-title">Get In Touch <span class="toggle-icon">▼</span></h2>
+        <div class="section-content">
+            <div class="contact-info">
+                <p>Email: <span id="contact-email"></span></p>
+                <p>LinkedIn: <span id="contact-linkedin"></span></p>
+                <p>GitHub: <span id="contact-github"></span></p>
+            </div>
+        </div>
+        </section>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -343,5 +314,6 @@
         });
     });
     </script>
+    <script src="index.js"></script>
 </body>
 </html>
