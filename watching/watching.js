@@ -26,7 +26,6 @@ class WeAreWatching {
 
         this.loadColors();
         this.createPlayers();
-        this.doImpressions();
     }
 
     createPlayers() {
@@ -1076,6 +1075,8 @@ class WeAreWatching {
     preSeasonIntroduction() {
         this.clearTextBox();
         this.printText("Welcome to We Are Watching! The agents are about to meet each other for the first time.");
+
+        this.doImpressions();
     
         // Simulate 20-30 interactions
         for (let i = 0; i < Math.floor(Math.random() * 11) + 20; i++) {
@@ -1086,6 +1087,7 @@ class WeAreWatching {
         
         // Update UI
         this.updateUI();
+        this.updateBottomInfoDisplay()
         
         // Enable the continue button
         document.getElementById('continueBtn').disabled = false;
