@@ -51,38 +51,51 @@ const jobsData = [
 ];
 
 const projectsData = [
-  {
-      title: "Project Name",
-      image: "path/to/project-image.jpg",
-      description: "A brief description of the project.",
-      link: "https://link-to-project.com",
-      technologies: ["Tech1", "Tech2", "Tech3"]
-  },
-  // Add more projects here...
-];
+    {
+      title: "Creatures of Habbitt (Godot Rhythm RPG)",
+      image: "path/to/creatures-of-habbitt-image.jpg",
+      description: "Created a Rhythm RPG using Godot engine (GDScript, which is like Python), demonstrating my ability to quickly learn and apply new technologies.",
+      link: "#",
+      technologies: ["Godot", "GDScript", "Game Development"]
+    },
+    {
+      title: "AI-Powered Application",
+      image: "path/to/ai-application-image.jpg",
+      description: "Developed an AI application using Python and machine learning libraries. This project showcased my skills in AI development and problem-solving.",
+      link: "#",
+      technologies: ["Python", "Machine Learning", "AI"]
+    },
+    {
+      title: "We're Watching (Reality Show Simulator)",
+      image: "path/to/were-watching-image.jpg",
+      description: "Developed a web-based simulator for the fake \"We're Watching\" reality TV show using JavaScript and HTML/CSS. This project demonstrates my skills in web development and game logic implementation.",
+      link: "watching/game.html",
+      technologies: ["JavaScript", "HTML", "CSS", "Web Development"]
+    }
+  ];
 
 function generateJobsHTML() {
-  const projectsContainer = document.getElementById('projects-container');
-  jobsData.forEach(project => {
-      const projectDiv = document.createElement('div');
-      projectDiv.className = 'project';
-      projectDiv.style.backgroundImage = `url('${project.backgroundImage}')`;
+  const jobsContainer = document.getElementById('jobs-container');
+  jobsData.forEach(job => {
+      const jobDiv = document.createElement('div');
+      jobDiv.className = 'job';
+      jobDiv.style.backgroundImage = `url('${job.backgroundImage}')`;
 
-      projectDiv.innerHTML = `
-          <h3 class="project-title">${project.title} <span class="toggle-icon">▼</span></h3>
-          <div class="project-content" style="display: none;">
-              <p>${project.period}</p>
+      jobDiv.innerHTML = `
+          <h3 class="job-title">${job.title} <span class="toggle-icon">▼</span></h3>
+          <div class="job-content" style="display: none;">
+              <p>${job.period}</p>
               <ul>
-                  ${project.responsibilities.map(resp => `<li>${resp}</li>`).join('')}
+                  ${job.responsibilities.map(resp => `<li>${resp}</li>`).join('')}
               </ul>
           </div>
       `;
 
-      projectsContainer.appendChild(projectDiv);
+      jobsContainer.appendChild(jobDiv);
 
       // Add click event listener to the title
-      const title = projectDiv.querySelector('.project-title');
-      const content = projectDiv.querySelector('.project-content');
+      const title = jobDiv.querySelector('.job-title');
+      const content = jobDiv.querySelector('.job-content');
       const icon = title.querySelector('.toggle-icon');
 
       title.addEventListener('click', function(event) {
@@ -153,6 +166,7 @@ document.querySelectorAll('.job').forEach(job => {
 
 document.addEventListener('DOMContentLoaded', function() {
   // Handle individual projects
+  generateJobsHTML();
   generateProjectsHTML();
 
   const nameElement = document.getElementById('myname');
