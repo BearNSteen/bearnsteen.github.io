@@ -1,28 +1,3 @@
-function generateDungeonMap(maxWidth, maxHeight, biome, minWidth = 0, minHeight = 0) {
-    const width = Math.floor(Math.random() * (maxWidth - minWidth + 1)) + minWidth;
-    const height = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
-
-    const dungeonMap = [];
-    for (let y = 0; y < height; y++) {
-        const row = [];
-        for (let x = 0; x < width; x++) {
-            if (Math.random() < 0.7) {
-                row.push(new DungeonRoom(biome, [x, y]));
-            } else {
-                row.push(null);
-            }
-        }
-        dungeonMap.push(row);
-    }
-
-    // Ensure the starting room is not null
-    while (dungeonMap[0][0] === null) {
-        dungeonMap[0][0] = new DungeonRoom(biome, [0, 0]);
-    }
-
-    return dungeonMap;
-}
-
 class Game {
     constructor() {
         this.outputElement = document.getElementById('gameOutput');
@@ -38,7 +13,7 @@ class Game {
 
     init() {
         this.loadCharacters();
-        this.display_output("Welcome to the RPG game! Type '/enter' to start.");
+        this.display_output("Welcome to Dungeon Delver's Guild! Type '/enter' to start.");
         this.initializeEventListeners();
     }
 
@@ -51,89 +26,132 @@ class Game {
     }
 
     processCommand(command) {
-        const [cmd, ...args] = command.split(' ');
-        switch (cmd.toLowerCase()) {
+        const [cmd, ...args] = command.trim().split(' ');
+        const cleanCmd = cmd.toLowerCase();
+    
+        switch (cleanCmd) {
             case '/enter':
+            case 'enter':
                 this.enterGame();
                 break;
             case '/rename':
+            case 'rename':
                 this.renameCharacter(args.join(' '));
                 break;
             case '/retire':
+            case 'retire':
                 this.retire();
                 break;
             case '/explore':
+            case 'explore':
                 this.explore(args[0]);
                 break;
             case '/current_biome':
+            case 'current_biome':
                 this.currentBiome();
                 break;
             case '/show_map':
+            case 'show_map':
                 this.showMap();
                 break;
             case '/go_left':
             case '/move_left':
             case '/left':
+            case 'go_left':
+            case 'move_left':
+            case 'left':
                 this.movePlayer('left');
                 break;
             case '/go_right':
             case '/move_right':
             case '/right':
+            case 'go_right':
+            case 'move_right':
+            case 'right':
                 this.movePlayer('right');
                 break;
             case '/go_up':
             case '/move_up':
             case '/up':
+            case 'go_up':
+            case 'move_up':
+            case 'up':
                 this.movePlayer('up');
                 break;
             case '/go_down':
             case '/move_down':
             case '/down':
+            case 'go_down':
+            case 'move_down':
+            case 'down':
                 this.movePlayer('down');
                 break;
             case '/fight':
+            case 'fight':
                 this.fight(args.join(' '));
                 break;
             case '/character_info':
+            case 'character_info':
                 this.characterInfo();
                 break;
             case '/item':
             case '/pickup':
+            case 'item':
+            case 'pickup':
                 this.item(args.join(' '));
                 break;
-            case '/leave_dungeon':
-                this.leaveDungeon();
+            case '/leave':
+            case 'leave':
+                this.leaveLocation();
                 break;
             case '/list_dungeon_maps':
             case '/dungeons':
+            case 'list_dungeon_maps':
+            case 'dungeons':
                 this.listDungeonMaps(args[0]);
                 break;
+            case '/display_town_map':
+            case 'display_town_map':
+                this.displayTownMap();
+                break;
+            case '/display_dungeon_map':
+            case 'display_dungeon_map':
+                this.displayDungeonMap();
+                break;
+            case '/display_character_info':
+            case 'display_character_info':
+                this.displayCharacterInfo();
+                break;
             case '/upstairs':
+            case 'upstairs':
                 this.goUpstairs();
                 break;
             case '/downstairs':
+            case 'downstairs':
                 this.goDownstairs();
                 break;
             case '/help':
+            case 'help':
                 this.displayHelp();
                 break;
             case '/guild':
+            case 'guild':
                 this.guildInteraction();
                 break;
-            case '/leave':
-                this.leaveLocation();
-                break;
             case '/get_map':
+            case 'get_map':
                 this.getMap();
                 break;
             case '/clear_maps':
+            case 'clear_maps':
                 this.clearDungeonMaps();
                 break;
             case '/show_first_map':
+            case 'show_first_map':
                 this.showFirstMap();
                 break;
             default:
-                this.display_output('Unknown command');
+                this.display_output('Unknown command. Type "/help" for a list of commands.');
         }
         this.draw();
         this.updateRightSide();
@@ -167,7 +185,7 @@ class Game {
         
         // Draw your game state here
         // For example:
-        this.ctx.fillText('RPG Game', 10, 30);
+        this.ctx.fillText('Dungeon Delver\'s Guild', 10, 30);
         
         // If you have a character, draw their info
         if (this.characters[this.currentUserId]) {
@@ -213,19 +231,6 @@ class Game {
         this.display_output("Type '/help' for a list of commands.");
     }
 
-    displayHelp() {
-        const commands = [
-            "/enter - Enter the game",
-            "/rename [name] - Rename your character",
-            "/explore - Explore a dungeon",
-            "/left, /right, /up, /down - Move in a dungeon",
-            "/leave_dungeon - Leave the current dungeon",
-            "/help - Display this help message"
-        ];
-        this.display_output("Available commands:");
-        commands.forEach(cmd => this.display_output(cmd));
-    }
-
     renameCharacter(newName) {
         if (!this.characters[this.currentUserId]) {
             this.display_output('Enter the game first');
@@ -267,34 +272,56 @@ class Game {
             return;
         }
     
-        const dungeonMap = character.dungeonMaps[dungeonIndex - 1];
-        
+        const dungeonData = character.dungeonMaps[dungeonIndex - 1];
+    
+        console.log("Dungeon data:", dungeonData);
+
         // Check if the dungeon map is valid
-        if (!dungeonMap || !Array.isArray(dungeonMap) || dungeonMap.length === 0 || !Array.isArray(dungeonMap[0])) {
+        if (!dungeonData || !dungeonData.map) {
+            console.log("Error: dungeonData or dungeonData.map is undefined");
+            this.display_output("Error: Invalid dungeon map structure.");
+            return;
+        }
+
+        if (!Array.isArray(dungeonData.map)) {
+            console.log("Error: dungeonData.map is not an array");
+            this.display_output("Error: Invalid dungeon map structure.");
+            return;
+        }
+
+        if (dungeonData.map.length === 0) {
+            console.log("Error: dungeonData.map is an empty array");
+            this.display_output("Error: Invalid dungeon map structure.");
+            return;
+        }
+
+        if (!Array.isArray(dungeonData.map[0])) {
+            console.log("Error: First row of dungeonData.map is not an array");
             this.display_output("Error: Invalid dungeon map structure.");
             return;
         }
     
+        const [startX, startY] = dungeonData.startPosition;
         this.dungeonMaps[userId] = {
-            map: dungeonMap,
-            position: [0, 0],
-            visitedRooms: new Set(['0,0'])
+            map: dungeonData.map,
+            position: [startX, startY],
+            visitedRooms: new Set([`${startX},${startY}`])
         };
-
-        this.addAdjacentWallsToVisited(this.dungeonMaps[userId], 0, 0);
     
-        const currentRoom = dungeonMap[0][0];
+        this.addAdjacentWallsToVisited(this.dungeonMaps[userId], startX, startY);
+    
+        const currentRoom = dungeonData.map[startY][startX];
         
         if (!currentRoom) {
             this.display_output("Error: Starting room is not defined.");
-            console.log("Dungeon map:", dungeonMap);
+            console.log("Dungeon map:", dungeonData.map);
             return;
         }
     
         character.location = currentRoom.biome;
         this.saveCharacters();
     
-        let roomInfo = `You are currently in a ${currentRoom.biome}. ${currentRoom.description}`;
+        let roomInfo = `You enter the dungeon and find yourself in a ${currentRoom.biome}. ${currentRoom.description}`;
         if (currentRoom.enemies && currentRoom.enemies.length > 0) {
             const enemyInfo = "Enemies: " + currentRoom.enemies.map((enemy, i) => `[${i+1}] ${enemy}`).join(", ");
             roomInfo += "\n" + enemyInfo;
@@ -422,15 +449,28 @@ class Game {
         }
     
         const character = this.characters[userId];
-        if (character.location === "guild_lobby") {
+    
+        if (this.dungeonMaps[userId]) {
+            // Leaving a dungeon
+            delete this.dungeonMaps[userId];
+            character.location = 'Town';
+            this.saveCharacters();
+            this.display_output('You have left the dungeon and returned to town.');
+        } else if (character.location === "guild_lobby") {
             character.location = "Town";
             this.saveCharacters();
             this.display_output("You leave the guild and return to town.");
         } else if (character.location === "Town") {
             this.display_output("You are already in town.");
+        } else if (character.location.startsWith("inn_")) {
+            character.location = "Town";
+            this.saveCharacters();
+            this.display_output("You leave the inn and return to town.");
         } else {
             // Handle other locations as needed
-            this.display_output("You can't leave your current location.");
+            character.location = "Town";
+            this.saveCharacters();
+            this.display_output(`You leave your current location and return to town.`);
         }
     }
 
@@ -741,31 +781,73 @@ Inventory: ${character.inventory.join(', ') || 'Empty'}
         localStorage.setItem('characters', JSON.stringify(this.characters));
     }
     
-    generateDungeonMap(maxWidth, maxHeight, biome, minWidth = 0, minHeight = 0) {
-        const width = Math.floor(Math.random() * (maxWidth - minWidth + 1)) + minWidth;
-        const height = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+    generateDungeonMap(maxWidth, maxHeight, minWidth = 1, minHeight = 1) {
+        console.log(`Input parameters: maxWidth=${maxWidth}, maxHeight=${maxHeight}, minWidth=${minWidth}, minHeight=${minHeight}`);
+    
+        // Ensure all parameters are numbers and at least 1
+        maxWidth = Math.max(1, Number(maxWidth) || 1);
+        maxHeight = Math.max(1, Number(maxHeight) || 1);
+        minWidth = Math.max(1, Number(minWidth) || 1);
+        minHeight = Math.max(1, Number(minHeight) || 1);
+    
+        console.log(`Adjusted parameters: maxWidth=${maxWidth}, maxHeight=${maxHeight}, minWidth=${minWidth}, minHeight=${minHeight}`);
+    
+        const possibleBiomes = Object.keys(ITEMS);
+        const biome = possibleBiomes[Math.floor(Math.random() * possibleBiomes.length)];
+    
+        console.log(`Selected biome: ${biome}`);
+    
+        // Calculate dimensions
+        const widthRange = maxWidth - minWidth + 1;
+        const heightRange = maxHeight - minHeight + 1;
         
+        console.log(`Width range: ${widthRange}, Height range: ${heightRange}`);
+    
+        const width = widthRange > 0 ? Math.floor(Math.random() * widthRange) + minWidth : minWidth;
+        const height = heightRange > 0 ? Math.floor(Math.random() * heightRange) + minHeight : minHeight;
+    
+        console.log(`Calculated dimensions: ${width}x${height}`);
+    
         const dungeonMap = [];
         for (let y = 0; y < height; y++) {
             const row = [];
             for (let x = 0; x < width; x++) {
                 if (Math.random() < 0.7) {  // 70% chance of generating a room
-                    const position = [x, y];
-                    const room = new DungeonRoom(biome, position);
-                    row.push(room);
+                    row.push(new DungeonRoom(biome, [x, y]));
                 } else {
                     row.push(null);  // No room at this position
                 }
             }
             dungeonMap.push(row);
         }
-        
-        // Ensure the starting room is not null
-        while (dungeonMap[0][0] === null) {
-            dungeonMap[0][0] = new DungeonRoom(biome, [0, 0]);
+    
+        // Find a valid starting room
+        let startingRoom = null;
+        let startX = 0, startY = 0;
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                if (dungeonMap[y][x] !== null) {
+                    startingRoom = dungeonMap[y][x];
+                    startX = x;
+                    startY = y;
+                    break;
+                }
+            }
+            if (startingRoom) break;
         }
-        
-        return dungeonMap;
+    
+        // If no valid room was found, create one
+        if (!startingRoom) {
+            startX = Math.floor(Math.random() * width);
+            startY = Math.floor(Math.random() * height);
+            startingRoom = new DungeonRoom(biome, [startX, startY]);
+            dungeonMap[startY][startX] = startingRoom;
+        }
+    
+        console.log(`Final starting room position: [${startX}, ${startY}]`);
+        console.log(`Final starting room biome: ${startingRoom.biome}`);
+    
+        return { map: dungeonMap, startPosition: [startX, startY] };
     }
     
     getMap() {
@@ -784,15 +866,15 @@ Inventory: ${character.inventory.join(', ') || 'Empty'}
         const width = 5;  // Set the width of the dungeon
         const height = 5;  // Set the height of the dungeon
         const biome = DUNGEON_BIOMES[Math.floor(Math.random() * DUNGEON_BIOMES.length)];
-        const dungeonMap = this.generateDungeonMap(width, height, biome);
+        const dungeonData = this.generateDungeonMap(width, height, biome);
     
-        console.log("New dungeon map generated:", dungeonMap);
-        console.log("Starting room of new map:", dungeonMap[0][0]);
+        console.log("New dungeon map generated:", dungeonData);
+        console.log("Starting room of new map:", dungeonData.map[dungeonData.startPosition[1]][dungeonData.startPosition[0]]);
     
         if (!character.dungeonMaps) {
             character.dungeonMaps = [];
         }
-        character.dungeonMaps.push(dungeonMap);
+        character.dungeonMaps.push(dungeonData);
         this.saveCharacters();
         this.display_output(`You received a new dungeon map for a ${biome} dungeon.`);
     }
@@ -904,6 +986,34 @@ Inventory: ${character.inventory.join(', ') || 'Empty'}
     
         // Debug information
         console.log("First map structure:", JSON.stringify(firstMap, null, 2));
+    }
+
+    currentBiome() {
+        const userId = this.currentUserId;
+        if (!this.characters[userId]) {
+            this.display_output("You are not currently connected. Try /enter.");
+            return;
+        }
+    
+        const character = this.characters[userId];
+        
+        if (this.dungeonMaps[userId]) {
+            const [x, y] = this.dungeonMaps[userId].position;
+            const currentRoom = this.dungeonMaps[userId].map[y][x];
+            if (currentRoom) {
+                this.display_output(`You are currently in a ${currentRoom.biome} biome.`);
+            } else {
+                this.display_output("You are in an undefined area of the dungeon.");
+            }
+        } else if (character.location === "Town") {
+            this.display_output("You are currently in the town. There is no specific biome here.");
+        } else if (character.location === "guild_lobby") {
+            this.display_output("You are in the guild lobby. There is no specific biome here.");
+        } else if (character.location.startsWith("inn_")) {
+            this.display_output("You are in the inn. There is no specific biome here.");
+        } else {
+            this.display_output(`You are in ${character.location}. The biome is undefined for this location.`);
+        }
     }
 }
 

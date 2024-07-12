@@ -15,12 +15,10 @@
         <div class="navbar-left">
             <a href="#" class="navbar-item">
                 <img src="images/home.png" alt="Home" class="navbar-logo">
-                <span>Home</span>
             </a>
             <div class="dropdown">
                 <button class="dropbtn navbar-item">
-                    <img src="images/wearewatchinglogo_navbar.png" alt="WAW" class="navbar-logo">
-                    <span>We Are Watching</span>
+                    <img src="images/wearewatchinglogo_navbar.png" alt="We Are Watching" class="navbar-logo">
                 </button>
                 <div class="dropdown-content">
                     <a href="#" class="dropdown-header" disabled>We Are Watching</a>
@@ -30,8 +28,7 @@
             </div>
             <div class="dropdown">
                 <button class="dropbtn navbar-item">
-                    <img src="images/bearlogo_navbar.png" alt="COH" class="navbar-logo">
-                    <span>Creatures of Habbitt</span>
+                    <img src="images/bearlogo_navbar.png" alt="Creatures of Habbitt" class="navbar-logo">
                 </button>
                 <div class="dropdown-content">
                     <a href="#" class="dropdown-header" disabled>Creatures of Habbitt</a>
@@ -41,12 +38,11 @@
             </div>
             <div class="dropdown">
                 <button class="dropbtn navbar-item">
-                    <img src="images/rpg_navbar.png" alt="RPG" class="navbar-logo">
-                    <span>RPG</span>
+                    <img src="images/rpg_navbar.png" alt="DDG" class="navbar-logo">
                 </button>
                 <div class="dropdown-content">
-                    <a href="#" class="dropdown-header" disabled>RPG</a>
-                    <a href="text-rpg/index.html" target="_blank">Play</a>
+                    <a href="#" class="dropdown-header" disabled>Dungeon Delvers Guild</a>
+                    <a href="ddg/index.html" target="_blank">Play</a>
                 </div>
             </div>
         </div>
@@ -213,20 +209,20 @@
             <div class="additional-experience">
                 <span>+4 more</span>
                 <div class="job-list">
-                    <div class="job" title="Freelance Web Developer">
-                        <img src="images/web-dev-icon.png" alt="Web Developer">
+                    <div class="addjob" title="Freelance Web Developer">
+                        <img src="images/bp.png" alt="Web Developer">
                         <span>Web Dev</span>
                     </div>
-                    <div class="job" title="Ballpark Suite Caterer">
-                        <img src="images/caterer-icon.png" alt="Caterer">
-                        <span>Caterer</span>
+                    <div class="addjob" title="Ballpark Suite Caterer">
+                        <img src="images/rivercats-logo.png" alt="Rivercats">
+                        <span>Private Club Caterer</span>
                     </div>
-                    <div class="job" title="ASD Therapist">
-                        <img src="images/therapist-icon.png" alt="Therapist">
+                    <div class="addjob" title="ASD Therapist">
+                        <img src="images/therapy-icon.png" alt="Therapist">
                         <span>Therapist</span>
                     </div>
-                    <div class="job" title="Lead Caterer / Lead Concessions">
-                        <img src="images/lead-caterer-icon.png" alt="Lead Caterer">
+                    <div class="addjob" title="Lead Caterer / Lead Concessions">
+                        <img src="images/csus-logo.png" alt="Lead Caterer">
                         <span>Lead Caterer</span>
                     </div>
                 </div>
@@ -253,44 +249,6 @@
         </div>
         </section>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-        const expandableSections = document.querySelectorAll('.section.expandable');
-        
-        expandableSections.forEach(section => {
-            const title = section.querySelector('.section-title');
-            const content = section.querySelector('.section-content');
-            const icon = title.querySelector('.toggle-icon');
-            
-            title.addEventListener('click', () => {
-                content.style.display = content.style.display === 'none' ? 'block' : 'none';
-                icon.textContent = content.style.display === 'none' ? '▼' : '▲';
-            });
-
-            /// Start with sections collapsed
-            content.style.display = 'none';
-            icon.textContent = '▼';
-        });
-
-        const expandableProjects = document.querySelectorAll('.project.expandable');
-        
-        expandableProjects.forEach(project => {
-            const title = project.querySelector('.project-title');
-            const content = project.querySelector('.project-content');
-            const icon = title.querySelector('.toggle-icon');
-
-            title.addEventListener('click', (event) => {
-                event.stopPropagation(); // Prevent triggering parent section's click event
-                content.style.display = content.style.display === 'none' ? 'block' : 'none';
-                icon.textContent = content.style.display === 'none' ? '▼' : '▲';
-            });
-
-            // Start with project content collapsed
-            content.style.display = 'none';
-            icon.textContent = '▼';
-        });
-    });
-    </script>
     <script src="index.js"></script>
 </body>
 </html>

@@ -110,17 +110,20 @@ function generateProjectsHTML() {
   const projectsContainer = document.getElementById('projects-container');
   projectsData.forEach(project => {
       const projectDiv = document.createElement('div');
-      projectDiv.className = 'project';
+      projectDiv.className = 'project expandable';
 
       projectDiv.innerHTML = `
           <h3 class="project-title">${project.title} <span class="toggle-icon">▼</span></h3>
           <div class="project-content" style="display: none;">
               <img src="${project.image}" alt="${project.title}" class="project-image">
               <p class="project-description">${project.description}</p>
-              <a href="${project.link}" target="_blank" class="project-link">View Project</a>
               <div class="project-technologies">
-                  ${project.technologies.map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
+                  <h4>Technologies Used:</h4>
+                  <div class="tech-tags">
+                      ${project.technologies.map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
+                  </div>
               </div>
+              <a href="${project.link}" target="_blank" class="project-link">View Project</a>
           </div>
       `;
 
@@ -165,13 +168,10 @@ document.querySelectorAll('.job').forEach(job => {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Handle individual projects
-  generateJobsHTML();
-  generateProjectsHTML();
 
   const nameElement = document.getElementById('myname');
   if (nameElement && nameElement.textContent === 'Redacted') {
-      nameElement.textContent = 'Dan Glendon';
+      nameElement.textContent = 'Name';
   }
 
   const banner = document.getElementById('constructionBanner');
@@ -186,4 +186,39 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('contact-github').textContent = sensitiveInfo.contactGitHub;
   generateJobsHTML();
   generateProjectsHTML();
+
+  const expandableSections = document.querySelectorAll('.section.expandable');
+        
+  expandableSections.forEach(section => {
+      const title = section.querySelector('.section-title');
+      const content = section.querySelector('.section-content');
+      const icon = title.querySelector('.toggle-icon');
+      
+      title.addEventListener('click', () => {
+          content.style.display = content.style.display === 'none' ? 'block' : 'none';
+          icon.textContent = content.style.display === 'none' ? '▼' : '▲';
+      });
+
+      /// Start with sections collapsed
+      content.style.display = 'none';
+      icon.textContent = '▼';
+  });
+
+  const expandableProjects = document.querySelectorAll('.project.expandable');
+  
+  expandableProjects.forEach(project => {
+      const title = project.querySelector('.project-title');
+      const content = project.querySelector('.project-content');
+      const icon = title.querySelector('.toggle-icon');
+
+      title.addEventListener('click', (event) => {
+          event.stopPropagation(); // Prevent triggering parent section's click event
+          content.style.display = content.style.display === 'none' ? 'block' : 'none';
+          icon.textContent = content.style.display === 'none' ? '▼' : '▲';
+      });
+
+      // Start with project content collapsed
+      content.style.display = 'none';
+      icon.textContent = '▼';
+  });
 });
