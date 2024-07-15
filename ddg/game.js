@@ -13,26 +13,50 @@ class Game {
 
     init() {
         this.loadCharacters();
-        this.display_output("Welcome to Dungeon Delver's Guild! Type '/enter' to start.");
+        if (this.characters[this.currentUserId]) {
+            this.enterGame(true);
+        } else {
+            this.display_output("Welcome to Dungeon Delver's Guild! Type '/enter [character name]' to start.");
+        }
         this.initializeEventListeners();
+        this.updateActionButtons();
     }
 
     display_output(message, rightSide = false) {
-        const outputElement = rightSide ? document.getElementById('rightOutput') : document.getElementById('gameOutput');
+        let outputElement;
+        if (rightSide) {
+            outputElement = document.getElementById('mapOutput');  // or 'legendOutput', depending on your preference
+        } else {
+            outputElement = document.getElementById('gameOutput');
+        }
+        
+        if (!outputElement) {
+            console.error(`Output element not found: ${rightSide ? 'mapOutput' : 'gameOutput'}`);
+            return;
+        }
+        
         const newMessage = document.createElement('div');
-        newMessage.textContent = message;
+        newMessage.innerHTML = message;
         outputElement.appendChild(newMessage);
         outputElement.scrollTop = outputElement.scrollHeight;
     }
 
+    formatPlayerName(name) {
+        return `<span style="color: #FFD700; font-weight: bold;">${name}</span>`;
+    }
+
     processCommand(command) {
+        document.getElementById('gameOutput').innerHTML = '';
+        document.getElementById('mapOutput').innerHTML = '';
+        document.getElementById('legendOutput').innerHTML = '';
         const [cmd, ...args] = command.trim().split(' ');
         const cleanCmd = cmd.toLowerCase();
     
         switch (cleanCmd) {
             case '/enter':
             case 'enter':
-                this.enterGame();
+                const name = args.join(' ').trim();
+                this.enterGame(false, name);
                 break;
             case '/rename':
             case 'rename':
@@ -92,7 +116,7 @@ class Game {
                 break;
             case '/character_info':
             case 'character_info':
-                this.characterInfo();
+                this.displayCharacterInfo();
                 break;
             case '/item':
             case '/pickup':
@@ -121,6 +145,10 @@ class Game {
             case '/display_character_info':
             case 'display_character_info':
                 this.displayCharacterInfo();
+                break;
+            case '/inn':
+            case 'inn':
+                this.innInteraction();
                 break;
             case '/upstairs':
             case 'upstairs':
@@ -155,6 +183,7 @@ class Game {
         }
         this.draw();
         this.updateRightSide();
+        this.updateActionButtons();
     }
 
     loadCharacters() {
@@ -183,17 +212,19 @@ class Game {
         this.ctx.fillStyle = '#ffffff';
         this.ctx.font = '16px VCR';
         
-        // Draw your game state here
-        // For example:
-        this.ctx.fillText('Dungeon Delver\'s Guild', 10, 30);
-        
         // If you have a character, draw their info
         if (this.characters[this.currentUserId]) {
             const character = this.characters[this.currentUserId];
-            this.ctx.fillText(`Name: ${character.name}`, 10, 60);
-            this.ctx.fillText(`Level: ${character.level}`, 10, 90);
-            this.ctx.fillText(`HP: ${character.hp}`, 10, 120);
-            this.ctx.fillText(`Location: ${character.location}`, 10, 150);
+            this.ctx.fillText(`Name: ${character.name}`, 10, 30);
+            this.ctx.fillText(`Level: ${character.level}`, 10, 60);
+            this.ctx.fillText(`Location: ${character.location}`, 10, 90);
+    
+            // Only show HP if the character is in a dungeon
+            if (this.dungeonMaps[this.currentUserId]) {
+                this.ctx.fillText(`HP: ${character.hp}`, 10, 120);
+            }
+        } else {
+            this.ctx.fillText('No character created yet', 10, 30);
         }
     }
 
@@ -215,20 +246,35 @@ class Game {
         }
     }
 
-    enterGame() {
-        if (!this.characters[this.currentUserId]) {
-            this.characters[this.currentUserId] = new Character(this.currentUserId, 'NewPlayer', 1, 100, 50, 10, 10, 10);
-            this.display_output("Welcome, new player! You've entered the game.");
+    enterGame(autoEnter = false, newName = '') {
+        if (this.characters[this.currentUserId]) {
+            // Player already has a character
+            if (!autoEnter) {
+                this.display_output("You are already logged in.");
+                return;
+            }
+            // If it's an auto-enter (initial login), display the welcome message
+            this.display_output(`Welcome back, ${this.formatPlayerName(this.characters[this.currentUserId].name)}!`);
         } else {
-            this.display_output(`Welcome back, ${this.characters[this.currentUserId].name}!`);
+            // New player
+            if (!newName) {
+                this.display_output("Please enter a name for your character. Usage: /enter [character name]");
+                return;
+            }
+            this.characters[this.currentUserId] = new Character(this.currentUserId, newName, 1, 100, 50, 10, 10, 10);
+            this.display_output(`Welcome, ${this.formatPlayerName(newName)}! You've entered the game.`);
         }
     
-        // Always set the character's location to "Town" when entering the game
+        // Set the character's location to "Town" when entering the game
         this.characters[this.currentUserId].location = "Town";
         this.saveCharacters();
     
         this.display_output("You find yourself in the town square.");
         this.display_output("Type '/help' for a list of commands.");
+    
+        // Update all relevant displays
+        this.draw();
+        this.updateRightSide();
     }
 
     renameCharacter(newName) {
@@ -243,9 +289,11 @@ class Game {
         }
     
         newName = newName.trim();
+        const oldName = this.characters[this.currentUserId].name;
         this.characters[this.currentUserId].name = newName;
         this.saveCharacters();
-        this.display_output(`You have renamed your character to ${newName}.`);
+        this.display_output(`You have renamed your character from ${this.formatPlayerName(oldName)} to ${this.formatPlayerName(newName)}.`);
+
     }
 
     explore(dungeonIndex) {
@@ -474,6 +522,70 @@ class Game {
         }
     }
 
+    innInteraction() {
+        const userId = this.currentUserId;
+        if (!this.characters[userId]) {
+            this.display_output("You are not currently connected. Try /enter.");
+            return;
+        }
+    
+        const character = this.characters[userId];
+        
+        if (character.location.startsWith("inn_")) {
+            this.display_output("You are already in the inn.");
+            if (character.location === "inn_bar") {
+                this.display_output("You are in the bar area.");
+            } else if (character.location === "inn_rooms") {
+                this.display_output("You are on the second floor.");
+            }
+            return;
+        }
+    
+        if (character.location !== "Town") {
+            this.display_output("You can only enter the inn while in town.");
+            return;
+        }
+    
+        this.display_output("You enter the inn. The innkeeper greets you warmly.");
+        character.location = "inn_bar";
+        this.saveCharacters();
+        this.display_output("You are now in the bar area.");
+    }
+
+    goUpstairs() {
+        const userId = this.currentUserId;
+        if (!this.characters[userId]) {
+            this.display_output("You are not currently connected. Try /enter.");
+            return;
+        }
+
+        const character = this.characters[userId];
+        if (character.location === "inn_bar") {
+            character.location = "inn_rooms";
+            this.saveCharacters();
+            this.display_output("You go upstairs to the second floor of the inn.");
+        } else {
+            this.display_output("You are not in the inn or already on the second floor.");
+        }
+    }
+
+    goDownstairs() {
+        const userId = this.currentUserId;
+        if (!this.characters[userId]) {
+            this.display_output("You are not currently connected. Try /enter.");
+            return;
+        }
+
+        const character = this.characters[userId];
+        if (character.location === "inn_rooms") {
+            character.location = "inn_bar";
+            this.saveCharacters();
+            this.display_output("You go downstairs to the first floor of the inn.");
+        } else {
+            this.display_output("You are not on the second floor of the inn.");
+        }
+    }
+
     initializeEventListeners() {
         const input = document.getElementById('commandInput');
         const button = document.getElementById('submitButton');
@@ -589,22 +701,19 @@ class Game {
             legendOutput.textContent = "Inn Rooms Legend:\nR1-R10: Rooms";
         } else if (character.location === "guild_lobby") {
             const guildLobbyMap = `
-            ┌─────────────────────────────┐
-            │  ┌─┐               ┌─┐      │
-            │  │N│     ┌───┐     │B│      │
-            │  └─┘     │   │     └─┘      │
-            │          │   │              │
-            │    ╔═════╧═══╧═════╗        │
-            │    ║      R      ◊║        │
-            │    ╚═══════════════╝        │
-            │                             │
-            │  ┌───────┐       ┌───────┐  │
-            │  │   S   │       │   Q   │  │
-            │  │       │       │       │  │
-            └──┴───────┴═══════┴───────┴──┘
-            
-            /get_map - Receive dungeon map
-            /leave - Return to town
+    ┌─────────────────────────────┐
+    │  ┌─┐               ┌─┐      │
+    │  │N│     ┌───┐     │B│      │
+    │  └─┘     │   │     └─┘      │
+    │          │   │              │
+    │    ╔═════╧═══╧═════╗        │
+    │    ║      R      ◊║        │
+    │    ╚═══════════════╝        │
+    │                             │
+    │  ┌───────┐       ┌───────┐  │
+    │  │   S   │       │   Q   │  │
+    │  │       │       │       │  │
+    └──┴───────┴═══════┴───────┴──┘
             `;
             mapOutput.textContent = guildLobbyMap;
             legendOutput.textContent = "Guild Lobby Legend:\nN: Notice Board\nB: Bounty Board\nR: Reception Counter\n◊: Receptionist\nS: Guild Store\nQ: Quest Board\n/get_map: Receive dungeon map\n/leave: Return to town";
@@ -672,23 +781,87 @@ class Game {
     }
 
     displayDungeonMap() {
-        // Implement dungeon map display logic
-        this.rightOutputElement.textContent = 'Dungeon Map Here';
+        const dungeonData = this.dungeonMaps[this.currentUserId];
+        if (!dungeonData) {
+            this.display_output("You are not in a dungeon.");
+            return;
+        }
+    
+        const { map, position, visitedRooms } = dungeonData;
+        let mapStr = "<div class='dungeon-map'><table>";
+    
+        for (let y = 0; y < map.length; y++) {
+            mapStr += "<tr>";
+            for (let x = 0; x < map[0].length; x++) {
+                let cellClass = "unknown";
+                let cellContent = "&nbsp;";
+    
+                if (x === position[0] && y === position[1]) {
+                    cellClass = "player";
+                    cellContent = "P";
+                } else if (visitedRooms.has(`${x},${y}`)) {
+                    const room = map[y][x];
+                    if (room !== null) {
+                        cellClass = "visited";
+                        if (room.loot.length > 0) cellClass += " loot";
+                        if (room.enemies.length > 0) cellClass += " enemy";
+                    } else {
+                        cellClass = "wall";
+                    }
+                } else if (
+                    (Math.abs(x - position[0]) === 1 && y === position[1]) ||
+                    (Math.abs(y - position[1]) === 1 && x === position[0])
+                ) {
+                    cellClass = "adjacent";
+                    cellContent = "?";
+                }
+    
+                mapStr += `<td class="${cellClass}">${cellContent}</td>`;
+            }
+            mapStr += "</tr>";
+        }
+    
+        mapStr += "</table></div>";
+        mapStr += `
+            <div class="map-legend">
+                <h4>Legend</h4>
+                <ul>
+                    <li><span class="legend-item player"></span> Player</li>
+                    <li><span class="legend-item visited"></span> Visited Room</li>
+                    <li><span class="legend-item loot"></span> Room with Loot</li>
+                    <li><span class="legend-item enemy"></span> Room with Enemy</li>
+                    <li><span class="legend-item adjacent"></span> Adjacent Room</li>
+                    <li><span class="legend-item wall"></span> Wall</li>
+                    <li><span class="legend-item unknown"></span> Unknown</li>
+                </ul>
+            </div>
+        `;
+    
+        this.display_output(mapStr);
     }
 
     displayCharacterInfo() {
         const character = this.characters[this.currentUserId];
-        this.rightOutputElement.textContent = `
-Character: ${character.name}
-Level: ${character.level}
-HP: ${character.hp}
-MP: ${character.mp}
-STR: ${character.strength}
-DEX: ${character.dexterity}
-INT: ${character.intelligence}
-
-Inventory: ${character.inventory.join(', ') || 'Empty'}
+        const info = `
+        <div class="character-info">
+            <h3>${this.formatPlayerName(character.name)}</h3>
+            <div class="info-grid">
+                <div class="info-item"><span>Level:</span> ${character.level}</div>
+                <div class="info-item"><span>HP:</span> ${character.hp}</div>
+                <div class="info-item"><span>MP:</span> ${character.mp}</div>
+                <div class="info-item"><span>STR:</span> ${character.strength}</div>
+                <div class="info-item"><span>DEX:</span> ${character.dexterity}</div>
+                <div class="info-item"><span>INT:</span> ${character.intelligence}</div>
+            </div>
+            <div class="inventory">
+                <h4>Inventory</h4>
+                <ul>
+                    ${character.inventory.map(item => `<li>${item}</li>`).join('') || '<li>Empty</li>'}
+                </ul>
+            </div>
+        </div>
         `;
+        this.display_output(info);
     }
 
     listDungeonMaps(biomeFilter = null) {
@@ -754,27 +927,52 @@ Inventory: ${character.inventory.join(', ') || 'Empty'}
     }
     
     displayHelp() {
-        const commands = [
-            "/enter - Enter the game",
-            "/rename [name] - Rename your character",
-            "/retire - Retire your character and disconnect",
-            "/explore [dungeon_index] - Explore a dungeon",
-            "/list_dungeon_maps [biome] - List available dungeon maps",
-            "/current_biome - Show current biome",
-            "/show_map - Display the current dungeon map",
-            "/left, /right, /up, /down - Move in the dungeon",
-            "/fight [enemy] - Fight an enemy",
-            "/character_info - Display character information",
-            "/item [item_number] - Pick up an item",
-            "/leave_dungeon - Leave the current dungeon",
-            "/inn - Enter the inn",
-            "/upstairs - Go upstairs in the inn",
-            "/downstairs - Go downstairs in the inn",
-            "/guild - Enter the guild",
-            "/get_map - Get a new dungeon map from the guild",
-            "/help - Display this help message"
-        ];
-        this.display_output("Available commands:\n" + commands.join("\n"));
+        const commandGroups = {
+            "Character Management": [
+                ["/enter [name]", "Enter the game with a new character name"],
+                ["/rename [name]", "Rename your character"],
+                ["/retire", "Retire your character and disconnect"],
+                ["/character_info", "Display character information"]
+            ],
+            "Navigation": [
+                ["/inn", "Enter the inn"],
+                ["/upstairs", "Go upstairs in the inn"],
+                ["/downstairs", "Go downstairs in the inn"],
+                ["/guild", "Enter the guild"],
+                ["/leave", "Leave the current location"]
+            ],
+            "Dungeon Exploration": [
+                ["/explore [dungeon_index]", "Explore a dungeon"],
+                ["/list_dungeon_maps [biome]", "List available dungeon maps"],
+                ["/current_biome", "Show current biome"],
+                ["/show_map", "Display the current dungeon map"],
+                ["/left, /right, /up, /down", "Move in the dungeon"],
+                ["/fight [enemy]", "Fight an enemy"],
+                ["/item [item_number]", "Pick up an item"]
+            ],
+            "Guild Actions": [
+                ["/get_map", "Get a new dungeon map from the guild"]
+            ],
+            "Miscellaneous": [
+                ["/help", "Display this help message"]
+            ]
+        };
+    
+        let helpMessage = "<div class='help-container'>";
+    
+        for (const [category, commands] of Object.entries(commandGroups)) {
+            helpMessage += `<div class='help-category'>
+                <h3>${category}</h3>
+                <ul>`;
+            for (const [command, description] of commands) {
+                helpMessage += `<li><span class='command'>${command}</span> - ${description}</li>`;
+            }
+            helpMessage += `</ul></div>`;
+        }
+    
+        helpMessage += "</div>";
+    
+        this.display_output(helpMessage);
     }
 
     saveCharacters() {
@@ -887,15 +1085,20 @@ Inventory: ${character.inventory.join(', ') || 'Empty'}
         }
     
         const character = this.characters[userId];
+    
+        if (character.location === "guild_lobby") {
+            this.display_output("You are already in the guild lobby.");
+            return;
+        }
+    
         if (character.location !== "Town") {
-            this.display_output("You are not in town. You can only interact with the guild while in town.");
+            this.display_output("You can only enter the guild while in town.");
             return;
         }
     
         this.display_output("You enter the guild. The receptionist greets you.");
         character.location = "guild_lobby";
         this.saveCharacters();
-        this.display_output("Available actions:\n/get_map - Generate a new dungeon map\n/leave - Return to town");
     }
 
     getMap() {
@@ -1014,6 +1217,113 @@ Inventory: ${character.inventory.join(', ') || 'Empty'}
         } else {
             this.display_output(`You are in ${character.location}. The biome is undefined for this location.`);
         }
+    }
+
+    updateActionButtons() {
+        const actionButtonsContainer = document.getElementById('actionButtons');
+        actionButtonsContainer.innerHTML = ''; // Clear existing buttons
+    
+        const character = this.characters[this.currentUserId];
+        if (!character) return;
+    
+        if (this.dungeonMaps[this.currentUserId]) {
+            // Create D-pad
+            this.createDPad(actionButtonsContainer);
+    
+            // Create fight button and input
+            this.createActionWithInput(actionButtonsContainer, 'fight', 'enemy number');
+    
+            // Create item button and input
+            this.createActionWithInput(actionButtonsContainer, 'item', 'item number');
+    
+            // Add character_info button
+            this.createActionButton(actionButtonsContainer, 'character_info');
+    
+            // Add help button
+            this.createActionButton(actionButtonsContainer, 'help');
+    
+            // Add leave button
+            this.createActionButton(actionButtonsContainer, 'leave');
+        } else {
+            let availableActions = [];
+    
+            switch (character.location) {
+                case 'Town':
+                    availableActions = ['inn', 'guild', {name: 'explore', params: ['map_number']}, 'character_info', 'help'];
+                    break;
+                case 'guild_lobby':
+                    availableActions = ['get_map', 'leave', 'character_info', 'help'];
+                    break;
+                case 'inn_bar':
+                    availableActions = ['upstairs', 'leave', 'character_info', 'help'];
+                    break;
+                case 'inn_rooms':
+                    availableActions = ['downstairs', 'leave', 'character_info', 'help'];
+                    break;
+                default:
+                    availableActions = ['character_info', 'help'];
+            }
+    
+            availableActions.forEach(action => {
+                if (typeof action === 'string') {
+                    this.createActionButton(actionButtonsContainer, action);
+                } else {
+                    this.createActionWithInput(actionButtonsContainer, action.name, action.params[0]);
+                }
+            });
+        }
+    }
+    
+    createActionButton(container, action) {
+        const button = document.createElement('button');
+        button.textContent = action.replace('_', ' ');
+        button.className = 'actionButton';
+        button.onclick = () => this.processCommand(action);
+        container.appendChild(button);
+    }
+    
+    createActionWithInput(container, action, placeholder) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'actionButtonContainer';
+    
+        const button = document.createElement('button');
+        button.textContent = action.replace('_', ' ');
+        button.className = 'actionButton';
+    
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = placeholder;
+        input.className = 'actionInput';
+    
+        button.onclick = () => {
+            this.processCommand(`${action} ${input.value.trim()}`);
+        };
+    
+        wrapper.appendChild(button);
+        wrapper.appendChild(input);
+        container.appendChild(wrapper);
+    }
+    
+    createDPad(container) {
+        const dpadContainer = document.createElement('div');
+        dpadContainer.className = 'dpad-container';
+    
+        const directions = [
+            { name: 'up', label: '↑' },
+            { name: 'left', label: '←' },
+            { name: 'right', label: '→' },
+            { name: 'down', label: '↓' }
+        ];
+    
+        directions.forEach(dir => {
+            const button = document.createElement('button');
+            button.textContent = dir.label;
+            button.className = `dpad-button dpad-${dir.name} actionButton`;
+            button.onclick = () => this.processCommand(dir.name);
+            dpadContainer.appendChild(button);
+        });
+    
+        container.appendChild(dpadContainer);
     }
 }
 

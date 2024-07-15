@@ -50,17 +50,23 @@
             <img src="../images/github-mark.png" alt="GitHub" class="github-logo">
         </a>
     </div>
-    <div id="gameContainer">
-        <div id="gameOutput"></div>
-        <canvas id="gameCanvas" width="800" height="200"></canvas>
-        <div id="rightPanel">
-            <div id="mapOutput"></div>
-            <div id="legendOutput"></div>
+    <div id="gameLayout">
+        <div id="gameContainer">
+            <div id="gameOutput"></div>
+            <canvas id="gameCanvas" width="800" height="200"></canvas>
+            <div id="bottomPanel">
+                <div id="mapOutput"></div>
+                <div id="legendOutput"></div>
+            </div>
         </div>
-        <div>
-            <input type="text" id="commandInput" placeholder="Enter command">
-            <button id="submitButton">Submit</button>
+        <div id="actionButtonsPanel">
+            <h3>Actions</h3>
+            <div id="actionButtons"></div>
         </div>
+    </div>
+    <div id="inputContainer">
+        <input type="text" id="commandInput" placeholder="Enter command">
+        <button id="submitButton">Submit</button>
     </div>
     <script src="constants.js"></script>
     <script src="items.js"></script>
