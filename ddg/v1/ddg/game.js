@@ -6,8 +6,6 @@ class Game {
     constructor() {
         this.outputElement = document.getElementById('gameOutput');
         this.rightOutputElement = document.getElementById('rightOutput');
-        this.mapCanvas = document.getElementById('mapCanvas');
-        this.ctx = this.mapCanvas.getContext('2d');
         this.inputElement = document.getElementById('commandInput');
         this.characters = {};
         this.currentUserId = 'testUser';
@@ -23,20 +21,19 @@ class Game {
             this.display_output("Welcome to Dungeon Delver's Guild! Type '/enter [character name]' to start.");
         }
         this.initializeEventListeners();
-        this.initializeCanvas(); // Add this line
         this.updateActionButtons();
     }
 
     display_output(message, rightSide = false) {
         let outputElement;
         if (rightSide) {
-            outputElement = document.getElementById('mapCanvas');
+            outputElement = document.getElementById('mapOutput');
         } else {
             outputElement = document.getElementById('gameOutput');
         }
         
         if (!outputElement) {
-            console.error(`Output element not found: ${rightSide ? 'mapCanvas' : 'gameOutput'}`);
+            console.error(`Output element not found: ${rightSide ? 'mapOutput' : 'gameOutput'}`);
             return;
         }
         
@@ -52,7 +49,7 @@ class Game {
 
     processCommand(command) {
         document.getElementById('gameOutput').innerHTML = '';
-        document.getElementById('mapCanvas').innerHTML = '';
+        document.getElementById('mapOutput').innerHTML = '';
         document.getElementById('legendOutput').innerHTML = '';
         const [cmd, ...args] = command.trim().split(' ');
         const cleanCmd = cmd.toLowerCase();
@@ -610,39 +607,164 @@ class Game {
     }
 
     updateRightSide() {
-        this.renderMap();
-    
+        const mapOutput = document.getElementById('mapOutput');
         const legendOutput = document.getElementById('legendOutput');
         const character = this.characters[this.currentUserId];
     
-        if (this.dungeonMaps[this.currentUserId]) {
-            legendOutput.innerHTML = `
-                <h4>Legend:</h4>
-                <ul>
-                    <li><span style="color: #ff6b6b;">●</span> Player</li>
-                    <li><span style="color: #4ecdc4;">■</span> Visited Room</li>
-                    <li><span style="color: #333;">■</span> Wall</li>
-                    <li><span style="color: #ff0000;">■</span> Enemy</li>
-                    <li><span style="color: #ffd700;">▲</span> Loot</li>
-                </ul>
+        if (character.location === "Town") {
+            const townLocations = [
+                ["O", "O", "O", "O", "O", "O"],
+                ["O", "O", "O", "O", "O", "O"],
+                ["O", "O", "O", "O", "O", "O"],
+                ["O", "O", "<span class='town-icon-guild'>G</span>", "<span class='town-icon-inn'>I</span>", "O", "O"]
+            ];
+    
+            let townMap = `<pre>
+    ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+    ▒ ${townLocations[0][0]} ▒ ${townLocations[0][1]} ▒ ${townLocations[0][2]} ▒ ${townLocations[0][3]} ▒ ${townLocations[0][4]} ▒ ${townLocations[0][5]} ▒
+    ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+    ▒ ${townLocations[1][0]} ▒ ${townLocations[1][1]} ▒ ${townLocations[1][2]} ▒ ${townLocations[1][3]} ▒ ${townLocations[1][4]} ▒ ${townLocations[1][5]} ▒
+    ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+    ▒ ${townLocations[2][0]} ▒ ${townLocations[2][1]} ▒ ${townLocations[2][2]} ▒ ${townLocations[2][3]} ▒ ${townLocations[2][4]} ▒ ${townLocations[2][5]} ▒
+    ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+    ▒ ${townLocations[3][0]} ▒ ${townLocations[3][1]} ▒ ${townLocations[3][2]} ▒ ${townLocations[3][3]} ▒ ${townLocations[3][4]} ▒ ${townLocations[3][5]} ▒
+    ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+    </pre>`;
+    
+            mapOutput.innerHTML = townMap;
+    
+            // Update the legend
+            const townLegend = {
+                "<span class='town-icon-guild'>G</span>": "Guild",
+                "<span class='town-icon-inn'>I</span>": "Inn",
+                "O": "Empty Plot"
+            };
+    
+            let legend = ["<h4>Legend:</h4>", "<ul>"];
+            for (let [symbol, building] of Object.entries(townLegend)) {
+                if (townLocations.some(row => row.includes(symbol))) {
+                    legend.push(`<li>${symbol} - ${building}</li>`);
+                }
+            }
+            legend.push("</ul>");
+    
+            legendOutput.innerHTML = legend.join("");
+        } else if (character.location === "Inn") {
+            const innMap = `
+    ┌────┬────┬────┬────┬────┬▄▄▄┐
+    │ R1 │ R2 │ R3 │ R4 │ R5 │-v-│
+    ├─▄▄─┴─▄▄─┴─▄▄─┴─▄▄─┴─▄▄─┘-v-│
+    │                            │
+    ├─▀▀─┬─▀▀─┬─▀▀─┬─▀▀─┬─▀▀─┐   │
+    │ R6 │ R7 │ R8 │ R9 │ R10│   │
+    └────┴────┴────┴────┴────┘───┘
+    ┌────┬─────────────┬─────┬▄▄▄┐
+    │ B  │+   ▄▄ ▄▄ ▄▄ ▌     │-^-│
+    │    │+   ██ ██ ██ └─────┘-^-│
+    │    │+   ▀▀ ▀▀ ▀▀           ▌
+    │    │+                      │
+    │    │+   ▒▒▒▒▒▒▒▒  ▒▒▒▒▒▒▒▒ │
+    └────┴───────────────────────┘
+    `;
+            mapOutput.textContent = innMap;
+            legendOutput.textContent = "Inn Legend:\nR1-R10: Rooms\nB: Bar";
+        } else if (character.location === "inn_bar") {
+            const innMapFirstFloor = `
+    ┌────┬─────────────┬─────┬▄▄▄┐
+    │ B  │+   ▄▄ ▄▄ ▄▄ ▌     │-^-│
+    │    │+   ██ ██ ██ └─────┘-^-│
+    │    │+   ▀▀ ▀▀ ▀▀           ▌
+    │    │+                      │
+    │    │+   ▒▒▒▒▒▒▒▒  ▒▒▒▒▒▒▒▒ │
+    └────┴───────────────────────┘
+    `;
+            mapOutput.textContent = innMapFirstFloor;
+            legendOutput.textContent = "Inn Bar Legend:\nB: Bar";
+        } else if (character.location === "inn_rooms") {
+            const innMapSecondFloor = `
+    ┌────┬────┬────┬────┬────┬▄▄▄┐
+    │ R1 │ R2 │ R3 │ R4 │ R5 │-v-│
+    ├─▄▄─┴─▄▄─┴─▄▄─┴─▄▄─┴─▄▄─┘-v-│
+    │                            │
+    ├─▀▀─┬─▀▀─┬─▀▀─┬─▀▀─┬─▀▀─┐   │
+    │ R6 │ R7 │ R8 │ R9 │ R10│   │
+    └────┴────┴────┴────┴────┘───┘
+    `;
+            mapOutput.textContent = innMapSecondFloor;
+            legendOutput.textContent = "Inn Rooms Legend:\nR1-R10: Rooms";
+        } else if (character.location === "guild_lobby") {
+            const guildLobbyMap = `
+    ┌─────────────────────────────┐
+    │  ┌─┐               ┌─┐      │
+    │  │N│     ┌───┐     │B│      │
+    │  └─┘     │   │     └─┘      │
+    │          │   │              │
+    │    ╔═════╧═══╧═════╗        │
+    │    ║      R      ◊║        │
+    │    ╚═══════════════╝        │
+    │                             │
+    │  ┌───────┐       ┌───────┐  │
+    │  │   S   │       │   Q   │  │
+    │  │       │       │       │  │
+    └──┴───────┴═══════┴───────┴──┘
             `;
-        } else if (character.location === "Town") {
-            legendOutput.innerHTML = `
-            <h4>Legend:</h4>
-            <ul>
-                <li><span style="color: #4ecdc4;">■ G</span> Guild</li>
-                <li><span style="color: #ff6b6b;">■ I</span> Inn</li>
-                <li><span style="color: #ffa500;">■ S</span> Shop</li>
-                <li><span style="color: #8b4513;">■ T</span> Tavern</li>
-                <li><span style="color: #daa520;">■ B</span> Bank</li>
-                <li><span style="color: #9932cc;">■ M</span> Magic Shop</li>
-                <li><span style="color: #808080;">■ F</span> Forge</li>
-                <li><span style="color: #008000;">■ A</span> Apothecary</li>
-                <li><span style="color: #ff6b6b;">●</span> Player</li>
-            </ul>
-        `;
+            mapOutput.textContent = guildLobbyMap;
+            legendOutput.textContent = "Guild Lobby Legend:\nN: Notice Board\nB: Bounty Board\nR: Reception Counter\n◊: Receptionist\nS: Guild Store\nQ: Quest Board\n/get_map: Receive dungeon map\n/leave: Return to town";
+        } else if (this.dungeonMaps[userId]) {
+            const dungeonMap = this.dungeonMaps[userId].map;
+            const position = this.dungeonMaps[userId].position;
+            const visitedRooms = this.dungeonMaps[userId].visitedRooms || new Set();
+        
+            let mapStr = "";
+            for (let y = 0; y < dungeonMap.length; y++) {
+                let rowStr = "|";
+                for (let x = 0; x < dungeonMap[0].length; x++) {
+                    if (x === position[0] && y === position[1]) {
+                        rowStr += " P ";
+                    } else if (visitedRooms.has(`${x},${y}`)) {
+                        const room = dungeonMap[y][x];
+                        if (room !== null) {
+                            if (room.loot.length > 0) {
+                                rowStr += " I ";
+                            } else {
+                                rowStr += "   ";
+                            }
+                        } else {
+                            rowStr += "###"; // Show walls
+                        }
+                    } else if (
+                        (Math.abs(x - position[0]) === 1 && y === position[1]) ||
+                        (Math.abs(y - position[1]) === 1 && x === position[0])
+                    ) {
+                        const room = dungeonMap[y][x];
+                        if (room !== null) {
+                            rowStr += " ? ";
+                        } else {
+                            rowStr += "###"; // Show walls for adjacent unexplored areas
+                        }
+                    } else {
+                        rowStr += "   ";
+                    }
+                    rowStr += "|";
+                }
+        
+    
+                if (y === dungeonMap.length - 1) {
+                    rowStr += "\n" + "└" + "───┴".repeat(dungeonMap[0].length - 1) + "───┘";
+                } else {
+                    rowStr += "\n" + "├" + "───┼".repeat(dungeonMap[0].length - 1) + "───┤\n";
+                }
+    
+                mapStr += rowStr;
+            }
+    
+            mapStr = "┌" + "───┬".repeat(dungeonMap[0].length - 1) + "───┐\n" + mapStr;
+    
+            mapOutput.textContent = mapStr;
+            legendOutput.textContent = "Dungeon Legend:\nP: Player\nI: Item\n?: Unexplored room\n###: Wall";
         } else {
-            legendOutput.innerHTML = '';
+            mapOutput.textContent = '';
+            legendOutput.textContent = '';
         }
     }
 
@@ -1303,353 +1425,6 @@ class Game {
     
         // For now, just display the placeholder message
         this.display_output("Item pickup not yet implemented.");
-    }
-
-    initializeCanvas() {
-        this.mapCanvas = document.getElementById('mapCanvas');
-        this.ctx = this.mapCanvas.getContext('2d');
-        this.tileSize = 30; // Size of each tile in pixels
-    }
-    
-    renderMap() {
-        if (!this.ctx) this.initializeCanvas();
-        this.ctx.clearRect(0, 0, this.mapCanvas.width, this.mapCanvas.height);
-    
-        const character = this.characters[this.currentUserId];
-        if (!character) return;
-    
-        if (this.dungeonMaps[this.currentUserId]) {
-            this.renderDungeonMap();
-        } else if (character.location === "Town") {
-            this.renderTownMap();
-        } else if (character.location === "guild_lobby") {
-            this.renderGuildMap();
-        } else if (character.location.startsWith("inn_")) {
-            this.renderInnMap();
-        }
-    }
-    
-    renderDungeonMap() {
-        const dungeonData = this.dungeonMaps[this.currentUserId];
-        const map = dungeonData.map;
-        const [playerX, playerY] = dungeonData.position;
-    
-        for (let y = 0; y < map.length; y++) {
-            for (let x = 0; x < map[y].length; x++) {
-                const room = map[y][x];
-                if (room === null) {
-                    this.drawTile(x, y, '#333'); // Wall
-                } else if (dungeonData.visitedRooms.has(`${x},${y}`)) {
-                    this.drawTile(x, y, '#4ecdc4'); // Visited room
-                    if (room.enemies.length > 0) {
-                        this.drawEnemy(x, y);
-                    }
-                    if (room.loot.length > 0) {
-                        this.drawLoot(x, y);
-                    }
-                } else {
-                    this.drawTile(x, y, '#2a2a2a'); // Unvisited room
-                }
-            }
-        }
-    
-        // Draw player
-        this.drawPlayer(playerX, playerY);
-    }
-    
-    drawTile(x, y, color) {
-        this.ctx.fillStyle = color;
-        this.ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
-        this.ctx.strokeStyle = '#000';
-        this.ctx.strokeRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
-    }
-    
-    drawPlayer(x, y) {
-        this.ctx.fillStyle = '#ff6b6b';
-        this.ctx.beginPath();
-        this.ctx.arc((x + 0.5) * this.tileSize, (y + 0.5) * this.tileSize, this.tileSize / 3, 0, Math.PI * 2);
-        this.ctx.fill();
-    }
-    
-    drawEnemy(x, y) {
-        this.ctx.fillStyle = '#ff0000';
-        this.ctx.fillRect(x * this.tileSize + 5, y * this.tileSize + 5, this.tileSize - 10, this.tileSize - 10);
-    }
-    
-    drawLoot(x, y) {
-        this.ctx.fillStyle = '#ffd700';
-        this.ctx.beginPath();
-        this.ctx.moveTo(x * this.tileSize + this.tileSize / 2, y * this.tileSize + 5);
-        this.ctx.lineTo(x * this.tileSize + this.tileSize - 5, y * this.tileSize + this.tileSize - 5);
-        this.ctx.lineTo(x * this.tileSize + 5, y * this.tileSize + this.tileSize - 5);
-        this.ctx.closePath();
-        this.ctx.fill();
-    }
-    
-    renderTownMap() {
-        const townLayout = [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 1, 0, 0, 2, 2, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        ];
-    
-        this.tileSize = Math.min(this.mapCanvas.width / townLayout[0].length, this.mapCanvas.height / townLayout.length);
-    
-        for (let y = 0; y < townLayout.length; y++) {
-            for (let x = 0; x < townLayout[y].length; x++) {
-                switch (townLayout[y][x]) {
-                    case 0:
-                        this.drawTile(x, y, '#228B22'); // Forest green for empty plots
-                        break;
-                    case 1:
-                        this.drawBuilding(x, y, '#4ecdc4', 'G'); // Guild
-                        break;
-                    case 2:
-                        this.drawBuilding(x, y, '#ff6b6b', 'I'); // Inn
-                        break;
-                }
-            }
-        }
-    
-        // Draw player in the center of the map
-        this.drawPlayer(5, 5);
-    }
-    
-    drawBuilding(x, y, color, letter) {
-        this.drawTile(x, y, color);
-        this.ctx.fillStyle = '#fff';
-        this.ctx.font = '20px Arial';
-        this.ctx.fillText(letter, x * this.tileSize + 10, y * this.tileSize + 20);
-    }
-    
-    renderInnMap() {
-        // Implement a simple representation of the inn
-        this.ctx.fillStyle = '#ff6b6b';
-        this.ctx.fillRect(0, 0, this.mapCanvas.width, this.mapCanvas.height);
-        this.ctx.fillStyle = '#fff';
-        this.ctx.font = '24px Arial';
-        this.ctx.fillText('Inn', 130, 150);
-    }
-
-    renderGuildMap() {
-        const width = this.mapCanvas.width;
-        const height = this.mapCanvas.height;
-    
-        // Clear the canvas
-        this.ctx.clearRect(0, 0, width, height);
-    
-        // Draw the floor
-        this.ctx.fillStyle = '#8B4513';  // Brown
-        this.ctx.fillRect(0, height * 0.8, width, height * 0.2);
-    
-        // Draw the wall
-        this.ctx.fillStyle = '#DEB887';  // Light wood color
-        this.ctx.fillRect(0, 0, width, height * 0.6);
-    
-        // Draw the counter
-        this.ctx.fillStyle = '#D2691E';  // Wood color
-        this.ctx.fillRect(width * 0.1, height * 0.6, width * 0.8, height * 0.2);
-    
-        // Draw a guild member behind the counter (simplified)
-        this.ctx.fillStyle = '#8B0000';  // Dark red
-        // Body
-        this.ctx.fillRect(width * 0.7, height * 0.3, width * 0.1, height * 0.3);
-        // Head
-        this.ctx.beginPath();
-        this.ctx.arc(width * 0.75, height * 0.25, width * 0.05, 0, Math.PI * 2);
-        this.ctx.fill();
-    
-        // Draw a person (very simplified) in front of the counter
-        this.ctx.fillStyle = '#000000';  // Black
-        // Body
-        this.ctx.fillRect(width * 0.45, height * 0.65, width * 0.1, height * 0.35);  // Stretches to bottom
-        // Head
-        this.ctx.beginPath();
-        this.ctx.arc(width * 0.5, height * 0.6, width * 0.05, 0, Math.PI * 2);
-        this.ctx.fill();
-    
-        // Add the "Welcome!" text
-        this.ctx.fillStyle = '#000000';  // Gold
-        this.ctx.font = 'bold 20px Arial';
-        this.ctx.textAlign = 'center';
-        this.ctx.fillText('Welcome!', width * 0.75, height * 0.1);  // Centered in the right half
-    }
-    
-    drawText(text, x, y) {
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = '12px OpenDyslexic';
-        this.ctx.textAlign = 'center';
-        this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(text, x, y);
-    }
-    
-    updateGuildLegend() {
-        const legendOutput = document.getElementById('legendOutput');
-        legendOutput.innerHTML = `
-            <h4>Guild Legend:</h4>
-            <ul>
-                <li><span style="color: #3da8a0;">■</span> Rooms</li>
-                <li><span style="color: #ff6b6b;">●</span> Player</li>
-            </ul>
-            <p>Rooms: Lobby, Mission Board, Training Area, Offices</p>
-        `;
-    }
-
-    renderInnMap() {
-        const width = this.mapCanvas.width;
-        const height = this.mapCanvas.height;
-    
-        // Clear the canvas
-        this.ctx.clearRect(0, 0, width, height);
-    
-        // Draw wooden floor
-        this.ctx.fillStyle = '#8B4513';  // Brown
-        this.ctx.fillRect(0, height * 0.8, width, height * 0.2);
-    
-        // Draw wall
-        this.ctx.fillStyle = '#D2B48C';  // Tan
-        this.ctx.fillRect(0, 0, width, height * 0.8);
-    
-        // Draw fireplace
-        this.ctx.fillStyle = '#8B4513';  // Dark brown for wood mantel
-        this.ctx.fillRect(width * 0.3, height * 0.2, width * 0.4, height * 0.6);
-        this.ctx.fillStyle = '#B22222';  // Firebrick red for bricks
-        this.ctx.fillRect(width * 0.33, height * 0.25, width * 0.34, height * 0.55);
-    
-        // Draw armchairs
-        this.drawArmchair(width * 0.05, height * 0.5, true);
-        this.drawArmchair(width * 0.75, height * 0.5, false);
-    
-        // Draw rug
-        this.ctx.fillStyle = '#8B0000';  // Dark red
-        this.ctx.fillRect(width * 0.2, height * 0.75, width * 0.6, height * 0.1);
-    
-        // Draw some decorations on the mantel
-        this.drawCandle(width * 0.32, height * 0.2);
-        this.drawCandle(width * 0.66, height * 0.2);
-    
-        // Draw flickering fire
-        this.drawFire(width * 0.37, height * 0.4, width * 0.26, height * 0.4);
-    
-        // Request next animation frame
-        requestAnimationFrame(() => this.renderInnMap());
-    }
-    
-    drawFire(x, y, w, h) {
-        const now = Date.now();
-        const flickerOffsetX = Math.sin(now * 0.01) * w * 0.05;
-        const flickerOffsetY = Math.cos(now * 0.01) * h * 0.05;
-    
-        this.ctx.fillStyle = '#FF4500';  // OrangeRed
-        this.ctx.beginPath();
-        this.ctx.moveTo(x, y + h);
-        this.ctx.quadraticCurveTo(x + w * 0.2 + flickerOffsetX, y + h * 0.7, x + w * 0.35, y + flickerOffsetY);
-        this.ctx.quadraticCurveTo(x + w * 0.5 - flickerOffsetX, y + h * 0.8, x + w * 0.65, y + flickerOffsetY);
-        this.ctx.quadraticCurveTo(x + w * 0.8 + flickerOffsetX, y + h * 0.7, x + w, y + h);
-        this.ctx.fill();
-    
-        // Add some yellow to the center for a more realistic fire
-        this.ctx.fillStyle = 'rgba(255, 255, 0, 0.5)';
-        this.ctx.beginPath();
-        this.ctx.moveTo(x + w * 0.3, y + h);
-        this.ctx.quadraticCurveTo(x + w * 0.4 + flickerOffsetX, y + h * 0.6, x + w * 0.5, y + h * 0.5 + flickerOffsetY);
-        this.ctx.quadraticCurveTo(x + w * 0.6 - flickerOffsetX, y + h * 0.6, x + w * 0.7, y + h);
-        this.ctx.fill();
-    }
-    
-    drawArmchair(x, y, facingRight) {
-        const chairWidth = this.mapCanvas.width * 0.2;
-        const chairHeight = this.mapCanvas.height * 0.3;
-    
-        // Base color
-        this.ctx.fillStyle = '#8B4513';  // SaddleBrown
-    
-        // Chair base
-        this.ctx.fillRect(x, y + chairHeight * 0.7, chairWidth, chairHeight * 0.3);
-    
-        // Chair back
-        this.ctx.beginPath();
-        this.ctx.moveTo(x + (facingRight ? 0 : chairWidth), y);
-        this.ctx.lineTo(x + (facingRight ? chairWidth * 0.3 : chairWidth * 0.7), y);
-        this.ctx.lineTo(x + (facingRight ? chairWidth * 0.3 : chairWidth * 0.7), y + chairHeight * 0.7);
-        this.ctx.lineTo(x + (facingRight ? 0 : chairWidth), y + chairHeight * 0.7);
-        this.ctx.fill();
-    
-        // Seat cushion
-        this.ctx.fillStyle = '#D2691E';  // Chocolate
-        this.ctx.beginPath();
-        this.ctx.moveTo(x, y + chairHeight * 0.6);
-        this.ctx.lineTo(x + chairWidth, y + chairHeight * 0.6);
-        this.ctx.lineTo(x + chairWidth, y + chairHeight * 0.8);
-        this.ctx.quadraticCurveTo(x + chairWidth * 0.5, y + chairHeight * 0.9, x, y + chairHeight * 0.8);
-        this.ctx.fill();
-    
-        // Back cushion
-        this.ctx.beginPath();
-        this.ctx.moveTo(x + (facingRight ? chairWidth * 0.05 : chairWidth * 0.95), y + chairHeight * 0.05);
-        this.ctx.lineTo(x + (facingRight ? chairWidth * 0.3 : chairWidth * 0.7), y + chairHeight * 0.05);
-        this.ctx.lineTo(x + (facingRight ? chairWidth * 0.3 : chairWidth * 0.7), y + chairHeight * 0.65);
-        this.ctx.lineTo(x + (facingRight ? chairWidth * 0.05 : chairWidth * 0.95), y + chairHeight * 0.65);
-        this.ctx.quadraticCurveTo(
-            x + (facingRight ? chairWidth * 0.15 : chairWidth * 0.85),
-            y + chairHeight * 0.35,
-            x + (facingRight ? chairWidth * 0.05 : chairWidth * 0.95),
-            y + chairHeight * 0.05
-        );
-        this.ctx.fill();
-    
-        // Armrest
-        this.ctx.fillStyle = '#8B4513';  // SaddleBrown
-        this.ctx.beginPath();
-        this.ctx.moveTo(x + (facingRight ? 0 : chairWidth), y + chairHeight * 0.3);
-        this.ctx.lineTo(x + (facingRight ? chairWidth * 0.15 : chairWidth * 0.85), y + chairHeight * 0.3);
-        this.ctx.lineTo(x + (facingRight ? chairWidth * 0.15 : chairWidth * 0.85), y + chairHeight * 0.6);
-        this.ctx.lineTo(x + (facingRight ? 0 : chairWidth), y + chairHeight * 0.7);
-        this.ctx.fill();
-    }
-    
-    drawCandle(x, y) {
-        this.ctx.fillStyle = '#F0E68C';  // Khaki
-        this.ctx.fillRect(x, y, 10, 20);
-        this.ctx.fillStyle = '#FFD700';  // Gold
-        this.ctx.beginPath();
-        this.ctx.ellipse(x + 5, y, 5, 2, 0, 0, Math.PI * 2);
-        this.ctx.fill();
-    }
-    
-    drawChair(x, y) {
-        this.ctx.fillStyle = '#A0522D';  // Sienna
-        this.ctx.fillRect(x - 15, y - 15, 30, 30);
-        this.ctx.strokeStyle = '#8B4513';  // Saddle Brown
-        this.ctx.strokeRect(x - 15, y - 15, 30, 30);
-    }
-    
-    drawTable(x, y) {
-        const tableSize = this.mapCanvas.width * 0.15;
-        this.ctx.fillStyle = '#DEB887';  // Light wood color
-        this.ctx.fillRect(x, y, tableSize, tableSize);
-    }
-    
-    updateInnLegend() {
-        const legendOutput = document.getElementById('legendOutput');
-        legendOutput.innerHTML = `
-            <h4>Inn Legend:</h4>
-            <ul>
-                <li><span style="color: #8B4513;">■</span> Floor</li>
-                <li><span style="color: #D2691E;">■</span> Walls</li>
-                <li><span style="color: #DEB887;">■</span> Tables</li>
-                <li><span style="color: #000000;">●</span> Bartender</li>
-                <li><span style="color: #ff6b6b;">●</span> Player</li>
-            </ul>
-            <p>Areas: Bar, Tables, Entrance</p>
-        `;
     }
 }
 
