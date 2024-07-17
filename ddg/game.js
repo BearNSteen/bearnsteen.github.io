@@ -2,6 +2,64 @@ const ANSI_RESET = "\x1b[0m";
 const ANSI_BLUE = "\x1b[34m";
 const ANSI_RED = "\x1b[31m";
 
+// Color Variables
+const BLACK = '#000000';
+const WHITE = '#FFFFFF';
+const BRIGHT_RED = '#FF0000';
+const DARK_RED = '#8B0000';
+const BRICK_RED = '#B22222';
+const CRIMSON = '#DC143C';
+const ORANGE_RED = '#FF4500';
+const CORAL = '#FF7F50';
+const DARK_ORANGE = '#FF8C00';
+const ORANGE = '#FFA500';
+const GOLD = '#FFD700';
+const YELLOW = '#FFFF00';
+const LIGHT_YELLOW = '#FFFFE0';
+const OLIVE = '#808000';
+const LIME_GREEN = '#32CD32';
+const FOREST_GREEN = '#228B22';
+const DARK_GREEN = '#006400';
+const TEAL = '#008080';
+const CYAN = '#00FFFF';
+const SKY_BLUE = '#87CEEB';
+const ROYAL_BLUE = '#4169E1';
+const NAVY_BLUE = '#000080';
+const INDIGO = '#4B0082';
+const PURPLE = '#800080';
+const MAGENTA = '#FF00FF';
+const PINK = '#FFC0CB';
+const HOT_PINK = '#FF69B4';
+const BROWN = '#A52A2A';
+const SADDLE_BROWN = '#8B4513';
+const SIENNA = '#A0522D';
+const PERU = '#CD853F';
+const TAN = '#D2B48C';
+const BEIGE = '#F5F5DC';
+const WHEAT = '#F5DEB3';
+const LIGHT_GRAY = '#D3D3D3';
+const SILVER = '#C0C0C0';
+const DARK_GRAY = '#A9A9A9';
+const GRAY = '#808080';
+const SLATE_GRAY = '#708090';
+
+// Additional colors more accurately named
+const DARK_CHOCOLATE = '#1E0A00';
+const MILK_CHOCOLATE = '#3D1C02';
+const CARAMEL = '#AF6E4D';
+const COFFEE = '#6F4E37';
+
+const COLORS = {
+    WALL: BLACK,
+    WALL_BORDER: BRIGHT_RED,
+    ROOM_FLOOR: SLATE_GRAY,
+    ROOM_BORDER: BLACK,
+    UNEXPLORED_ROOM: DARK_GRAY,
+    PLAYER: BRIGHT_RED,
+    ENEMY: ORANGE_RED,
+    LOOT: GOLD
+};
+
 class Game {
     constructor() {
         this.outputElement = document.getElementById('gameOutput');
@@ -12,6 +70,7 @@ class Game {
         this.characters = {};
         this.currentUserId = 'testUser';
         this.dungeonMaps = {};
+        this.currentAnimationFrame = null;
         
     }
 
@@ -187,12 +246,143 @@ class Game {
             case 'show_first_map':
                 this.showFirstMap();
                 break;
+            case '/inventory':
+            case '/i':
+                this.displayInventory();
+                break;
+            case '/equip':
+                this.equipItem(args.join(' '));
+                break;
+            case '/unequip':
+                this.unequipItem(args.join(' '));
+                break;
+            case '/stats':
+                this.displayStats();
+                break;
+            case '/skills':
+                this.manageSkills();
+                break;
+            case '/quest':
+                this.manageQuests();
+                break;
+            case '/shop':
+                this.enterShop();
+                break;
+            case '/craft':
+                this.craftItem(args.join(' '));
+                break;
+            case '/add_item':
+                this.addItemToInventory(args.join(' '));
+                break;
             default:
                 this.display_output('Unknown command. Type "/help" for a list of commands.');
         }
         this.updateGameInfo();
         this.updateRightSide();
         this.updateActionButtons();
+    }
+
+    // === INVENTORY START
+
+    displayInventory() {
+        const inventoryContainer = document.createElement('div');
+        inventoryContainer.className = 'inventory-container';
+        inventoryContainer.style.display = 'grid';
+        inventoryContainer.style.gridTemplateColumns = 'repeat(5, 1fr)'; // 5 columns
+        inventoryContainer.style.gap = '10px';
+        inventoryContainer.style.padding = '10px';
+        inventoryContainer.style.backgroundColor = '#f0f0f0';
+    
+        const character = this.characters[this.currentUserId];
+        
+        character.inventory.forEach((item, index) => {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'inventory-item';
+            itemElement.draggable = true;
+            itemElement.dataset.itemIndex = index;
+    
+            const itemIcon = document.createElement('span');
+            itemIcon.className = 'item-icon';
+            itemIcon.textContent = item.name[0].toUpperCase(); // First letter as icon
+            itemIcon.style.backgroundColor = this.getItemColor(item.itemType);
+            itemIcon.style.color = 'white';
+            itemIcon.style.padding = '10px';
+            itemIcon.style.borderRadius = '50%';
+            itemIcon.style.display = 'inline-block';
+            itemIcon.style.width = '40px';
+            itemIcon.style.height = '40px';
+            itemIcon.style.textAlign = 'center';
+            itemIcon.style.lineHeight = '40px';
+            itemIcon.style.fontWeight = 'bold';
+    
+            const itemName = document.createElement('div');
+            itemName.textContent = item.name;
+            itemName.style.marginTop = '5px';
+    
+            itemElement.appendChild(itemIcon);
+            itemElement.appendChild(itemName);
+    
+            itemElement.addEventListener('dragstart', this.onDragStart.bind(this));
+            itemElement.addEventListener('dragover', this.onDragOver.bind(this));
+            itemElement.addEventListener('drop', this.onDrop.bind(this));
+    
+            inventoryContainer.appendChild(itemElement);
+        });
+    
+        this.display_output('');
+        document.getElementById('gameOutput').appendChild(inventoryContainer);
+    }
+    
+    getItemColor(itemType) {
+        const colors = {
+            'Weapon': '#ff4136',
+            'Armor': '#0074d9',
+            'Potion': '#2ecc40',
+            'Accessory': '#ffdc00',
+            'Key': '#ff851b',
+            'Tool': '#7fdbff',
+            'Crafting': '#b10dc9',
+            'Map': '#3d9970',
+            'Consumable': '#39cccc',
+            'container': '#aaaaaa',
+            'charter': '#f012be'
+        };
+        return colors[itemType] || '#111111'; // default color
+    }
+    
+    onDragStart(event) {
+        event.dataTransfer.setData('text/plain', event.target.dataset.itemIndex);
+    }
+    
+    onDragOver(event) {
+        event.preventDefault();
+    }
+    
+    onDrop(event) {
+        event.preventDefault();
+        const sourceIndex = parseInt(event.dataTransfer.getData('text'));
+        const targetIndex = parseInt(event.target.closest('.inventory-item').dataset.itemIndex);
+    
+        const character = this.characters[this.currentUserId];
+        const [removed] = character.inventory.splice(sourceIndex, 1);
+        character.inventory.splice(targetIndex, 0, removed);
+    
+        this.saveCharacters();
+        this.displayInventory();
+    }
+
+    // ==== INVENTORY END
+    
+    equipItem(itemName) {
+        // Logic to equip an item
+    }
+    
+    unequipItem(itemName) {
+        // Logic to unequip an item
+    }
+    
+    displayStats() {
+        // Logic to display detailed character stats
     }
 
     loadCharacters() {
@@ -390,7 +580,7 @@ class Game {
 
     movePlayer(direction) {
         if (!this.dungeonMaps[this.currentUserId]) {
-            this.display_output('You are not in a dungeon');
+            this.display_output('Please move using the commands on the right, or by typing commands. You do not need to move directionally unless you are in a dungeon.');
             return;
         }
     
@@ -435,8 +625,7 @@ class Game {
     
         dungeonData.position = [newX, newY];
         dungeonData.visitedRooms.add(`${newX},${newY}`);
-
-        // Add this new function call
+    
         this.addAdjacentWallsToVisited(dungeonData, newX, newY);
         const room = dungeonData.map[newY][newX];
         this.display_output(`You move ${direction}.\n${room.description}`);
@@ -525,6 +714,11 @@ class Game {
             this.saveCharacters();
             this.display_output(`You leave your current location and return to town.`);
         }
+    
+        // Clear the canvas and re-render the map
+        this.ctx.clearRect(0, 0, this.mapCanvas.width, this.mapCanvas.height);
+        this.renderMap();
+        this.updateRightSide();
     }
 
     innInteraction() {
@@ -796,61 +990,71 @@ class Game {
             this.display_output("You are not on the second floor of the inn.");
         }
     }
-    
+
     displayHelp() {
-        // Hide other elements
-        document.getElementById('gameInfo').style.display = 'none';
-        document.getElementById('bottomPanel').style.display = 'none';
-        
-        // Expand gameOutput
-        document.getElementById('gameOutput').style.height = '580px'; // Adjust this value as needed
-        
-        const commandGroups = {
-            "Character Management": [
-                ["/enter [name]", "Enter the game with a new character name"],
-                ["/rename [name]", "Rename your character"],
-                ["/retire", "Retire your character and disconnect"],
-                ["/character_info", "Display character information"]
-            ],
-            "Navigation": [
-                ["/inn", "Enter the inn"],
-                ["/upstairs", "Go upstairs in the inn"],
-                ["/downstairs", "Go downstairs in the inn"],
-                ["/guild", "Enter the guild"],
-                ["/leave", "Leave the current location"]
-            ],
-            "Dungeon Exploration": [
-                ["/explore [dungeon_index]", "Explore a dungeon"],
-                ["/list_dungeon_maps [biome]", "List available dungeon maps"],
-                ["/current_biome", "Show current biome"],
-                ["/show_map", "Display the current dungeon map"],
-                ["/left, /right, /up, /down", "Move in the dungeon"],
-                ["/fight [enemy]", "Fight an enemy"],
-                ["/item [item_number]", "Pick up an item"]
-            ],
-            "Guild Actions": [
-                ["/get_map", "Get a new dungeon map from the guild"]
-            ],
-            "Miscellaneous": [
-                ["/help", "Display this help message"]
-            ]
-        };
+        const gameInfoElement = document.getElementById('gameInfo');
+        const bottomPanelElement = document.getElementById('bottomPanel');
+        const gameOutputElement = document.getElementById('gameOutput');
     
-        let helpMessage = "<div class='help-container'>";
-
-        for (const [category, commands] of Object.entries(commandGroups)) {
-            helpMessage += `<div class='help-category'>
-                <h3>${category}</h3>
-                <ul>`;
-            for (const [command, description] of commands) {
-                helpMessage += `<li><span class='command'>${command}</span> - ${description}</li>`;
+        if (gameInfoElement.style.display === 'none') {
+            // Help is currently shown, so restore the original layout
+            gameInfoElement.style.display = 'block';
+            bottomPanelElement.style.display = 'flex';
+            gameOutputElement.style.height = '200px'; // Restore original height
+            this.display_output("Help closed. Type '/help' to see available commands again.");
+        } else {
+            // Show help
+            gameInfoElement.style.display = 'none';
+            bottomPanelElement.style.display = 'none';
+            gameOutputElement.style.height = '580px'; // Adjust this value as needed
+    
+            const commandGroups = {
+                "Character Management": [
+                    ["/enter [name]", "Enter the game with a new character name"],
+                    ["/rename [name]", "Rename your character"],
+                    ["/retire", "Retire your character and disconnect"],
+                    ["/character_info", "Display character information"]
+                ],
+                "Navigation": [
+                    ["/inn", "Enter the inn"],
+                    ["/upstairs", "Go upstairs in the inn"],
+                    ["/downstairs", "Go downstairs in the inn"],
+                    ["/guild", "Enter the guild"],
+                    ["/leave", "Leave the current location"]
+                ],
+                "Dungeon Exploration": [
+                    ["/explore [dungeon_index]", "Explore a dungeon"],
+                    ["/list_dungeon_maps [biome]", "List available dungeon maps"],
+                    ["/current_biome", "Show current biome"],
+                    ["/show_map", "Display the current dungeon map"],
+                    ["/left, /right, /up, /down", "Move in the dungeon"],
+                    ["/fight [enemy]", "Fight an enemy"],
+                    ["/item [item_number]", "Pick up an item"]
+                ],
+                "Guild Actions": [
+                    ["/get_map", "Get a new dungeon map from the guild"]
+                ],
+                "Miscellaneous": [
+                    ["/help", "Display this help message"]
+                ]
+            };
+    
+            let helpMessage = "<div class='help-container'>";
+    
+            for (const [category, commands] of Object.entries(commandGroups)) {
+                helpMessage += `<div class='help-category'>
+                    <h3>${category}</h3>
+                    <ul>`;
+                for (const [command, description] of commands) {
+                    helpMessage += `<li><span class='command'>${command}</span> - ${description}</li>`;
+                }
+                helpMessage += `</ul></div>`;
             }
-            helpMessage += `</ul></div>`;
+    
+            helpMessage += "</div>";
+    
+            this.display_output(helpMessage);
         }
-
-        helpMessage += "</div>";
-
-        this.display_output(helpMessage);
     }
 
     restoreLayout() {
@@ -1334,27 +1538,173 @@ class Game {
         const map = dungeonData.map;
         const [playerX, playerY] = dungeonData.position;
     
+        // Calculate the scale factor to fit the map
+        const maxMapDimension = Math.max(map.length, map[0].length);
+        const scaleFactor = Math.min(
+            (this.mapCanvas.width * 0.9) / maxMapDimension,
+            (this.mapCanvas.height * 0.9) / maxMapDimension
+        );
+    
+        // Calculate offsets to center the map
+        const offsetX = (this.mapCanvas.width - map[0].length * scaleFactor) / 2;
+        const offsetY = (this.mapCanvas.height - map.length * scaleFactor) / 2;
+    
+        // Clear the canvas
+        this.ctx.clearRect(0, 0, this.mapCanvas.width, this.mapCanvas.height);
+    
         for (let y = 0; y < map.length; y++) {
             for (let x = 0; x < map[y].length; x++) {
                 const room = map[y][x];
-                if (room === null) {
-                    this.drawTile(x, y, '#333'); // Wall
-                } else if (dungeonData.visitedRooms.has(`${x},${y}`)) {
-                    this.drawTile(x, y, '#4ecdc4'); // Visited room
-                    if (room.enemies.length > 0) {
-                        this.drawEnemy(x, y);
+                const roomX = offsetX + x * scaleFactor;
+                const roomY = offsetY + y * scaleFactor;
+    
+                if (dungeonData.visitedRooms.has(`${x},${y}`)) {
+                    if (room === null) {
+                        this.drawWall(roomX, roomY, scaleFactor);
+                    } else {
+                        this.drawExploredRoom(roomX, roomY, scaleFactor, room);
                     }
-                    if (room.loot.length > 0) {
-                        this.drawLoot(x, y);
+                } else if (this.isAdjacentToVisitedRoom(x, y, dungeonData)) {
+                    if (room === null) {
+                        this.drawWall(roomX, roomY, scaleFactor);
+                    } else {
+                        this.drawUnexploredRoom(roomX, roomY, scaleFactor);
                     }
-                } else {
-                    this.drawTile(x, y, '#2a2a2a'); // Unvisited room
                 }
             }
         }
     
         // Draw player
-        this.drawPlayer(playerX, playerY);
+        this.drawDungeonPlayer(offsetX + playerX * scaleFactor, offsetY + playerY * scaleFactor, scaleFactor);
+    }
+    
+    isAdjacentToVisitedRoom(x, y, dungeonData) {
+        const adjacentPositions = [
+            [x-1, y], [x+1, y], [x, y-1], [x, y+1]
+        ];
+    
+        return adjacentPositions.some(([adjX, adjY]) => {
+            if (adjX >= 0 && adjX < dungeonData.map[0].length &&
+                adjY >= 0 && adjY < dungeonData.map.length) {
+                return dungeonData.visitedRooms.has(`${adjX},${adjY}`) && dungeonData.map[adjY][adjX] !== null;
+            }
+            return false;
+        });
+    }
+    
+    addAdjacentRoomsToVisited(dungeonData, x, y) {
+        const adjacentPositions = [
+            [x-1, y], [x+1, y], [x, y-1], [x, y+1]
+        ];
+    
+        adjacentPositions.forEach(([adjX, adjY]) => {
+            if (adjX >= 0 && adjX < dungeonData.map[0].length &&
+                adjY >= 0 && adjY < dungeonData.map.length) {
+                dungeonData.visitedRooms.add(`${adjX},${adjY}`);
+            }
+        });
+    }
+    
+    drawWall(x, y, size) {
+        this.ctx.fillStyle = COLORS.WALL;
+        this.ctx.fillRect(x, y, size, size);
+        
+        this.ctx.strokeStyle = COLORS.WALL_BORDER;
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(x, y, size, size);
+        
+        this.ctx.beginPath();
+        this.ctx.moveTo(x, y);
+        this.ctx.lineTo(x + size, y + size);
+        this.ctx.moveTo(x + size, y);
+        this.ctx.lineTo(x, y + size);
+        this.ctx.stroke();
+    }
+    
+    drawExploredRoom(x, y, size, room) {
+        // Draw the base room
+        this.ctx.fillStyle = COLORS.ROOM_FLOOR;
+        this.ctx.fillRect(x, y, size, size);
+        
+        this.ctx.strokeStyle = COLORS.ROOM_BORDER;
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeRect(x, y, size, size);
+    
+        // Size for mini squares
+        const miniSize = size / 4;
+    
+        // Draw mini squares for different elements
+        // Top-left: Enemies
+        if (room.enemies && room.enemies.length > 0) {
+            this.ctx.fillStyle = COLORS.ENEMY;
+            this.ctx.fillRect(x, y, miniSize, miniSize);
+        }
+    
+        // Top-right: Items/Loot
+        if (room.loot && room.loot.length > 0) {
+            this.ctx.fillStyle = COLORS.LOOT;
+            this.ctx.fillRect(x + size - miniSize, y, miniSize, miniSize);
+        }
+    
+        // Bottom-left: Special features (e.g., traps, puzzles)
+        if (room.specialFeature) {
+            this.ctx.fillStyle = '#800080'; // Purple for special features
+            this.ctx.fillRect(x, y + size - miniSize, miniSize, miniSize);
+        }
+    
+        // Bottom-right: Exit or key
+        if (room.isExit || room.hasKey) {
+            this.ctx.fillStyle = '#00FF00'; // Green for exit or key
+            this.ctx.fillRect(x + size - miniSize, y + size - miniSize, miniSize, miniSize);
+        }
+    }
+    
+    drawUnexploredRoom(x, y, size) {
+        this.ctx.fillStyle = COLORS.UNEXPLORED_ROOM;
+        this.ctx.fillRect(x, y, size, size);
+        
+        this.ctx.strokeStyle = COLORS.ROOM_BORDER;
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeRect(x, y, size, size);
+    }
+    
+    drawDungeonPlayer(x, y, size) {
+        this.ctx.fillStyle = COLORS.PLAYER;
+        this.ctx.beginPath();
+        this.ctx.arc(x + size / 2, y + size / 2, size / 3, 0, Math.PI * 2);
+        this.ctx.fill();
+    }
+    
+    drawEnemy(x, y, size) {
+        this.ctx.fillStyle = COLORS.ENEMY;
+        this.ctx.fillRect(x + size * 0.2, y + size * 0.2, size * 0.6, size * 0.6);
+    }
+    
+    drawLoot(x, y, size) {
+        this.ctx.fillStyle = COLORS.LOOT;
+        this.ctx.beginPath();
+        this.ctx.moveTo(x + size / 2, y + size * 0.2);
+        this.ctx.lineTo(x + size * 0.8, y + size * 0.8);
+        this.ctx.lineTo(x + size * 0.2, y + size * 0.8);
+        this.ctx.closePath();
+        this.ctx.fill();
+    }
+
+    updateLegend() {
+        const legendOutput = document.getElementById('legendOutput');
+        legendOutput.innerHTML = `
+            <h4>Legend:</h4>
+            <ul>
+                <li><span style="color: ${COLORS.PLAYER};">●</span> Player</li>
+                <li><span style="color: ${COLORS.ROOM_FLOOR};">■</span> Explored Room</li>
+                <li><span style="color: ${COLORS.WALL};">■</span> Wall</li>
+                <li><span style="color: ${COLORS.ENEMY};">■</span> Enemy (top-left)</li>
+                <li><span style="color: ${COLORS.LOOT};">■</span> Loot (top-right)</li>
+                <li><span style="color: #800080;">■</span> Special Feature (bottom-left)</li>
+                <li><span style="color: #00FF00;">■</span> Exit/Key (bottom-right)</li>
+                <li><span style="color: ${COLORS.UNEXPLORED_ROOM};">■</span> Unexplored Room</li>
+            </ul>
+        `;
     }
     
     drawTile(x, y, color) {
@@ -1364,29 +1714,10 @@ class Game {
         this.ctx.strokeRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
     }
     
-    drawPlayer(x, y) {
-        this.ctx.fillStyle = '#ff6b6b';
-        this.ctx.beginPath();
-        this.ctx.arc((x + 0.5) * this.tileSize, (y + 0.5) * this.tileSize, this.tileSize / 3, 0, Math.PI * 2);
-        this.ctx.fill();
-    }
-    
-    drawEnemy(x, y) {
-        this.ctx.fillStyle = '#ff0000';
-        this.ctx.fillRect(x * this.tileSize + 5, y * this.tileSize + 5, this.tileSize - 10, this.tileSize - 10);
-    }
-    
-    drawLoot(x, y) {
-        this.ctx.fillStyle = '#ffd700';
-        this.ctx.beginPath();
-        this.ctx.moveTo(x * this.tileSize + this.tileSize / 2, y * this.tileSize + 5);
-        this.ctx.lineTo(x * this.tileSize + this.tileSize - 5, y * this.tileSize + this.tileSize - 5);
-        this.ctx.lineTo(x * this.tileSize + 5, y * this.tileSize + this.tileSize - 5);
-        this.ctx.closePath();
-        this.ctx.fill();
-    }
-    
     renderTownMap() {
+        // Clear the entire canvas
+        this.ctx.clearRect(0, 0, this.mapCanvas.width, this.mapCanvas.height);
+    
         const townLayout = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -1401,6 +1732,9 @@ class Game {
         ];
     
         this.tileSize = Math.min(this.mapCanvas.width / townLayout[0].length, this.mapCanvas.height / townLayout.length);
+    
+        // Reset line width to default
+        this.ctx.lineWidth = 1;
     
         for (let y = 0; y < townLayout.length; y++) {
             for (let x = 0; x < townLayout[y].length; x++) {
@@ -1419,67 +1753,352 @@ class Game {
         }
     
         // Draw player in the center of the map
-        this.drawPlayer(5, 5);
+        this.drawMapPlayer(5, 5);
+    }
+    
+    drawTile(x, y, color) {
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
+        this.ctx.strokeStyle = '#000';
+        this.ctx.strokeRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
     }
     
     drawBuilding(x, y, color, letter) {
         this.drawTile(x, y, color);
         this.ctx.fillStyle = '#fff';
-        this.ctx.font = '20px Arial';
-        this.ctx.fillText(letter, x * this.tileSize + 10, y * this.tileSize + 20);
+        this.ctx.font = `${this.tileSize * 0.6}px Arial`;
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(letter, (x + 0.5) * this.tileSize, (y + 0.5) * this.tileSize);
     }
     
-    renderInnMap() {
-        // Implement a simple representation of the inn
+    drawMapPlayer(x, y) {
+        const centerX = (x + 0.5) * this.tileSize;
+        const centerY = (y + 0.5) * this.tileSize;
+        const radius = this.tileSize / 3;
+    
         this.ctx.fillStyle = '#ff6b6b';
-        this.ctx.fillRect(0, 0, this.mapCanvas.width, this.mapCanvas.height);
-        this.ctx.fillStyle = '#fff';
-        this.ctx.font = '24px Arial';
-        this.ctx.fillText('Inn', 130, 150);
+        this.ctx.beginPath();
+        this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        this.ctx.fill();
+    }
+
+    cancelCurrentAnimation() {
+        if (this.currentAnimationFrame) {
+            cancelAnimationFrame(this.currentAnimationFrame);
+            this.currentAnimationFrame = null;
+        }
     }
 
     renderGuildMap() {
+        if (this.characters[this.currentUserId].location !== "guild_lobby") {
+            if (this.guildAnimationFrame) {
+                cancelAnimationFrame(this.guildAnimationFrame);
+                this.guildAnimationFrame = null;
+            }
+            return;
+        }
+    
         const width = this.mapCanvas.width;
         const height = this.mapCanvas.height;
     
         // Clear the canvas
         this.ctx.clearRect(0, 0, width, height);
     
-        // Draw the floor
-        this.ctx.fillStyle = '#8B4513';  // Brown
-        this.ctx.fillRect(0, height * 0.8, width, height * 0.2);
+        // Draw disco floor
+        this.drawDiscoFloor(0, height * 0.8, width, height * 0.2);
     
-        // Draw the wall
-        this.ctx.fillStyle = '#DEB887';  // Light wood color
-        this.ctx.fillRect(0, 0, width, height * 0.6);
+        // Draw wooden walls (now darker to contrast with the bright floor)
+        this.ctx.fillStyle = '#3E2723';  // Very dark brown
+        this.ctx.fillRect(0, 0, width, height * 0.8);
     
-        // Draw the counter
-        this.ctx.fillStyle = '#D2691E';  // Wood color
-        this.ctx.fillRect(width * 0.1, height * 0.6, width * 0.8, height * 0.2);
+        // Draw wooden beams
+        this.drawWoodenBeams(width, height);
     
-        // Draw a guild member behind the counter (simplified)
-        this.ctx.fillStyle = '#8B0000';  // Dark red
-        // Body
-        this.ctx.fillRect(width * 0.7, height * 0.3, width * 0.1, height * 0.3);
-        // Head
+        // Draw notice board
+        this.drawNoticeBoard(width * 0.05, height * 0.1, width * 0.3, height * 0.5);
+    
+        // Draw weapon rack
+        this.drawWeaponRack(width * 0.7, height * 0.1, width * 0.25, height * 0.5);
+    
+        // Draw reception desk
+        this.drawReceptionDesk(width * 0.1, height * 0.6, width * 0.8, height * 0.2);
+    
+        // Draw guild member behind the desk
+        this.drawGuildMember(width * 0.5, height * 0.7);
+    
+        // Draw player character
+        this.drawPlayer(width * 0.8, height * 0.9);
+    
+        // Draw disco ball
+        this.drawDiscoBall(width * 0.5, height * 0.1, 30);
+    
+        // Request next animation frame
+        this.guildAnimationFrame = requestAnimationFrame(() => this.renderGuildMap());
+    }
+    
+    drawDiscoBall(x, y, radius) {
+        const now = Date.now();
+    
+        // Draw the ball
+        this.ctx.fillStyle = '#C0C0C0';
         this.ctx.beginPath();
-        this.ctx.arc(width * 0.75, height * 0.25, width * 0.05, 0, Math.PI * 2);
+        this.ctx.arc(x, y, radius, 0, Math.PI * 2);
         this.ctx.fill();
     
-        // Draw a person (very simplified) in front of the counter
-        this.ctx.fillStyle = '#000000';  // Black
+        // Draw the reflections
+        for (let i = 0; i < 20; i++) {
+            const angle = (i / 20) * Math.PI * 2 + now * 0.001;
+            const rx = x + Math.cos(angle) * radius * 0.9;
+            const ry = y + Math.sin(angle) * radius * 0.9;
+            this.ctx.fillStyle = '#FFFFFF';
+            this.ctx.beginPath();
+            this.ctx.arc(rx, ry, radius * 0.1, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+    }
+    
+    drawDiscoFloor(x, y, width, height) {
+        const tileSize = 40;
+        const colors = [
+            '#FF3131', '#1E90FF', '#39FF14', '#FFFF00', // Neon Red, Neon Blue, Neon Green, Neon Yellow
+            '#FF1493', '#00FFFF', '#FF6600', '#8A2BE2'  // Neon Pink, Neon Cyan, Neon Orange, Neon Purple
+        ];
+        const now = Date.now() / 1000; // Use seconds for smoother animation
+    
+        const centerX = Math.floor(width / (2 * tileSize));
+        const centerY = Math.floor(height / (2 * tileSize));
+    
+        for (let i = 0; i < width / tileSize; i++) {
+            for (let j = 0; j < height / tileSize; j++) {
+                // Calculate distance from center
+                const dx = i - centerX;
+                const dy = j - centerY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+    
+                // Calculate base color index based on distance and time
+                const baseColorIndex = Math.floor((distance + now) * 2) % colors.length;
+    
+                // Get colors of nearby tiles
+                const aboveColor = j > 0 ? this.getColorAt(i, j - 1) : null;
+                const leftColor = i > 0 ? this.getColorAt(i - 1, j) : null;
+                const aboveLeftColor = (i > 0 && j > 0) ? this.getColorAt(i - 1, j - 1) : null;
+    
+                // Find a color that's different from nearby tiles
+                let finalColorIndex = baseColorIndex;
+                let attempts = 0;
+                while (attempts < colors.length) {
+                    if (colors[finalColorIndex] !== aboveColor &&
+                        colors[finalColorIndex] !== leftColor &&
+                        colors[finalColorIndex] !== aboveLeftColor) {
+                        break;
+                    }
+                    finalColorIndex = (finalColorIndex + 1) % colors.length;
+                    attempts++;
+                }
+    
+                this.ctx.fillStyle = colors[finalColorIndex];
+                this.ctx.fillRect(x + i * tileSize, y + j * tileSize, tileSize, tileSize);
+    
+                // Store the color for future reference
+                this.setColorAt(i, j, colors[finalColorIndex]);
+            }
+        }
+    }
+    
+    getColorAt(i, j) {
+        if (!this.floorColors) this.floorColors = {};
+        return this.floorColors[`${i},${j}`];
+    }
+    
+    setColorAt(i, j, color) {
+        if (!this.floorColors) this.floorColors = {};
+        this.floorColors[`${i},${j}`] = color;
+    }
+    
+    getColorAt(i, j) {
+        if (!this.floorColors) this.floorColors = {};
+        return this.floorColors[`${i},${j}`];
+    }
+    
+    setColorAt(i, j, color) {
+        if (!this.floorColors) this.floorColors = {};
+        this.floorColors[`${i},${j}`] = color;
+    }
+    
+    drawWoodenBeams(width, height) {
+        this.ctx.fillStyle = '#4E3524';  // Darker wood color
+        // Vertical beams
+        this.ctx.fillRect(0, 0, width * 0.05, height * 0.8);
+        this.ctx.fillRect(width * 0.95, 0, width * 0.05, height * 0.8);
+        // Horizontal beams
+        this.ctx.fillRect(0, 0, width, height * 0.05);
+        this.ctx.fillRect(0, height * 0.75, width, height * 0.05);
+    }
+    
+    drawNoticeBoard(x, y, width, height) {
+        // Draw notice board background
+        this.ctx.fillStyle = '#8B4513';  // Dark wood color
+        this.ctx.fillRect(x, y, width, height);
+    
+        // Draw border
+        this.ctx.strokeStyle = '#D2691E';  // Lighter wood color for border
+        this.ctx.lineWidth = 10;
+        this.ctx.strokeRect(x + 5, y + 5, width - 10, height - 10);
+    
+        // Draw quest notices
+        const now = Date.now();
+        const noticeWidth = width * 0.25;
+        const noticeHeight = height * 0.2;
+        const noticeColors = ['#FFFACD', '#F0E68C', '#FAFAD2', '#EEE8AA', '#FFFFE0', '#FFEFD5'];
+    
+        for (let col = 0; col < 3; col++) {
+            // Calculate column-specific wave
+            const columnWave = Math.sin(now * 0.002 + col) * 5; // 5 pixels max displacement
+    
+            for (let row = 0; row < 2; row++) {
+                const i = col + row * 3;
+                const noticeX = x + col * (width / 3) + width * 0.04;
+                const noticeY = y + row * (height / 3) + height * 0.15 + columnWave;
+    
+                // Draw notice paper
+                this.ctx.fillStyle = noticeColors[i];
+                this.ctx.fillRect(noticeX, noticeY, noticeWidth, noticeHeight);
+    
+                // Draw push pin
+                this.ctx.beginPath();
+                this.ctx.arc(noticeX + noticeWidth / 2, noticeY + 10, 5, 0, Math.PI * 2);
+                this.ctx.fillStyle = '#FF0000';  // Red pin
+                this.ctx.fill();
+            }
+        }
+    }
+    
+    getRandomBookColor() {
+        const bookColors = [
+            '#F4A460', '#DEB887', '#D2B48C', '#FFDAB9', 
+            '#FFE4B5', '#FFEFD5', '#FFE4E1', '#FFF0F5'
+        ];
+        return bookColors[Math.floor(Math.random() * bookColors.length)];
+    }
+    
+    drawWeaponRack(x, y, width, height) {
+        // Draw rack base
+        this.ctx.fillStyle = '#8B4513';  // Dark wood color
+        this.ctx.fillRect(x, y + height * 0.9, width, height * 0.1);
+    
+        // Draw vertical support
+        this.ctx.fillRect(x + width * 0.1, y, width * 0.05, height * 0.9);
+        this.ctx.fillRect(x + width * 0.85, y, width * 0.05, height * 0.9);
+    
+        // Draw weapon holders
+        for (let i = 0; i < 4; i++) {
+            const holderY = y + height * (0.2 + i * 0.2);
+            this.ctx.fillRect(x, holderY, width, height * 0.05);
+        }
+    
+        // Draw weapons
+        const weaponTypes = ['sword', 'axe', 'spear', 'bow'];
+        for (let i = 0; i < 4; i++) {
+            const weaponX = x + width * (0.25 + i * 0.2);
+            const weaponY = y + height * 0.15;
+            this.drawWeapon(weaponTypes[i], weaponX, weaponY, width * 0.1, height * 0.7);
+        }
+    }
+    
+    drawWeapon(type, x, y, width, height) {
+        this.ctx.strokeStyle = '#C0C0C0';  // Silver color for weapons
+        this.ctx.lineWidth = 3;
+    
+        switch (type) {
+            case 'sword':
+                this.ctx.beginPath();
+                this.ctx.moveTo(x, y);
+                this.ctx.lineTo(x, y + height * 0.8);
+                this.ctx.moveTo(x - width / 2, y + height * 0.2);
+                this.ctx.lineTo(x + width / 2, y + height * 0.2);
+                this.ctx.stroke();
+                break;
+            case 'axe':
+                this.ctx.beginPath();
+                this.ctx.moveTo(x, y);
+                this.ctx.lineTo(x, y + height * 0.8);
+                this.ctx.moveTo(x - width / 2, y + height * 0.2);
+                this.ctx.lineTo(x + width / 2, y + height * 0.1);
+                this.ctx.lineTo(x + width / 2, y + height * 0.3);
+                this.ctx.lineTo(x - width / 2, y + height * 0.2);
+                this.ctx.stroke();
+                break;
+            case 'spear':
+                this.ctx.beginPath();
+                this.ctx.moveTo(x, y);
+                this.ctx.lineTo(x, y + height);
+                this.ctx.moveTo(x - width / 4, y + height * 0.1);
+                this.ctx.lineTo(x, y);
+                this.ctx.lineTo(x + width / 4, y + height * 0.1);
+                this.ctx.stroke();
+                break;
+            case 'bow':
+                // Draw the bow
+                this.ctx.beginPath();
+                this.ctx.moveTo(x, y);
+                this.ctx.quadraticCurveTo(x + width / 2, y + height / 2, x, y + height);
+                this.ctx.stroke();
+    
+                // Draw the bowstring
+                this.ctx.beginPath();
+                this.ctx.moveTo(x, y);
+                this.ctx.lineTo(x - width / 4, y + height / 2);
+                this.ctx.lineTo(x, y + height);
+                this.ctx.stroke();
+                break;
+        }
+    }
+    
+    drawReceptionDesk(x, y, width, height) {
+        this.ctx.fillStyle = '#D2691E';  // Chocolate color
+        this.ctx.fillRect(x, y, width, height);
+    
+        // Add some detail to the desk
+        this.ctx.fillStyle = '#8B4513';  // Dark wood color
+        this.ctx.fillRect(x + 10, y + 10, width - 20, height - 20);
+    }
+    
+    drawGuildMember(x, y) {
+        const now = Date.now();
+        const bobAmount = Math.sin(now * 0.005) * 5; // Slight bobbing motion
+    
         // Body
-        this.ctx.fillRect(width * 0.45, height * 0.65, width * 0.1, height * 0.35);  // Stretches to bottom
+        this.ctx.fillStyle = '#006400';  // Dark green for uniform
+        this.ctx.fillRect(x - 30, y - 60 + bobAmount, 60, 80);
+    
         // Head
+        this.ctx.fillStyle = '#FFA07A';  // Light Salmon for skin
         this.ctx.beginPath();
-        this.ctx.arc(width * 0.5, height * 0.6, width * 0.05, 0, Math.PI * 2);
+        this.ctx.arc(x, y - 80 + bobAmount, 30, 0, Math.PI * 2);
         this.ctx.fill();
     
-        // Add the "Welcome!" text
-        this.ctx.fillStyle = '#000000';  // Gold
-        this.ctx.font = 'bold 20px Arial';
-        this.ctx.textAlign = 'center';
-        this.ctx.fillText('Welcome!', width * 0.75, height * 0.1);  // Centered in the right half
+        // Eyes
+        this.ctx.fillStyle = '#000000';
+        this.ctx.beginPath();
+        this.ctx.arc(x - 10, y - 80 + bobAmount, 5, 0, Math.PI * 2);
+        this.ctx.arc(x + 10, y - 80 + bobAmount, 5, 0, Math.PI * 2);
+        this.ctx.fill();
+    }
+    
+    drawPlayer(x, y) {
+        const now = Date.now();
+        const bobAmount = Math.sin(now * 0.005) * 3; // Slight bobbing motion
+    
+        // Body
+        this.ctx.fillStyle = '#FF6347';  // Tomato color for player
+        this.ctx.fillRect(x - 20, y - 50 + bobAmount, 40, 60);
+    
+        // Head
+        this.ctx.fillStyle = '#FFA07A';  // Light Salmon for skin
+        this.ctx.beginPath();
+        this.ctx.arc(x, y - 60 + bobAmount, 20, 0, Math.PI * 2);
+        this.ctx.fill();
     }
     
     drawText(text, x, y) {
@@ -1503,6 +2122,16 @@ class Game {
     }
 
     renderInnMap() {
+        // Check if the player is still in the inn
+        if (!this.characters[this.currentUserId].location.startsWith("inn_")) {
+            // If not in the inn, cancel the animation and return
+            if (this.innAnimationFrame) {
+                cancelAnimationFrame(this.innAnimationFrame);
+                this.innAnimationFrame = null;
+            }
+            return;
+        }
+    
         const width = this.mapCanvas.width;
         const height = this.mapCanvas.height;
     
@@ -1537,9 +2166,9 @@ class Game {
     
         // Draw flickering fire
         this.drawFire(width * 0.37, height * 0.4, width * 0.26, height * 0.4);
-    
-        // Request next animation frame
-        requestAnimationFrame(() => this.renderInnMap());
+
+        // Request the next frame only if still in the inn
+        this.innAnimationFrame = requestAnimationFrame(() => this.renderInnMap());
     }
     
     drawFire(x, y, w, h) {
