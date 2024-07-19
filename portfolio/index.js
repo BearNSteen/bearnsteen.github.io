@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const nameElement = document.getElementById('myname');
   if (nameElement && nameElement.textContent === 'Redacted') {
-      nameElement.textContent = 'Name';
+      nameElement.textContent = 'Dan Glendon';
   }
 
   const banner = document.getElementById('constructionBanner');

@@ -7,248 +7,31 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="construction-banner">
-        <p id="constructionBanner">🚧 7/5/24 - This site is under construction. Some features may not be available. 🚧</p>
-    </div>
-
-    <div class="navbar">
-        <div class="navbar-left">
-            <a href="#" class="navbar-item">
-                <img src="images/home.png" alt="Home" class="navbar-logo">
+    <div class="home-container">
+        <div class="button-row">
+            <a href="watching/index.html" class="home-button" data-name="We Are Watching">
+                <img src="images/wearewatchinglogo_navbar.png" alt="We Are Watching" class="button-logo">
             </a>
-            <div class="dropdown">
-                <button class="dropbtn navbar-item">
-                    <img src="images/wearewatchinglogo_navbar.png" alt="We Are Watching" class="navbar-logo">
-                </button>
-                <div class="dropdown-content">
-                    <a href="#" class="dropdown-header" disabled>We Are Watching</a>
-                    <a href="watching/index.html" target="_blank">Play</a>
-                    <a href="watching/about.html" target="_blank">About</a>
-                </div>
-            </div>
-            <div class="dropdown">
-                <button class="dropbtn navbar-item">
-                    <img src="images/bearlogo_navbar.png" alt="Creatures of Habbitt" class="navbar-logo">
-                </button>
-                <div class="dropdown-content">
-                    <a href="#" class="dropdown-header" disabled>Creatures of Habbitt</a>
-                    <a href="habbitt/about.html" target="_blank">About</a>
-                    <a href="habbitt/wiki.html" target="_blank">Wiki</a>
-                </div>
-            </div>
-            <div class="dropdown">
-                <button class="dropbtn navbar-item">
-                    <img src="images/rpg_navbar.png" alt="DDG" class="navbar-logo">
-                </button>
-                <div class="dropdown-content">
-                    <a href="#" class="dropdown-header" disabled>Dungeon Delvers Guild</a>
-                    <a href="ddg/index.html" target="_blank">Play</a>
-                </div>
-            </div>
+            <a href="habbitt/about.html" class="home-button" data-name="Creatures of Habbitt">
+                <img src="images/bearlogo_navbar.png" alt="Creatures of Habbitt" class="button-logo">
+            </a>
+            <a href="ddg/index.html" class="home-button" data-name="Dungeon Delvers Guild">
+                <img src="images/ddg-logo.jpeg" alt="DDG" class="button-logo">
+            </a>
         </div>
-        <a href="https://github.com/bearnsteen" target="_blank" class="github-link">
-            <img src="images/github-mark.png" alt="GitHub" class="github-logo">
-        </a>
+        <div class="divider"></div>
+        <div class="button-row">
+            <a href="portfolio/index.html" class="home-button" data-name="Portfolio">
+                <img src="images/resume.png" alt="Portfolio" class="button-logo">
+            </a>
+            <a href="https://github.com/bearnsteen" target="_blank" class="home-button" data-name="GitHub">
+                <img src="images/github-mark.png" alt="GitHub" class="button-logo">
+            </a>
+        </div>
     </div>
+    <div id="hover-text"></div>
+    <div class="footer-text">BearNSteen, 2024</div>
 
-    <header>
-        <h1 id="myname">Redacted</h1>
-        <p>Game Developer | AI Developer | Software Engineer | Computer Science Educator</p>
-    </header>
-
-    <section class="section">
-        <h2>About Me</h2>
-        <p>Welcome to my portfolio! I'm a passionate AI developer and software engineer with experience in both industry and academia. With a strong foundation in computer science and a knack for problem-solving, I bring innovative solutions to every project I undertake.</p>
-    </section>
-
-    <section class="section">
-        <h2>At A Glance</h2>
-        <h3>Education</h3>
-        <div class="education-list">
-            <div class="education-item" title="GPA: 3.92">
-                <img src="images/osu-logo.png" alt="Oregon State University">
-                <div class="education-details">
-                    <span>B.S. Computer Science</span>
-                    <span>Oregon State University</span>
-                    <span>Graduated 2023, GPA 3.92</span>
-                </div>
-            </div>
-            <div class="education-item">
-                <img src="images/csus-logo.png" alt="California State University Sacramento">
-                <div class="education-details">
-                    <span>B.S. Criminal Justice</span>
-                    <span>California State University, Sacramento</span>
-                    <span>Graduated 2018, GPA 3.0</span>
-                </div>
-            </div>
-        </div>
-        <div class="education-list">
-            <div class="education-item" title="GPA: 3.92">
-                <img src="images/osu-logo.png" alt="Oregon State University">
-                <div class="education-details">
-                    <span>Minor in Cybersecurity</span>
-                    <span>Oregon State University</span>
-                    <span>Graduated 2023, GPA 4.0</span>
-                </div>
-            </div>
-            <div class="education-item">
-                <img src="images/csus-logo.png" alt="California State University Sacramento">
-                <div class="education-details">
-                    <span>Minor in Pre-law</span>
-                    <span>California State University, Sacramento</span>
-                    <span>Graduated 2018, GPA 3.6</span>
-                </div>
-            </div>
-        </div>
-        <h3>Skills</h3>
-        <div class="skill-list">
-            <div class="skill">
-                <img src="images/python-logo.png" alt="Python">
-                <span>Python</span>
-            </div>
-            <div class="skill">
-                <img src="images/java-logo.png" alt="Java">
-                <span>Java</span>
-            </div>
-            <div class="skill">
-                <img src="images/godot-logo.png" alt="GDScript">
-                <span>GDScript (Godot 4)</span>
-            </div>
-            <div class="skill">
-                <img src="images/javascript-logo.png" alt="JS">
-                <span>JavaScript</span>
-            </div>
-            <div class="skill">
-                <img src="images/aws-logo.png" alt="AWS">
-                <span>AWS</span>
-            </div>
-            <div class="skill">
-                <img src="images/chatgpt-logo.png" alt="ChatGPT">
-                <span>ChatGPT</span>
-            </div>
-            <div class="skill">
-                <img src="images/scrum-logo.png" alt="SCRUM">
-                <span>SCRUM</span>
-            </div>
-            <div class="skill">
-                <img src="images/angular-logo.png" alt="Angular">
-                <span>Angular</span>
-            </div>
-            <div class="skill">
-                <img src="images/react-logo.png" alt="React">
-                <span>React</span>
-            </div>
-            <div class="skill">
-                <img src="images/mysql-logo.png" alt="mySQL">
-                <span>mySQL</span>
-            </div>
-        </div>
-        <h3>Jobs</h3>
-        <div class="skill-list">
-            <div class="skill">
-                <img src="images/dataannotation-logo.png" alt="Confidential">
-                <span>AI Developer</span>
-            </div>
-            <div class="skill">
-                <img src="images/amazon-logo.png" alt="Amazon">
-                <span>SDE Intern</span>
-            </div>
-            <div class="skill">
-                <img src="images/osu-logo.png" alt="Oregon State University">
-                <span>CS TA</span>
-            </div>
-        </div>
-    </section>
-
-    <section class="section expandable" id="skillsSection">
-        <h2 class="section-title">Skills <span class="toggle-icon">▼</span></h2>
-        <div class="section-content">
-            <div class="skills-grid">
-                <div class="skill-category">
-                    <h3>Programming</h3>
-                    <ul>
-                        <li>Python (NumPy, Pandas, Matplotlib, pyQT, pyOpenGL, pygame)</li>
-                        <li>Java (Kotlin, Spring, Lombok)</li>
-                        <li>GDScript (Godot)</li>
-                        <li>Assembly Language</li>
-                    </ul>
-                </div>
-                <div class="skill-category">
-                    <h3>Web Development</h3>
-                    <ul>
-                        <li>JavaScript</li>
-                        <li>CSS</li>
-                        <li>HTML</li>
-                        <li>React</li>
-                        <li>Angular</li>
-                    </ul>
-                </div>
-                <div class="skill-category">
-                    <h3>Data & AI</h3>
-                    <ul>
-                        <li>Machine Learning and AI</li>
-                        <li>Database Management (MongoDB, PostgreSQL, MySQL)</li>
-                    </ul>
-                </div>
-                <div class="skill-category">
-                    <h3>Development Tools</h3>
-                    <ul>
-                        <li>Git, GitHub</li>
-                        <li>SDLC (SCRUM, Agile)</li>
-                        <li>JIRA</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="section expandable" id="experienceSection">
-        <h2 class="section-title">Experience <span class="toggle-icon">▼</span></h2>
-        <div class="section-content">
-            <div id="jobs-container"></div>
-            <div class="additional-experience">
-                <span>+4 more</span>
-                <div class="job-list">
-                    <div class="addjob" title="Freelance Web Developer">
-                        <img src="images/bp.png" alt="Web Developer">
-                        <span>Web Dev</span>
-                    </div>
-                    <div class="addjob" title="Ballpark Suite Caterer">
-                        <img src="images/rivercats-logo.png" alt="Rivercats">
-                        <span>Private Club Caterer</span>
-                    </div>
-                    <div class="addjob" title="ASD Therapist">
-                        <img src="images/therapy-icon.png" alt="Therapist">
-                        <span>Therapist</span>
-                    </div>
-                    <div class="addjob" title="Lead Caterer / Lead Concessions">
-                        <img src="images/csus-logo.png" alt="Lead Caterer">
-                        <span>Lead Caterer</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-    </section>
-
-    <section class="section expandable" id="projectsSection">
-        <h2 class="section-title">Projects <span class="toggle-icon">▼</span></h2>
-        <div class="section-content">
-            <div id="projects-container"></div>
-        </div>
-    </section>
-
-    <section class="section expandable" id="contactSection">
-        <h2 class="section-title">Get In Touch <span class="toggle-icon">▼</span></h2>
-        <div class="section-content">
-            <div class="contact-info">
-                <p>Email: <span id="contact-email"></span></p>
-                <p>LinkedIn: <span id="contact-linkedin"></span></p>
-                <p>GitHub: <span id="contact-github"></span></p>
-            </div>
-        </div>
-        </section>
-
-    <script src="index.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
