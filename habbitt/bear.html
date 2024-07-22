@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bear Character - Your Game Name</title>
+    <link rel="stylesheet" href="habbitt.css">
+    <link rel="stylesheet" href="character.css">
+</head>
+<body>
+    <header>
+        <h1>Bear Character</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="characters.html">Characters</a></li>
+                <li><a href="locations.html">Locations</a></li>
+                <li><a href="items.html">Items</a></li>
+                <li><a href="quests.html">Quests</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="character-container">
+            <div class="character-image">
+                <img src="https://place-hold.it/300x400" alt="Bear Character">
+            </div>
+            <div class="character-details">
+                <h2 class="character-name">Bear</h2>
+                <div class="tab-container">
+                    <div class="tab-buttons">
+                        <button class="tab-button active" data-tab="description">Description</button>
+                        <button class="tab-button" data-tab="stats">Stats</button>
+                        <button class="tab-button" data-tab="skills">Skills</button>
+                        <button class="tab-button" data-tab="background">Background</button>
+                        <button class="tab-button" data-tab="quests">Quests</button>
+                        <button class="tab-button" data-tab="relationship">Relationship</button>
+                    </div>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="description">
+                            <!-- Add character description here -->
+                        </div>
+                        <div class="tab-pane" id="stats">
+                            <ul id="stat-list">
+                                <!-- Add stats here -->
+                                <!-- Example: <li>Strength: 8</li> -->
+                            </ul>
+                        </div>
+                        <div class="tab-pane" id="skills">
+                            <ul id="skill-list">
+                                <!-- Add skills here -->
+                                <!-- Example: <li>Foraging: Level 5</li> -->
+                            </ul>
+                        </div>
+                        <div class="tab-pane" id="background">
+                            <!-- Add background information here -->
+                        </div>
+                        <div class="tab-pane" id="quests">
+                            <ul id="quest-list">
+                                <!-- Add quests here -->
+                                <!-- Example: <li><a href="quest1.html">Quest Name</a></li> -->
+                            </ul>
+                        </div>
+                        <div class="tab-pane" id="relationship">
+                            <!-- Add relationship questline information here -->
+                            <ul id="relationship-quest-list">
+                                <!-- Add relationship quests here -->
+                                <!-- Example: <li><a href="rel-quest1.html">Relationship Quest 1</a></li> -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Your Game Name. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // JavaScript for tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabPanes.forEach(pane => pane.classList.remove('active'));
+
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
