@@ -156,3 +156,29 @@ footer {
     display: inline-block !important;
     line-height: 1 !important;
 }
+
+.logo {
+    padding: 10px 0;
+    text-align: center;
+}
+
+.logo img {
+    max-width: 300px;
+    width: 100%;
+    height: auto;
+}
+
+.logo-divider {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0));
+    margin: 0 auto 20px auto;
+    width: 80%;
+}
+
+/* For smaller screens */
+@media (max-width: 500px) {
+    .logo img {
+        max-width: 200px;
+    }
+}

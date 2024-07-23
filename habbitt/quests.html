@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Wiki - Quests</title>
+    <link rel="stylesheet" href="habbitt.css">
+    <style>
+        header {
+            padding-bottom: 0;
+        }
+        nav {
+            padding-top: 0;
+        }
+        .logo-container {
+            text-align: center;
+            padding: 10px 0 0 0;
+        }
+        .quest-container {
+            display: flex;
+            width: 100%;
+            height: calc(100vh - 150px);
+        }
+        .quest-list {
+            width: 250px;
+            height: calc(100vh - 150px);
+            overflow-y: auto;
+            padding-right: 20px;
+            background-color: #2a2a2a;
+            position: fixed;
+            left: 0;
+            top: 200px;
+        }
+        .quest-list ul {
+            list-style-type: none;
+            padding: 20px;
+        }
+        .quest-list li {
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .quest-list li:hover {
+            background-color: #3a3a3a;
+        }
+        .quest-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .quest-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 10px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            background-color: #3a3a3a;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .tab:hover {
+            background-color: #4a4a4a;
+        }
+        .tab.active {
+            background-color: #4a4a4a;
+        }
+        .tab-content {
+            display: none;
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 5px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .quest-content {
+            position: fixed;
+            left: 270px;
+            bottom: 0;
+            width: calc(100% - 300px);
+            padding: 20px 30px 20px 20px;
+            overflow-y: auto;
+            background-color: #1a1a1a;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tab.disabled {
+            background-color: #2a2a2a;
+            color: #666;
+            cursor: not-allowed;
+        }
+        .tab.disabled:hover {
+            background-color: #2a2a2a;
+        }
+        .quest-header {
+            color: #ffd700;
+            text-shadow: 0 0 5px #ff6600;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        .npc, .location {
+            color: #00ffff;
+            font-weight: bold;
+        }
+        .quest-description {
+            font-style: italic;
+            line-height: 1.6;
+            border-left: 3px solid #ff6600;
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+        .quest-importance {
+            background-color: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+        .hint {
+            background-color: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .hint-icon {
+            font-size: 1.2em;
+            margin-right: 5px;
+        }
+        .walkthrough {
+            background-color: rgba(0, 0, 255, 0.1);
+            border: 1px solid #0000ff;
+            padding: 20px 20px 20px 40px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+        .walkthrough li {
+            margin-bottom: 10px;
+        }
+        .walkthrough ul {
+            list-style-type: circle;
+            padding-left: 20px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+        <div class="logo">
+            <a href="index.html">
+                <img src="images/habbitt-logo.png" alt="Habbitt Game Logo">
+            </a>
+        </div>
+        <hr class="logo-divider">
+    </div>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="characters.html">Characters</a></li>
+            <li><a href="quests.html">Quests</a></li>
+            <li><a href="items.html">Items</a></li>
+        </ul>
+    </nav>
+    </header>
+
+    <div class="container">
+        <main>
+            <div class="quest-container">
+                <div class="quest-list">
+                    <ul>
+                        <li onclick="showQuest('quest1')">The Lost Artifact</li>
+                        <li onclick="showQuest('quest2')">Dragon's Hoard</li>
+                        <li onclick="showQuest('quest3')">The Cursed Village</li>
+                        <!-- Add more quests here -->
+                    </ul>
+                </div>
+                <div class="quest-content">
+                    <h2 class="quest-title" id="questTitle">No Quest Selected</h2>
+                    <div class="quest-tabs">
+                        <div class="tab active" data-tab="info">Info</div>
+                        <div class="tab" data-tab="hint1">Hint 1</div>
+                        <div class="tab" data-tab="hint2">Hint 2</div>
+                        <div class="tab" data-tab="hint3">Hint 3</div>
+                        <div class="tab" data-tab="walkthrough">Walkthrough</div>
+                    </div>
+                    <div id="questContent">
+                        <div class="tab-content active" id="info">Select a quest to view information.</div>
+                        <div class="tab-content" id="hint1"></div>
+                        <div class="tab-content" id="hint2"></div>
+                        <div class="tab-content" id="hint3"></div>
+                        <div class="tab-content" id="walkthrough"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2023 RPG Wiki. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const quests = {
+            quest1: {
+                title: "The Lost Artifact",
+                info: `<h3 class="quest-header">🧙‍♂️ Acquired from: <span class="npc">Elder Sage</span> in <span class="location">Mystical Village</span></h3>
+                       <p class="quest-description">The Elder Sage tasks you with finding an ancient artifact hidden in the <span class="location">Forbidden Forest</span>. Legend speaks of its immense power, capable of altering the very fabric of reality!</p>
+                       <div class="quest-importance">⚠️ <strong>Importance:</strong> This artifact could change the course of history. The fate of the realm rests in your hands!</div>`,
+                hint1: `<p class="hint"><span class="hint-icon">💡</span> Look for clues near the ancient oak tree at the forest entrance. Its gnarled branches seem to whisper secrets of old...</p>`,
+                hint2: `<p class="hint"><span class="hint-icon">💡</span> The artifact emits a faint, ethereal blue glow in darkness. Watch for shimmering air and listen for soft, melodic humming.</p>`,
+                hint3: `<p class="hint"><span class="hint-icon">💡</span> Beware of the guardian spirits protecting the artifact. They appear as wisps of light but can unleash tremendous power!</p>`,
+                walkthrough: `<ol class="walkthrough">
+                                <li>Journey to the enigmatic <span class="location">Forbidden Forest</span></li>
+                                <li>Examine the ancient oak tree, feeling its rough bark for hidden symbols</li>
+                                <li>Follow the mesmerizing blue wisps deeper into the woods</li>
+                                <li>Engage in an epic battle with the ethereal guardian spirits</li>
+                                <li>Descend into the hidden cave, where reality itself seems to warp</li>
+                                <li>Claim the artifact, feeling its power course through your veins!</li>
+                              </ol>`
+            },
+            quest2: {
+                title: "Dragon's Hoard",
+                info: `<h3 class="quest-header">🏔️ Acquired from: <span class="npc">Village Chief</span> in <span class="location">Mountain Town</span></h3>
+                       <p class="quest-description">The Village Chief implores you to recover priceless treasures stolen by a fearsome dragon. The beast's lair lies hidden in the treacherous <span class="location">Misty Mountains</span>.</p>
+                       <div class="quest-importance">⚠️ <strong>Importance:</strong> These treasures are the lifeblood of the town. Without them, the people face certain doom!</div>`,
+                hint1: `<p class="hint"><span class="hint-icon">💡</span> The dragon's lair is concealed behind a thundering waterfall in the heart of the <span class="location">Misty Mountains</span>.</p>`,
+                hint2: `<p class="hint"><span class="hint-icon">💡</span> The dragon's scales are impervious to fire, but they shatter like glass when struck with ice-based magic!</p>`,
+                hint3: `<p class="hint"><span class="hint-icon">💡</span> Behind the roaring waterfall lies a hidden passage. Look for the glint of gold amidst the mist to find the entrance.</p>`,
+                walkthrough: `<ol class="walkthrough">
+                                <li>Embark on a perilous journey to the <span class="location">Misty Mountains</span></li>
+                                <li>Locate the majestic waterfall concealing the dragon's lair</li>
+                                <li>Brave the icy waters to find the secret passage</li>
+                                <li>Confront the dragon in an epic battle, using powerful ice magic</li>
+                                <li>Claim the glittering hoard of treasures from the vanquished beast</li>
+                                <li>Return triumphantly to the village, hailed as a true hero!</li>
+                              </ol>`
+            },
+            quest3: {
+                title: "The Cursed Village",
+                info: `<h3 class="quest-header">🌙 Acquired from: <span class="npc">Mysterious Traveler</span> at the <span class="location">Crossroads</span></h3>
+                       <p class="quest-description">A enigmatic traveler speaks of a village trapped in an eternal nightmare. A malevolent curse has befallen the land, and only you can break its wicked hold!</p>
+                       <div class="quest-importance">⚠️ <strong>Importance:</strong> An entire village's fate hangs in the balance. Will you be their savior or leave them to their doom?</div>`,
+                hint1: `<p class="hint"><span class="hint-icon">💡</span> The source of the curse lies within an ancient totem, standing ominously in the village center. Its eyes seem to follow your every move...</p>`,
+                hint2: `<p class="hint"><span class="hint-icon">💡</span> Seek out the village elder, whose weathered face holds the key to the village's dark past. Listen carefully to their tales of woe.</p>`,
+                hint3: `<p class="hint"><span class="hint-icon">💡</span> The curse can only be lifted by performing an arcane ritual at the stroke of midnight. Gather the necessary components under the light of the blood moon!</p>`,
+                walkthrough: `<ol class="walkthrough">
+                                <li>Enter the forsaken village, where shadows whisper and mist clings to your feet</li>
+                                <li>Seek audience with the village elder, gleaning crucial information about the curse's origin</li>
+                                <li>Investigate the sinister totem in the village center, deciphering its cryptic markings</li>
+                                <li>Scour the haunted landscape for the ritual components:
+                                    <ul>
+                                        <li>A vial of moonlight tears</li>
+                                        <li>The essence of a nightmare</li>
+                                        <li>A token of true love's sacrifice</li>
+                                    </ul>
+                                </li>
+                                <li>As the clock strikes midnight, perform the intricate ritual to shatter the curse</li>
+                                <li>Watch in awe as the village awakens from its nightmare, freed at last!</li>
+                              </ol>`
+            }
+        };
+
+        function setTabsEnabled(enabled) {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                if (enabled) {
+                    tab.classList.remove('disabled');
+                    tab.onclick = function() { showTab(this.innerText.toLowerCase()); };
+                } else {
+                    tab.classList.add('disabled');
+                    tab.onclick = null;
+                }
+            });
+        }
+
+        function showQuest(questId) {
+            const quest = quests[questId];
+            document.getElementById('questTitle').textContent = quest.title;
+            
+            const questContent = document.getElementById('questContent');
+            questContent.innerHTML = `
+                <div class="tab-content active" id="info">${quest.info}</div>
+                <div class="tab-content" id="hint1">${quest.hint1}</div>
+                <div class="tab-content" id="hint2">${quest.hint2}</div>
+                <div class="tab-content" id="hint3">${quest.hint3}</div>
+                <div class="tab-content" id="walkthrough">${quest.walkthrough}</div>
+            `;
+        
+            setTabsEnabled(true);
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.onclick = function() {
+                    const tabId = this.getAttribute('data-tab');
+                    showTab(tabId);
+                };
+            });
+            
+            showTab('info');
+        }
+        
+        function showTab(tabId) {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+        
+            tabs.forEach(tab => tab.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+        
+            const activeTab = document.querySelector(`.tab[data-tab="${tabId}"]`);
+            const activeContent = document.getElementById(tabId);
+        
+            if (activeTab && activeContent) {
+                activeTab.classList.add('active');
+                activeContent.classList.add('active');
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const header = document.querySelector('header');
+            const headerHeight = header.offsetHeight;
+            const questList = document.querySelector('.quest-list');
+            const questContent = document.querySelector('.quest-content');
+            
+            questList.style.top = `${headerHeight}px`;
+            questList.style.height = `calc(100vh - ${headerHeight}px)`;
+            
+            // Apply same top position to quest-content
+            questContent.style.top = `${headerHeight}px`;
+            questContent.style.height = `calc(100vh - ${headerHeight}px)`;
+            setTabsEnabled(false);
+        });
+    </script>
+</body>
+</html>

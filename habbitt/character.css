@@ -1,36 +1,11 @@
 /* Import the existing styles */
 @import url('habbitt.css');
 
-/* Character page specific styles */
-.character-container {
-    display: flex;
-    margin: 2rem auto;
-    max-width: 1200px;
-    background-color: #2a2a2a;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-}
-
-.character-image {
-    flex: 0 0 40%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #202122;
-    padding: 2rem;
-}
-
 .character-image img {
     max-width: 100%;
-    max-height: 500px;
+    max-height: 400px;
     object-fit: contain;
     border-radius: 5px;
-}
-
-.character-details {
-    flex: 1;
-    padding: 2rem;
 }
 
 .character-name {
@@ -92,17 +67,32 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .character-container {
         flex-direction: column;
+        align-items: center;
     }
 
     .character-image {
         padding: 1rem;
+        width: 100%;
+        max-width: 500px;
     }
 
     .character-details {
         padding: 1rem;
+        width: 100%;
+        max-width: 600px;
+    }
+}
+
+@media (max-width: 768px) {
+    .character-image {
+        max-width: 100%;
+    }
+
+    .character-details {
+        max-width: 100%;
     }
 
     .tab-buttons {
@@ -113,4 +103,71 @@
         flex: 1 0 33.33%;
         text-align: center;
     }
+}
+
+.character-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 2rem auto;
+    max-width: 1200px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.character-image {
+    flex: 1 1 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #2a2a2a;
+    padding: 2rem;
+    min-width: 300px;
+    border-right: 1px solid #3a3a3a;
+}
+
+.character-details {
+    flex: 1 1 400px;
+    padding: 2rem;
+    min-width: 300px;
+    background-color: #2a2a2a;
+}
+
+@media (max-width: 1024px) {
+    .character-image {
+        border-right: none;
+        border-bottom: 1px solid #3a3a3a;
+        margin-bottom: 2rem; /* Add vertical gap */
+    }
+
+    /* Optional: Remove the top margin of the character-details to balance spacing */
+    .character-details {
+        margin-top: 0;
+    }
+}
+
+.logo {
+    padding: 10px 0;
+    text-align: center;
+}
+
+.logo img {
+    max-width: 300px;  /* Adjust this value based on your logo's ideal display size */
+    width: 100%;
+    height: auto;
+}
+
+/* For smaller screens */
+@media (max-width: 500px) {
+    .logo img {
+        max-width: 200px;  /* A bit smaller for mobile devices */
+    }
+}
+
+.logo-divider {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0));
+    margin: 0 auto 20px auto;
+    width: 80%;
 }
