@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habbitt - World Map</title>
+    <link rel="stylesheet" href="habbitt.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .map-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            position: relative;
+        }
+        .world-map {
+            display: grid;
+            grid-template-columns: repeat(61, 1fr);
+            gap: 1px;
+            background-color: #2a2a2a;
+            padding: 5px;
+            border-radius: 5px;
+            width: 100%;
+        }
+        .tile {
+            aspect-ratio: 1 / 1;
+            background-color: #3a3a3a;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .tile:hover {
+            background-color: #4a4a4a;
+        }
+        .tile.habbitt {
+            background-color: #FFC107;
+        }
+        .tile.grass {
+            background-color: #4CAF50;
+        }
+        .tile.known-location {
+            background-color: #5a5a5a;
+        }
+        .info-box {
+            position: absolute;
+            background-color: #2a2a2a;
+            border: 1px solid #4a4a4a;
+            border-radius: 5px;
+            padding: 10px;
+            max-width: 200px;
+            display: none;
+            z-index: 1000;
+        }
+        .info-box h3 {
+            margin-top: 0;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #2a2a2a;
+        }
+        .info-box {
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="index.html">
+                <img src="images/habbitt-logo.png" alt="Habbitt Game Logo">
+            </a>
+        </div>
+        <hr class="logo-divider">
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="characters.html">Characters</a></li>
+                <li><a href="locations.html">Locations</a></li>
+                <li><a href="items.html">Items</a></li>
+                <li><a href="quests.html">Quests</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>World Map</h1>
+        <div class="map-container">
+            <div class="world-map" id="worldMap"></div>
+            <div class="info-box" id="infoBox"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Habbitt. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const worldMap = document.getElementById('worldMap');
+        const infoBox = document.getElementById('infoBox');
+
+        const knownLocations = {
+            1860: { name: "Habbitt", description: "The central town and starting point of your adventure." },
+            // Add more locations as needed
+        };
+
+        // Function to get the index of surrounding tiles
+        function getSurroundingTiles(center, distance = 1) {
+            let surroundingTiles = [];
+            for (let i = -distance; i <= distance; i++) {
+                for (let j = -distance; j <= distance; j++) {
+                    if (i !== 0 || j !== 0) {
+                        // Exclude tiles that are at the maximum distance (creates a diamond shape)
+                        if (Math.abs(i) + Math.abs(j) <= distance) {
+                            surroundingTiles.push(center + (i * 61) + j);
+                        }
+                    }
+                }
+            }
+            return surroundingTiles;
+        }
+
+        // Create world map
+        for (let i = 0; i < 3721; i++) {
+            const tile = document.createElement('div');
+            tile.classList.add('tile');
+            
+            if (i === 1860) { // Center tile (31st row, 31st column: 30 * 61 + 30 = 1860)
+                tile.classList.add('habbitt');
+            } else if (getSurroundingTiles(1860, 1).includes(i)) { // Surrounding grass tiles (changed from 2 to 1)
+                tile.classList.add('grass');
+            } else if (knownLocations[i]) {
+                tile.classList.add('known-location');
+            }
+            
+            tile.addEventListener('click', (event) => showLocationInfo(i, event));
+            worldMap.appendChild(tile);
+        }
+
+        function showLocationInfo(index, event) {
+            let content = '';
+            if (knownLocations[index]) {
+                const location = knownLocations[index];
+                content = `<h3>${location.name}</h3><p>${location.description}</p>`;
+            } else if (index === 1860) {
+                content = "<h3>Habbitt</h3><p>The central town and starting point of your adventure.</p>";
+            } else {
+                content = "<p>No information available for this location.</p>";
+            }
+        
+            infoBox.innerHTML = content;
+            infoBox.style.display = 'block';
+        
+            // Position the info box near the clicked tile
+            const rect = event.target.getBoundingClientRect();
+            const mapRect = worldMap.getBoundingClientRect();
+        
+            // Calculate available space on each side
+            const spaceRight = mapRect.right - rect.right;
+            const spaceLeft = rect.left - mapRect.left;
+            const spaceBottom = mapRect.bottom - rect.bottom;
+            const spaceTop = rect.top - mapRect.top;
+        
+            let left, top;
+        
+            // Determine horizontal position
+            if (spaceRight >= infoBox.offsetWidth) {
+                left = rect.right + 5;
+            } else if (spaceLeft >= infoBox.offsetWidth) {
+                left = rect.left - infoBox.offsetWidth - 5;
+            } else {
+                left = mapRect.left + (mapRect.width - infoBox.offsetWidth) / 2;
+            }
+        
+            // Determine vertical position
+            if (spaceBottom >= infoBox.offsetHeight) {
+                top = rect.top;
+            } else if (spaceTop >= infoBox.offsetHeight) {
+                top = rect.bottom - infoBox.offsetHeight;
+            } else {
+                top = mapRect.top + (mapRect.height - infoBox.offsetHeight) / 2;
+            }
+        
+            // Ensure the info box stays within the map boundaries
+            left = Math.max(mapRect.left, Math.min(left, mapRect.right - infoBox.offsetWidth));
+            top = Math.max(mapRect.top, Math.min(top, mapRect.bottom - infoBox.offsetHeight));
+        
+            infoBox.style.left = `${left}px`;
+            infoBox.style.top = `${top}px`;
+        }
+
+        // Close info box when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('.tile')) {
+                infoBox.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

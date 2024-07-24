@@ -5,231 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Items - Habbitt</title>
     <link rel="stylesheet" href="habbitt.css">
-    <style>
-        /* Items page specific styles */
-        .category-grid, .item-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            margin: 20px 20px 0;
-        }
-
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        .category-tile {
-            background-color: #3a3a3a;
-            padding: 20px;
-            text-align: center;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-
-        .category-tile:hover {
-            background-color: #4a4a4a;
-            transform: scale(1.05);
-        }
-
-        #item-search {
-            width: 100%;
-            padding: 10px;
-            margin-top: 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #3a3a3a;
-            color: #c8ccd1;
-        }
-
-        .item-card {
-            flex: 1 0 calc(25% - 20px);
-            min-width: 150px;
-            max-width: calc(25% - 20px);
-            background-color: #3a3a3a;
-            padding: 15px;
-            text-align: center;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: transform 0.3s;
-            box-sizing: border-box;
-        }
-
-        .item-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-        }
-
-        .item-card img {
-            width: 100%;
-            max-width: 100px;
-            height: auto;
-            margin-bottom: 15px;
-            border-radius: 5px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.8);
-        }
-
-        .modal-content {
-            background-color: #2a2a2a;
-            margin: 10% auto;
-            padding: 30px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 400px;
-            color: #c8ccd1;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .close {
-            color: #c8ccd1;
-            float: right;
-            font-size: 28px;
-            cursor: pointer;
-        }
-
-        .close:hover {
-            color: #fff;
-        }
-
-        main {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-        }
-
-        .modal-header {
-            margin-bottom: 20px;
-        }
-
-        .modal-header h2, #modalItemName {
-            margin-bottom: 5px;
-        }
-
-        .modal-header p, #modalItemCategory {
-            color: #999;
-            font-style: italic;
-            margin-bottom: 15px;
-        }
-
-        #modalItemDescription {
-            line-height: 1.6;
-            margin-bottom: 25px;
-            text-align: left;
-        }
-
-        .item-stats {
-            background-color: #3a3a3a;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: left;
-        }
-
-        .item-stats h3 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .item-stats ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .item-stats li {
-            margin-bottom: 8px;
-        }
-
-        .emoji-placeholder, #modalItemEmoji {
-            white-space: nowrap;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .emoji-placeholder {
-            font-size: 48px;
-            height: 100px;
-        }
-
-        #modalItemImage {
-            font-size: 64px;
-            height: 150px;
-            margin: 15px auto;
-            display: block;
-            max-width: 120px;
-        }
-        
-        #modalItemEmoji {
-            font-size: 64px;
-            height: 150px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .emoji-placeholder:has(div + div), #modalItemEmoji:has(div + div) {
-            font-size: 0.8em;
-        }
-
-        @media (max-width: 1100px) {
-            .item-card {
-                flex: 1 0 calc(33.33% - 20px);
-                max-width: calc(33.33% - 20px);
-            }
-        }
-
-        @media (max-width: 900px) {
-            .category-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .item-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (max-width: 800px) {
-            .item-card {
-                flex: 1 0 calc(50% - 20px);
-                max-width: calc(50% - 20px);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .category-grid, .item-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 500px) {
-            .item-card {
-                flex: 1 0 calc(100% - 20px);
-                max-width: calc(100% - 20px);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="items.css">
 </head>
 <body>
+    <!-- Header section -->
     <header>
         <div class="logo">
             <a href="index.html">
@@ -248,13 +27,21 @@
         </nav>
     </header>
 
+    <!-- Main content section -->
     <main>
         <h1>Items Encyclopedia</h1>
-        <input type="text" placeholder="Search items..." id="item-search">
-        <div id="categories" class="category-grid"></div>
-        <div id="items" class="item-grid"></div>
+        <div class="search-container">
+            <input type="text" placeholder="Search items..." id="item-search">
+        </div>
+        <div class="categories-container">
+            <div id="categories" class="category-grid"></div>
+        </div>
+        <div class="items-container">
+            <div id="items" class="item-grid"></div>
+        </div>
     </main>
 
+    <!-- Modal for item details -->
     <div id="itemModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -275,15 +62,22 @@
         </div>
     </div>
 
+    <!-- Footer section -->
     <footer>
         <p>&copy; 2023 Habbitt. All rights reserved.</p>
     </footer>
 
     <script>
         // This would be replaced with actual data from your game
-        const categories = ['Weapons', 'Armor', 'Potions', 'Scrolls', 'Artifacts', 'Miscellaneous'];
+        const categories = [
+            { name: 'Weapons', emoji: '⚔️' },
+            { name: 'Armor', emoji: '🛡️' },
+            { name: 'Potions', emoji: '🧪' },
+            { name: 'Scrolls', emoji: '📜' },
+            { name: 'Artifacts', emoji: '🏺' },
+            { name: 'Miscellaneous', emoji: '🎒' }
+        ];
         const items = [
-        // Existing items
         {name: 'Sword', category: 'Weapons', image: 'images/sword.png', description: 'A sharp blade for melee combat.', emoji: '⚔️'},
         {name: 'Bow', category: 'Weapons', image: 'images/bow.png', description: 'A weapon for ranged attacks.', emoji: '🏹'},
         {name: 'Shield', category: 'Armor', image: 'images/shield.png', description: 'Protects from incoming attacks.', emoji: '🛡️'},
@@ -293,8 +87,6 @@
         {name: 'Fireball Scroll', category: 'Scrolls', image: 'images/fireball_scroll.png', description: 'Scroll that conjures a ball of fire.', emoji: '📜🔥'},
         {name: 'Ancient Amulet', category: 'Artifacts', image: 'images/ancient_amulet.png', description: 'An amulet with unknown magical properties.', emoji: '📿'},
         {name: 'Torch', category: 'Miscellaneous', image: 'images/torch.png', description: 'Provides light in dark areas.', emoji: '🕯️'},
-        
-        // New items
         {name: 'Rusty Sword', category: 'Weapons', description: 'An old sword found in a cave.', emoji: '🗡️'},
         {name: 'Skeleton Key', category: 'Miscellaneous', description: 'Opens ancient locks in the crypt.', emoji: '🔑'},
         {name: 'Pickaxe', category: 'Tools', description: 'Used for mining ore.', emoji: '⛏️'},
@@ -494,95 +286,109 @@
         {name: 'Fletcher Charter', category: 'Charters', description: 'A charter to establish a fletcher in your settlement.', emoji: '📜🏹'},
     ];
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const categoriesContainer = document.getElementById('categories');
-            const itemsContainer = document.getElementById('items');
-            const searchInput = document.getElementById('item-search');
-            const modal = document.getElementById('itemModal');
-            const closeModal = document.getElementsByClassName('close')[0];
+    document.addEventListener('DOMContentLoaded', () => {
+        // Get DOM elements
+        const categoriesContainer = document.getElementById('categories');
+        const itemsContainer = document.getElementById('items');
+        const searchInput = document.getElementById('item-search');
+        const modal = document.getElementById('itemModal');
+        const closeModal = document.getElementsByClassName('close')[0];
 
-            function displayCategories() {
-                categories.forEach(category => {
-                    const categoryTile = document.createElement('div');
-                    categoryTile.classList.add('category-tile');
-                    categoryTile.textContent = category;
-                    categoryTile.addEventListener('click', () => displayItems(category));
-                    categoriesContainer.appendChild(categoryTile);
-                });
-            }
-
-            function displayItems(category) {
-                itemsContainer.innerHTML = '';
-                const filteredItems = items.filter(item => item.category === category);
-                filteredItems.forEach(item => {
-                    const itemCard = document.createElement('div');
-                    itemCard.classList.add('item-card');
-                    itemCard.innerHTML = `
-                        <div class="item-image">
-                            <img src="${item.image}" alt="${item.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                            <div class="emoji-placeholder" style="display:none;">${item.emoji}</div>
-                        </div>
-                        <p>${item.name}</p>
-                    `;
-                    itemCard.addEventListener('click', () => displayItemDetails(item));
-                    itemsContainer.appendChild(itemCard);
-                });
-            }
-            
-            function displayItemDetails(item) {
-                document.getElementById('modalItemName').textContent = item.name;
-                document.getElementById('modalItemCategory').textContent = item.category;
-                document.getElementById('modalItemImage').src = item.image;
-                document.getElementById('modalItemImage').onerror = function() {
-                    this.style.display = 'none';
-                    document.getElementById('modalItemEmoji').style.display = 'block';
-                    document.getElementById('modalItemEmoji').textContent = item.emoji;
-                };
-                document.getElementById('modalItemEmoji').style.display = 'none';
-                document.getElementById('modalItemDescription').textContent = item.description;
-                
-                // Generate random stats for demonstration
-                document.getElementById('modalItemWeight').textContent = `${Math.floor(Math.random() * 10) + 1} lbs`;
-                document.getElementById('modalItemValue').textContent = `${Math.floor(Math.random() * 100) + 10}`;
-                document.getElementById('modalItemDurability').textContent = `${Math.floor(Math.random() * 50) + 50}/100`;
-                document.getElementById('modalItemLevel').textContent = `${Math.floor(Math.random() * 20) + 1}`;
-                
-                modal.style.display = 'block';
-            }
-
-            searchInput.addEventListener('input', () => {
-                const searchTerm = searchInput.value.toLowerCase();
-                const filteredItems = items.filter(item => 
-                    item.name.toLowerCase().includes(searchTerm) || 
-                    item.category.toLowerCase().includes(searchTerm)
-                );
-                itemsContainer.innerHTML = '';
-                filteredItems.forEach(item => {
-                    const itemCard = document.createElement('div');
-                    itemCard.classList.add('item-card');
-                    const imageExists = item.image && !item.image.includes('undefined');
-                    itemCard.innerHTML = `
-                        ${imageExists ? `<img src="${item.image}" alt="${item.name}">` : `<div class="emoji-placeholder">${item.emoji}</div>`}
-                        <p>${item.name}</p>
-                    `;
-                    itemCard.addEventListener('click', () => displayItemDetails(item));
-                    itemsContainer.appendChild(itemCard);
-                });
+        function displayCategories() {
+            categoriesContainer.innerHTML = '';
+            categories.forEach(category => {
+                const categoryTile = document.createElement('div');
+                categoryTile.classList.add('category-tile');
+                categoryTile.innerHTML = `
+                    <div class="category-emoji">${category.emoji}</div>
+                    <div class="category-name">${category.name}</div>
+                `;
+                categoryTile.addEventListener('click', () => displayItems(category.name));
+                categoriesContainer.appendChild(categoryTile);
             });
+        }
 
-            closeModal.onclick = function() {
+        function displayItems(category) {
+            const itemsGrid = document.getElementById('items');
+            itemsGrid.innerHTML = ''; // Clear only the items grid
+            
+            const filteredItems = items.filter(item => item.category === category);
+            
+            filteredItems.forEach(item => {
+                const itemCard = document.createElement('div');
+                itemCard.classList.add('item-card');
+                itemCard.innerHTML = `
+                    <div class="item-image">
+                        <img src="${item.image}" alt="${item.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div class="emoji-placeholder" style="display:none;">${item.emoji}</div>
+                    </div>
+                    <p>${item.name}</p>
+                `;
+                itemCard.addEventListener('click', () => displayItemDetails(item));
+                itemsGrid.appendChild(itemCard);
+            });
+        }
+        
+        // Function to display item details in the modal
+        function displayItemDetails(item) {
+            document.getElementById('modalItemName').textContent = item.name;
+            document.getElementById('modalItemCategory').textContent = item.category;
+            document.getElementById('modalItemImage').src = item.image;
+            document.getElementById('modalItemImage').onerror = function() {
+                this.style.display = 'none';
+                document.getElementById('modalItemEmoji').style.display = 'block';
+                document.getElementById('modalItemEmoji').textContent = item.emoji;
+            };
+            document.getElementById('modalItemEmoji').style.display = 'none';
+            document.getElementById('modalItemDescription').textContent = item.description;
+            
+            // Generate random stats for demonstration
+            document.getElementById('modalItemWeight').textContent = `${Math.floor(Math.random() * 10) + 1} lbs`;
+            document.getElementById('modalItemValue').textContent = `${Math.floor(Math.random() * 100) + 10}`;
+            document.getElementById('modalItemDurability').textContent = `${Math.floor(Math.random() * 50) + 50}/100`;
+            document.getElementById('modalItemLevel').textContent = `${Math.floor(Math.random() * 20) + 1}`;
+            
+            modal.style.display = 'block';
+        }
+
+        // Event listener for search input
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filteredItems = items.filter(item => 
+                item.name.toLowerCase().includes(searchTerm) || 
+                item.category.toLowerCase().includes(searchTerm)
+            );
+            itemsContainer.innerHTML = '';
+            filteredItems.forEach(item => {
+                const itemCard = document.createElement('div');
+                itemCard.classList.add('item-card');
+                itemCard.innerHTML = `
+                    <div class="item-image">
+                        <img src="${item.image}" alt="${item.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div class="emoji-placeholder" style="display:none;">${item.emoji}</div>
+                    </div>
+                    <p>${item.name}</p>
+                `;
+                itemCard.addEventListener('click', () => displayItemDetails(item));
+                itemsContainer.appendChild(itemCard);
+            });
+        });
+
+        // Event listener to close modal
+        closeModal.onclick = function() {
+            modal.style.display = 'none';
+        }
+
+        // Event listener to close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == modal) {
                 modal.style.display = 'none';
             }
+        }
 
-            window.onclick = function(event) {
-                if (event.target == modal) {
-                    modal.style.display = 'none';
-                }
-            }
-
-
-            displayCategories();
-        });
-    </script>
+        // Initialize the page by displaying categories
+        displayCategories();
+    });
+</script>
 </body>
 </html>

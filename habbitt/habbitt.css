@@ -15,6 +15,11 @@ header {
     color: #fff;
     padding: 1rem;
     text-align: center;
+    padding-bottom: 0;
+}
+
+nav {
+    padding-top: 0;
 }
 
 nav ul {
@@ -131,7 +136,7 @@ footer {
     font-weight: bold;
     color: #c8ccd1;
     text-align: center;
-    font-size: 70px; /* Adjust this value to change the size of the question mark */
+    font-size: 70px;
 }
 
 .hidden-character span {
@@ -174,6 +179,11 @@ footer {
     background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0));
     margin: 0 auto 20px auto;
     width: 80%;
+}
+
+.logo-container {
+    text-align: center;
+    padding: 10px 0 0 0;
 }
 
 /* For smaller screens */
