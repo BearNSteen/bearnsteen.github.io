@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bear Character - Your Game Name</title>
+    <title>Bear - Habbitt Encyclopedia</title>
     <link rel="stylesheet" href="habbitt.css">
     <link rel="stylesheet" href="character.css">
 </head>
@@ -27,9 +27,10 @@
     </header>
 
     <main>
+        <button id="layout-toggle">Toggle Layout</button>
         <div class="character-container">
-            <div class="character-image">
-                <img src="https://place-hold.it/300x400" alt="Bear Character">
+            <div class="character-image character-divider">
+                <img src="images/bear_page.png" alt="Bear Character">
             </div>
             <div class="character-details">
                 <h2 class="character-name">Bear</h2>
@@ -44,34 +45,57 @@
                     </div>
                     <div class="tab-content">
                         <div class="tab-pane active" id="description">
-                            <!-- Add character description here -->
+                            <p>Bear is a formidable member of the prestigious Bear Knights, standing tall at 7 feet. Clad in custom-fitted armor that gleams with a mix of polished steel and gold accents, he cuts an imposing figure on and off the battlefield.</p>
+                            <p>Despite his martial appearance, Bear's eyes hold a gentle wisdom. His deep, rumbling voice commands respect, yet often surprises others with its eloquence. The insignia of the Bear Knights is proudly displayed on his breastplate, a symbol of his sworn duty to protect the realm.</p>
                         </div>
                         <div class="tab-pane" id="stats">
-                            <ul id="stat-list">
-                                <!-- Add stats here -->
-                                <!-- Example: <li>Strength: 8</li> -->
-                            </ul>
+                            <div class="stat-controls">
+                                <button class="stat-button" data-stat="all">Show All</button>
+                            </div>
+                            <canvas id="statChart" width="600" height="400"></canvas>
+                            <div id="stat-details">
+                                <h4>Stat Details at Level <span id="level-display">99</span></h4>
+                                <table id="stat-table">
+                                    <!-- Table rows will be dynamically inserted here -->
+                                </table>
+                            </div>
                         </div>
                         <div class="tab-pane" id="skills">
                             <ul id="skill-list">
-                                <!-- Add skills here -->
-                                <!-- Example: <li>Foraging: Level 5</li> -->
+                                <li>Swordsmanship: Level 9</li>
+                                <li>Heavy Armor: Level 8</li>
+                                <li>Tactics: Level 7</li>
+                                <li>Diplomacy: Level 6</li>
+                                <li>Wilderness Survival: Level 8</li>
                             </ul>
                         </div>
                         <div class="tab-pane" id="background">
-                            <!-- Add background information here -->
+                            <p>Born into a noble line of warrior bears, Bear showed promise from a young age. He was inducted into the Bear Knights at an unusually young age, quickly rising through the ranks due to his combat prowess and unwavering sense of justice.</p>
+                            <p>While his primary duty lies in defending the realm, Bear has not forgotten his connection to nature. He often serves as a mediator between the civilized world and the wild, ensuring that progress does not come at the cost of the natural balance.</p>
                         </div>
                         <div class="tab-pane" id="quests">
                             <ul id="quest-list">
-                                <!-- Add quests here -->
-                                <!-- Example: <li><a href="quest1.html">Quest Name</a></li> -->
+                                <li><a href="#">The Border Dispute</a></li>
+                                <li><a href="#">Rite of the Bear Knights</a></li>
+                                <li><a href="#">The Lost Artifact</a></li>
+                                <li><a href="#">Forest's Lament</a></li>
                             </ul>
                         </div>
                         <div class="tab-pane" id="relationship">
-                            <!-- Add relationship questline information here -->
+                            <p>Earning Bear's respect and friendship is a noble pursuit. As your bond grows stronger, you'll gain insights into the ways of the Bear Knights and potentially earn their alliance.</p>
+                            <h4>Friendship Levels:</h4>
+                            <ol>
+                                <li>Curious Outsider</li>
+                                <li>Respectful Acquaintance</li>
+                                <li>Trusted Confidant</li>
+                                <li>Honorary Squire</li>
+                                <li>Brother/Sister-in-Arms</li>
+                            </ol>
+                            <h4>Relationship Quests:</h4>
                             <ul id="relationship-quest-list">
-                                <!-- Add relationship quests here -->
-                                <!-- Example: <li><a href="rel-quest1.html">Relationship Quest 1</a></li> -->
+                                <li><a href="#">A Knight's Honor</a></li>
+                                <li><a href="#">Trials of Trust</a></li>
+                                <li><a href="#">The Bear's Burden</a></li>
                             </ul>
                         </div>
                     </div>
@@ -84,24 +108,7 @@
         <p>&copy; 2023 Your Game Name. All rights reserved.</p>
     </footer>
 
-    <script>
-        // JavaScript for tab functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const tabPanes = document.querySelectorAll('.tab-pane');
-
-            tabButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const tabId = this.getAttribute('data-tab');
-
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    tabPanes.forEach(pane => pane.classList.remove('active'));
-
-                    this.classList.add('active');
-                    document.getElementById(tabId).classList.add('active');
-                });
-            });
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="character.js"></script>
 </body>
 </html>
