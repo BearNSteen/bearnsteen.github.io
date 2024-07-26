@@ -1,0 +1,213 @@
+header {
+    padding-bottom: 0;
+}
+nav {
+    padding-top: 0;
+}
+.logo-container {
+    text-align: center;
+    padding: 10px 0 0 0;
+}
+.quest-container {
+    display: flex;
+    width: 100%;
+    height: calc(100vh - 150px);
+}
+.quest-list {
+    width: 250px;
+    height: calc(100vh - 150px);
+    overflow-y: auto;
+    padding-right: 20px;
+    background-color: #2a2a2a;
+    position: fixed;
+    left: 0;
+    top: 200px;
+}
+.quest-list ul {
+    list-style-type: none;
+    padding: 20px;
+}
+.quest-list li {
+    margin-bottom: 10px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+.quest-list li:hover {
+    background-color: #3a3a3a;
+}
+.quest-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+.quest-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.tab {
+    padding: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    background-color: #3a3a3a;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+.tab:hover {
+    background-color: #4a4a4a;
+}
+.tab.active {
+    background-color: #4a4a4a;
+}
+.tab-content {
+    display: none;
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 5px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+.quest-content {
+    position: fixed;
+    left: 270px;
+    bottom: 0;
+    width: calc(100% - 300px);
+    padding: 20px 30px 20px 20px;
+    overflow-y: auto;
+    background-color: #1a1a1a;
+}
+.tab-content.active {
+    display: block;
+}
+.tab.disabled {
+    background-color: #2a2a2a;
+    color: #666;
+    cursor: not-allowed;
+}
+.tab.disabled:hover {
+    background-color: #2a2a2a;
+}
+.quest-header {
+    color: #ffd700;
+    text-shadow: 0 0 5px #ff6600;
+    font-size: 1.2em;
+    margin-bottom: 15px;
+}
+.npc, .location {
+    color: #00ffff;
+    font-weight: bold;
+}
+.quest-description {
+    font-style: italic;
+    line-height: 1.6;
+    border-left: 3px solid #ff6600;
+    padding-left: 15px;
+    margin-bottom: 15px;
+}
+.quest-importance {
+    background-color: rgba(255, 0, 0, 0.2);
+    border: 1px solid #ff0000;
+    padding: 10px;
+    margin-top: 15px;
+    border-radius: 5px;
+}
+.hint {
+    background-color: rgba(0, 255, 0, 0.1);
+    border: 1px solid #00ff00;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+.hint-icon {
+    font-size: 1.2em;
+    margin-right: 5px;
+}
+.walkthrough {
+    background-color: rgba(0, 0, 255, 0.1);
+    border: 1px solid #0000ff;
+    padding: 20px 20px 20px 40px;
+    margin-top: 15px;
+    border-radius: 5px;
+}
+.walkthrough li {
+    margin-bottom: 10px;
+}
+.walkthrough ul {
+    list-style-type: circle;
+    padding-left: 20px;
+    margin-top: 5px;
+}
+
+.quest-list {
+    padding: 20px;
+}
+
+.quest-list h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.quest-list h3:first-child {
+    margin-top: 0;
+}
+
+.quest-list ul {
+    padding-left: 20px;
+}
+
+.quest-list li {
+    margin-bottom: 8px;
+}
+
+/* Main Quests styling */
+.quest-list h3:first-of-type {
+    color: #FFD700; /* Yellow */
+}
+
+.quest-list ul:first-of-type li {
+    color: #FFF2A0; /* Less saturated yellow */
+}
+
+/* Side Quests styling */
+.quest-list h3:last-of-type {
+    color: #87CEFA; /* Light blue */
+}
+
+.quest-list ul:last-of-type li {
+    color: #B0E0FF; /* Less saturated light blue */
+}
+
+/* Hover effect for better visibility */
+.quest-list li:hover {
+    color: #FFFFFF; /* White on hover for better contrast */
+    cursor: pointer;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.quest-container {
+    margin-top: 150px;  /* Match your header's height */
+}
+
+.quest-list {
+    top: 150px;  /* Match your header's height */
+    height: calc(100vh - 150px);  /* Subtract header height */
+}
+
+.quest-content {
+    top: 150px;  /* Match your header's height */
+    height: calc(100vh - 150px);  /* Subtract header height */
+}
+
+.quest-content {
+    width: calc(100% - 315px);  /* Changed from 300px to 330px */
+}

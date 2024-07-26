@@ -5,195 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RPG Wiki - Quests</title>
     <link rel="stylesheet" href="habbitt.css">
-    <style>
-        header {
-            padding-bottom: 0;
-        }
-        nav {
-            padding-top: 0;
-        }
-        .logo-container {
-            text-align: center;
-            padding: 10px 0 0 0;
-        }
-        .quest-container {
-            display: flex;
-            width: 100%;
-            height: calc(100vh - 150px);
-        }
-        .quest-list {
-            width: 250px;
-            height: calc(100vh - 150px);
-            overflow-y: auto;
-            padding-right: 20px;
-            background-color: #2a2a2a;
-            position: fixed;
-            left: 0;
-            top: 200px;
-        }
-        .quest-list ul {
-            list-style-type: none;
-            padding: 20px;
-        }
-        .quest-list li {
-            margin-bottom: 10px;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        .quest-list li:hover {
-            background-color: #3a3a3a;
-        }
-        .quest-title {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        .quest-tabs {
-            display: flex;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        .tab {
-            padding: 10px;
-            margin-right: 10px;
-            margin-bottom: 10px;
-            background-color: #3a3a3a;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        .tab:hover {
-            background-color: #4a4a4a;
-        }
-        .tab.active {
-            background-color: #4a4a4a;
-        }
-        .tab-content {
-            display: none;
-            background-color: #2a2a2a;
-            padding: 20px;
-            border-radius: 5px;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-        .quest-content {
-            position: fixed;
-            left: 270px;
-            bottom: 0;
-            width: calc(100% - 300px);
-            padding: 20px 30px 20px 20px;
-            overflow-y: auto;
-            background-color: #1a1a1a;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .tab.disabled {
-            background-color: #2a2a2a;
-            color: #666;
-            cursor: not-allowed;
-        }
-        .tab.disabled:hover {
-            background-color: #2a2a2a;
-        }
-        .quest-header {
-            color: #ffd700;
-            text-shadow: 0 0 5px #ff6600;
-            font-size: 1.2em;
-            margin-bottom: 15px;
-        }
-        .npc, .location {
-            color: #00ffff;
-            font-weight: bold;
-        }
-        .quest-description {
-            font-style: italic;
-            line-height: 1.6;
-            border-left: 3px solid #ff6600;
-            padding-left: 15px;
-            margin-bottom: 15px;
-        }
-        .quest-importance {
-            background-color: rgba(255, 0, 0, 0.2);
-            border: 1px solid #ff0000;
-            padding: 10px;
-            margin-top: 15px;
-            border-radius: 5px;
-        }
-        .hint {
-            background-color: rgba(0, 255, 0, 0.1);
-            border: 1px solid #00ff00;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 5px;
-        }
-        .hint-icon {
-            font-size: 1.2em;
-            margin-right: 5px;
-        }
-        .walkthrough {
-            background-color: rgba(0, 0, 255, 0.1);
-            border: 1px solid #0000ff;
-            padding: 20px 20px 20px 40px;
-            margin-top: 15px;
-            border-radius: 5px;
-        }
-        .walkthrough li {
-            margin-bottom: 10px;
-        }
-        .walkthrough ul {
-            list-style-type: circle;
-            padding-left: 20px;
-            margin-top: 5px;
-        }
-
-        .quest-list {
-            padding: 20px;
-        }
-
-        .quest-list h3 {
-            margin-top: 20px;
-            margin-bottom: 10px;
-            font-size: 1.2em;
-        }
-
-        .quest-list h3:first-child {
-            margin-top: 0;
-        }
-
-        .quest-list ul {
-            padding-left: 20px;
-        }
-
-        .quest-list li {
-            margin-bottom: 8px;
-        }
-
-        /* Main Quests styling */
-        .quest-list h3:first-of-type {
-            color: #FFD700; /* Yellow */
-        }
-
-        .quest-list ul:first-of-type li {
-            color: #FFF2A0; /* Less saturated yellow */
-        }
-
-        /* Side Quests styling */
-        .quest-list h3:last-of-type {
-            color: #87CEFA; /* Light blue */
-        }
-
-        .quest-list ul:last-of-type li {
-            color: #B0E0FF; /* Less saturated light blue */
-        }
-
-        /* Hover effect for better visibility */
-        .quest-list li:hover {
-            color: #FFFFFF; /* White on hover for better contrast */
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="quests.css">
 </head>
 <body>
     <header>
@@ -220,20 +32,42 @@
                 <div class="quest-list">
                     <h3>Main Quests</h3>
                     <ul>
-                        <li onclick="showQuest('oilMeTonight')">Oil Me Tonight</li>
+                        <li class="subcategory">Act 1
+                            <ul>
+                                <li>Oil Me Tonight</li>
+                                <!-- Other Act 1 quests would go here -->
+                            </ul>
+                        </li>
+                        <!-- Other main quest categories would go here -->
                     </ul>
                     <h3>Side Quests</h3>
+                        <ul>
+                            <li>
+                                <span class="subcategory">Bear's Quests</span>
+                                <ul>
+                                    <li onclick="showQuest('borderDispute')">The Border Dispute</li>
+                                    <li onclick="showQuest('bearKnightsRite')">Rite of the Bear Knights</li>
+                                    <li onclick="showQuest('lostArtifact')">The Lost Artifact</li>
+                                    <li onclick="showQuest('forestLament')">Forest's Lament</li>
+                                    <li onclick="showQuest('knightsHonor')">A Knight's Honor</li>
+                                    <li onclick="showQuest('trialsOfTrust')">Trials of Trust</li>
+                                    <li onclick="showQuest('bearsBurden')">The Bear's Burden</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <span class="subcategory">Mystical Quests</span>
+                                <ul>
+                                    <li onclick="showQuest('mysticalRelic')">The Mystical Relic</li>
+                                    <li onclick="showQuest('dragonHoard')">Dragon's Hoard</li>
+                                    <li onclick="showQuest('cursedVillage')">The Cursed Village</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    <h3>Eraser Quests</h3>
                     <ul>
-                        <li onclick="showQuest('borderDispute')">The Border Dispute</li>
-                        <li onclick="showQuest('bearKnightsRite')">Rite of the Bear Knights</li>
-                        <li onclick="showQuest('lostArtifact')">The Lost Artifact</li>
-                        <li onclick="showQuest('forestLament')">Forest's Lament</li>
-                        <li onclick="showQuest('knightsHonor')">A Knight's Honor</li>
-                        <li onclick="showQuest('trialsOfTrust')">Trials of Trust</li>
-                        <li onclick="showQuest('bearsBurden')">The Bear's Burden</li>
-                        <li onclick="showQuest('mysticalRelic')">The Mystical Relic</li>
-                        <li onclick="showQuest('dragonHoard')">Dragon's Hoard</li>
-                        <li onclick="showQuest('cursedVillage')">The Cursed Village</li>
+                        <li onclick="showQuest('rainbow')">Rainbow</li>
+                        <li onclick="showQuest('penguin')">Penguin</li>
+                        <li onclick="showQuest('hamburger')">Hamburger</li>
                     </ul>
                 </div>
                 <div class="quest-content">
@@ -465,6 +299,57 @@
                                 <li>Receive a unique robotic gadget as a thank-you gift from Gorilla</li>
                             </ol>`
             },
+            rainbow: {
+                title: "Rainbow",
+                info: `<h3 class="quest-header">🌈 Acquired from: <span class="npc">Bear</span> in <span class="location">Habbitt Library</span></h3>
+                    <p class="quest-description">Your Rainbow eraser requires the collection of seven different magical pigments to unlock its full potential and advance your color manipulation skills.</p>`,
+                hint1: `<p class="hint"><span class="hint-icon">💡</span> Each pigment is connected to a different emotion. Your mood might affect your ability to find them.</p>`,
+                hint2: `<p class="hint"><span class="hint-icon">💡</span> The Whispering Woods change their dominant color every few hours. That might be a good place to start.</p>`,
+                hint3: `<p class="hint"><span class="hint-icon">💡</span> Some pigments are only visible under specific light. Try moonlight, sunset, and dawn.</p>`,
+                walkthrough: `<ol class="walkthrough">
+                            <li>Collect red pigment from the Lava Lakes</li>
+                            <li>Gather orange pigment at sunset in the Autumn Vale</li>
+                            <li>Find yellow pigment in the Grand Desert</li>
+                            <li>Extract green pigment from the Whispering Woods</li>
+                            <li>Locate blue pigment beneath the High Waterfall</li>
+                            <li>Retrieve indigo pigment from a sacred cave, visible only by moonlight</li>
+                            <li>The final violet pigment appears at dawn in the Mistflower Meadows</li>
+                            </ol>`
+            },
+
+            penguin: {
+                title: "Penguin",
+                info: `<h3 class="quest-header">🐧 Acquired from: <span class="npc">Bear</span> in <span class="location">Frozen Harbor</span></h3>
+                    <p class="quest-description">Your Penguin eraser wants you to restore safe-passage-flow-routes for its kin. You'll need to map out and clear three crucial swimming-ways.</p>`,
+                hint1: `<p class="hint"><span class="hint-icon">💡</span> Look for abnormal ice formations. They're likely blocking key routes.</p>`,
+                hint2: `<p class="hint"><span class="hint-icon">💡</span> Your heat-based abilities might come in handy. Particularly, Flame-Step.</p>`,
+                hint3: `<p class="hint"><span class="hint-icon">💡</span> Not all blockages are natural. Someone or something might be creating them.</p>`, 
+                walkthrough: `<ol class="walkthrough">
+                            <li>Map the original swim-routes from ancient penguin-carvings</li>
+                            <li>Clear the Southern ice-block using Flame-Step</li>
+                            <li>Navigate the Northern flow-route, identifying what's causing the blockage</li>
+                            <li>Confront the seal-construction-crew, convincing them to relocate</li>
+                            <li>Use Spark-Thrust to dislodge remaining dense-ice-chunks</li>
+                            <li>Verify all routes are flowing, by actually swimming them (brrr!)</li>
+                            </ol>`
+            },
+
+            hamburger: {
+                title: "Hamburger",
+                info: `<h3 class="quest-header">🍔 Acquired from: <span class="npc">Bear</span> in <span class="location">Habbitt Town Square</span></h3>
+                    <p class="quest-description">Your Hamburger eraser requires you to explore the entire 'foodchain' behind a hamburger's construction. You'll need to understand how each layer comes to be.</p>`,
+                hint1: `<p class="hint"><span class="hint-icon">💡</span> Don't just look for the ingredients, but their sources. The cow, the wheat field, the tomato vines.</p>`,
+                hint2: `<p class="hint"><span class="hint-icon">💡</span> Each 'layer' has a unique challenge. The cow-pasture-keeper is particularly grumpy.</p>`,
+                hint3: `<p class="hint"><span class="hint-icon">💡</span> The wheat-field contains a maze. Your map-making skills might be useful.</p>`,
+                walkthrough: `<ol class="walkthrough">
+                            <li>Learn bread-baking from the Habbitt Baker, including a wheat-maze-navigation. You'll need to complete his maze-challenge.</li>
+                            <li>Find bun-ingredients: eggs from the coop, milk from the dairy</li>
+                            <li>Visit Farmer Mildred's tomato-patch, but watch out for her antique scarecrow-security-system</li>
+                            <li>Locate the cow-pasture. You'll need to convince the keeper you're not 'just another city-faced-food-tourist'</li>
+                            <li>Retrieve a mythical-pickle, which legend-says-grows-only in the belly of a giant-toad</li>
+                            <li>Combine all-your-knowledge-and-items. Behold! A Hamburger-produced-through-but-not-limited-to-your-new-vast-calories-based-enlightenment!</li>
+                            </ol>`
+            }
         };
 
         function setTabsEnabled(enabled) {
@@ -534,6 +419,24 @@
             questContent.style.top = `${headerHeight}px`;
             questContent.style.height = `calc(100vh - ${headerHeight}px)`;
             setTabsEnabled(false);
+
+            const subcategories = document.querySelectorAll('.subcategory');
+            const questItems = document.querySelectorAll('.quest-list ul ul li');
+
+            subcategories.forEach(subcategory => {
+                subcategory.addEventListener('click', function(event) {
+                    this.classList.toggle('open');
+                    event.stopPropagation();
+                });
+            });
+
+            questItems.forEach(item => {
+                item.addEventListener('click', function(event) {
+                    const questId = this.getAttribute('onclick').match(/'(.*?)'/)[1];
+                    showQuest(questId);
+                    event.stopPropagation();
+                });
+            });
         });
     </script>
 </body>
