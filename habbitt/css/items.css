@@ -1,0 +1,341 @@
+/* Global styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #c8ccd1;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header and Navigation */
+header {
+    padding-bottom: 0;
+}
+
+nav {
+    padding-top: 0;
+}
+
+.logo-container {
+    text-align: center;
+    padding: 10px 0 0 0;
+}
+
+/* Main content */
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/* Search */
+.search-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 20px;
+}
+
+#item-search {
+    width: 100%;
+    max-width: 600px;
+    padding: 10px;
+    margin: 0 auto;
+    border: none;
+    border-radius: 5px;
+    background-color: #3a3a3a;
+    color: #c8ccd1;
+}
+
+/* Categories */
+.categories-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 20px;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 200px);
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto;
+    width: 100%;
+    max-width: 680px;
+    position: relative;
+    z-index: 2;
+}
+
+.category-tile {
+    background-color: #3a3a3a;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    width: 180px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-tile:hover {
+    background-color: #4a4a4a;
+    transform: scale(1.05);
+}
+
+.category-emoji {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.category-name {
+    font-size: 14px;
+}
+
+/* Items */
+.items-container {
+    min-height: 400px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.item-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    justify-content: center;
+    justify-items: center;
+    margin: 20px auto;
+    max-width: 1200px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+.item-card {
+    background-color: #3a3a3a;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s;
+    width: 200px;
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.item-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.item-image {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.item-card img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+/* Emoji placeholder */
+.emoji-placeholder, #modalItemEmoji {
+    font-size: 40px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.emoji-placeholder:has(div + div), #modalItemEmoji:has(div + div) {
+    font-size: 0.8em;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+}
+
+.modal-content {
+    background-color: #2a2a2a;
+    margin: 10% auto;
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    color: #c8ccd1;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.close {
+    color: #c8ccd1;
+    float: right;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #fff;
+}
+
+.modal-header {
+    margin-bottom: 20px;
+}
+
+.modal-header h2, #modalItemName {
+    margin-bottom: 5px;
+}
+
+.modal-header p, #modalItemCategory {
+    color: #999;
+    font-style: italic;
+    margin-bottom: 15px;
+}
+
+#modalItemDescription {
+    line-height: 1.6;
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+#modalItemImage {
+    font-size: 64px;
+    height: 150px;
+    margin: 15px auto;
+    display: block;
+    max-width: 120px;
+}
+
+/* Item stats */
+.item-stats {
+    background-color: #3a3a3a;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: left;
+}
+
+.item-stats h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.item-stats ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.item-stats li {
+    margin-bottom: 8px;
+}
+
+/* Media queries */
+@media (max-width: 900px) {
+    .category-grid {
+        grid-template-columns: repeat(2, 200px);
+        max-width: 460px;
+    }
+    .item-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .category-grid {
+        grid-template-columns: repeat(1, 200px);
+        max-width: 240px;
+    }
+    .item-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .category-tile {
+        width: 100%;
+        height: 80px;
+    }
+    .category-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        max-width: 100%;
+        padding: 0 10px;
+    }
+    .item-card {
+        width: 100%;
+        height: auto;
+        min-height: 160px;
+    }
+}
+
+/* New stuff */
+
+.item-card {
+    background-color: #3a3a3a;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s;
+    width: 150px; /* Smaller width */
+    height: 120px; /* Smaller height */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.item-image {
+    height: 60px; /* Smaller height for emojis */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+.emoji-placeholder, #modalItemEmoji {
+    font-size: 28px; /* Smaller font size */
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.emoji-placeholder:has(div + div), #modalItemEmoji:has(div + div) {
+    font-size: 24px; /* Even smaller font when there are two emojis */
+}
+

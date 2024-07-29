@@ -69,9 +69,63 @@
         .info-box {
             pointer-events: none;
         }
+        .map-container {
+            position: relative;  /* Already present, but critical */
+            overflow: hidden;    /* Add this line */
+        }
+        .info-box {
+            position: absolute;
+            background-color: rgba(42, 42, 42, 0.9);  /* Semi-transparent background */
+            border: 1px solid #4a4a4a;
+            border-radius: 5px;
+            padding: 5px;          /* Reduced padding */
+            max-width: 150px;      /* Reduced max-width */
+            font-size: 0.85em;     /* Slightly smaller font */
+            display: none;
+            z-index: 1000;
+            pointer-events: none;  /* Allows clicks to pass through */
+        }
+        .info-box h3 {
+            margin: 0 0 5px 0;     /* Compact header */
+        }
+        .info-box p {
+            margin: 0;             /* Remove paragraph margins */
+        }
+        @keyframes locationPulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .tile.known-location {
+            background-color: #9370DB;  /* Medium Purple */
+            border-radius: 50%;
+            animation: locationPulse 2s infinite;
+        }
+        .tile.known-location::before {
+            content: attr(data-name);
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 10px;
+            white-space: nowrap;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .tile.known-location:hover::before {
+            opacity: 1;
+        }
     </style>
+    <script src="auth.js"></script>
 </head>
-<body>
+<body onload="checkAuth()">
     <header>
         <div class="logo">
             <a href="index.html">
@@ -108,7 +162,29 @@
 
         const knownLocations = {
             1860: { name: "Habbitt", description: "The central town and starting point of your adventure." },
-            // Add more locations as needed
+            1922: { name: "Habbitt Cave", description: "A small cave system just east of Habbitt, often explored by novice adventurers." },
+            
+            // Northern region (colder climates)
+            610: { name: "Frostpeak Village", description: "A remote settlement high in the northern mountains where skilled artisans craft magical ice tools." },
+            490: { name: "Glacier Bay", description: "An icy coastal area where massive glaciers calve into the frigid sea." },
+            
+            // Eastern region (forests and hills)
+            2306: { name: "Whispering Woods", description: "An enchanted forest east of Habbitt where the trees are said to speak ancient secrets." },
+            2550: { name: "Misty Hills", description: "Rolling hills often covered in a mysterious fog, home to reclusive druids." },
+            
+            // Southern region (warmer, swampy)
+            3172: { name: "Sunken Temple", description: "Ancient ruins partially submerged in southern swamps, filled with forgotten treasures and traps." },
+            3300: { name: "Cursed Bog", description: "A treacherous swamp in the far south filled with strange magic and ghostly apparitions." },
+            
+            // Western region (mountains and mines)
+            1340: { name: "Dragon's Ridge", description: "A precarious mountain path in the west where dragon sightings are common." },
+            1100: { name: "Echoing Caverns", description: "A vast underground network known for its haunting acoustic properties." },
+            
+            // Far regions (very distant locations for high-level adventurers)
+            60: { name: "Northern Citadel", description: "A mysterious fortress in the far north, shrouded in perpetual snowstorms." },
+            3660: { name: "Southern Oasis", description: "A lush haven amidst scorching deserts, rumored to hold magical waters." },
+            120: { name: "Forgotten Coast", description: "A desolate shoreline in the northeast, dotted with shipwrecks and pirate hideouts." },
+            3540: { name: "Thornwright Jungle", description: "A dense, magical jungle filled with carnivorous plants and lost civilizations." }
         };
 
         // Function to get the index of surrounding tiles
@@ -138,6 +214,7 @@
                 tile.classList.add('grass');
             } else if (knownLocations[i]) {
                 tile.classList.add('known-location');
+                tile.setAttribute('data-name', knownLocations[i].name);  // Add this line
             }
             
             tile.addEventListener('click', (event) => showLocationInfo(i, event));
@@ -154,46 +231,41 @@
             } else {
                 content = "<p>No information available for this location.</p>";
             }
-        
+
             infoBox.innerHTML = content;
             infoBox.style.display = 'block';
-        
-            // Position the info box near the clicked tile
-            const rect = event.target.getBoundingClientRect();
+
+            // Get the clicked tile and map positions
+            const tile = event.target;
+            const tileRect = tile.getBoundingClientRect();
             const mapRect = worldMap.getBoundingClientRect();
-        
-            // Calculate available space on each side
-            const spaceRight = mapRect.right - rect.right;
-            const spaceLeft = rect.left - mapRect.left;
-            const spaceBottom = mapRect.bottom - rect.bottom;
-            const spaceTop = rect.top - mapRect.top;
-        
-            let left, top;
-        
-            // Determine horizontal position
-            if (spaceRight >= infoBox.offsetWidth) {
-                left = rect.right + 5;
-            } else if (spaceLeft >= infoBox.offsetWidth) {
-                left = rect.left - infoBox.offsetWidth - 5;
+
+            const mapWidth = mapRect.width;
+            const mapHeight = mapRect.height;
+
+            let popupLeft, popupTop;
+
+            // Horizontal positioning
+            if (tileRect.left - mapRect.left > mapWidth / 2) {
+                // If on the right half, show popup to the left
+                popupLeft = tileRect.left - mapRect.left - infoBox.offsetWidth;
             } else {
-                left = mapRect.left + (mapRect.width - infoBox.offsetWidth) / 2;
+                // If on the left half, show popup to the right
+                popupLeft = tileRect.left - mapRect.left + tileRect.width;
             }
-        
-            // Determine vertical position
-            if (spaceBottom >= infoBox.offsetHeight) {
-                top = rect.top;
-            } else if (spaceTop >= infoBox.offsetHeight) {
-                top = rect.bottom - infoBox.offsetHeight;
+
+            // Vertical positioning
+            if (tileRect.top - mapRect.top > mapHeight / 2) {
+                // If on the bottom half, show popup above
+                popupTop = tileRect.top - mapRect.top - infoBox.offsetHeight;
             } else {
-                top = mapRect.top + (mapRect.height - infoBox.offsetHeight) / 2;
+                // If on the top half, show popup below
+                popupTop = tileRect.top - mapRect.top + tileRect.height;
             }
-        
-            // Ensure the info box stays within the map boundaries
-            left = Math.max(mapRect.left, Math.min(left, mapRect.right - infoBox.offsetWidth));
-            top = Math.max(mapRect.top, Math.min(top, mapRect.bottom - infoBox.offsetHeight));
-        
-            infoBox.style.left = `${left}px`;
-            infoBox.style.top = `${top}px`;
+
+            // Apply positioning with boundary checks
+            infoBox.style.left = `${Math.max(0, Math.min(popupLeft, mapWidth - infoBox.offsetWidth))}px`;
+            infoBox.style.top = `${Math.max(0, Math.min(popupTop, mapHeight - infoBox.offsetHeight))}px`;
         }
 
         // Close info box when clicking outside

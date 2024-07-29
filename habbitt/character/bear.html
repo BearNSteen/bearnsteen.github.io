@@ -6,8 +6,9 @@
     <title>Bear - Habbitt Encyclopedia</title>
     <link rel="stylesheet" href="habbitt.css">
     <link rel="stylesheet" href="character.css">
+    <script src="auth.js"></script>
 </head>
-<body>
+<body onload="checkAuth()">
     <header>
         <div class="logo">
             <a href="index.html">
@@ -33,7 +34,7 @@
                 <img src="images/bear_page.png" alt="Bear Character">
             </div>
             <div class="character-details">
-                <h2 class="character-name">Bear</h2>
+                <h2 class="character-name">Bear N. Steen</h2>
                 <div class="tab-container">
                     <div class="tab-buttons">
                         <button class="tab-button active" data-tab="description">Description</button>

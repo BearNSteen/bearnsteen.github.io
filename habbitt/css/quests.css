@@ -582,3 +582,93 @@ nav {
     color: #FFFFFF;
     cursor: pointer;
 }
+
+header {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;  /* adjust padding as needed */
+}
+
+.logo {
+    margin-right: 20px;  /* space between logo and nav */
+}
+
+.small-logo {
+    height: 30px;  /* adjust size as needed */
+    width: auto;   /* maintain aspect ratio */
+}
+
+nav {
+    flex-grow: 1;  /* allows nav to take up remaining space */
+}
+
+nav ul {
+    display: flex;
+    justify-content: flex-start;  /* aligns buttons to the left, after the logo */
+    gap: 20px;  /* space between nav items */
+}
+
+nav a {
+    /* other styles */
+    line-height: 1.5;  /* adjust this value to your preference */
+}
+
+.small-logo {
+    height: 1em;  /* matches the line-height of nav links */
+    width: auto;   /* maintain aspect ratio */
+    vertical-align: middle;  /* align with the text */
+}
+
+header {
+    /* other styles */
+    padding: 10px 10px;  /* reduced horizontal padding */
+}
+
+nav ul {
+    /* other styles */
+    gap: 15px;  /* reduced space between nav items */
+}
+
+.small-logo {
+    height: auto;
+    width: 3.5em;  /* Double the previous size */
+    max-height: 2.5em;  /* Increased to allow for a slightly taller logo */
+    vertical-align: middle;
+    object-fit: contain;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.logo {
+    margin-right: 20px;
+}
+
+.small-logo {
+    height: auto;
+    width: 3.5em;
+    max-height: 2.5em;
+    vertical-align: middle;
+    object-fit: contain;
+}
+
+nav {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+}
+
+nav ul {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 0;
+    margin: 0;
+}
+
+nav li {
+    list-style-type: none;
+}

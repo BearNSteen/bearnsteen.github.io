@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Characters - Your Game Name</title>
-    <link rel="stylesheet" href="habbitt.css">
+    <title>Creatures of Habbeat - Characters</title>
+    <link rel="stylesheet" href="css/habbitt.css">
+    <script src="js/auth.js"></script>
 </head>
-<body>
+<body onload="checkAuth()">
     <header>
         <div class="logo">
             <a href="index.html">
@@ -27,7 +28,7 @@
 
     <main>
         <div class="character-grid">
-            <a href="bear.html" class="character-card">
+            <a href="character/bear.html" class="character-card">
                 <img src="images/bear.png" alt="Bear">
                 <span>Bear</span>
             </a>
