@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Habbitt Game - Home</title>
     <link rel="stylesheet" href="css/habbitt.css">
+    <script src="js/auth.js" defer></script>
 </head>
 <body>
+    <div class="back-to-main">
+        <a href="../index.html" title="Back to main site">&#129044; Main Site</a>
+    </div>
     <header>
         <div class="logo">
             <a href="index.html">
@@ -23,6 +27,10 @@
                 <li><a href="quests.html">Quests</a></li>
             </ul>
         </nav>
+        <div class="user-actions">
+            <button id="loginBtn" onclick="handleLogin()">Log In</button>
+            <button id="logoutBtn" onclick="logout()">Logout</button>
+        </div>
     </header>
 
     <div class="warning-label">
@@ -85,5 +93,10 @@
     <footer>
         <p>&copy; 2023-2024 Bear & Bunny Games. All rights reserved.</p>
     </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNavLinks();
+        });
+    </script>
 </body>
 </html>
