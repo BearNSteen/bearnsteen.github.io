@@ -12,20 +12,23 @@
     --winner-text: #00FF00;
     --runner-up-background: #1E90FF;
     --runner-up-text: #87CEFA;
-    --purged-background: #4D4D4D;
-    --purged-text: #A9A9A9;
     --overseer-background: #715e00;
     --overseer-text: #FFD700;
-    --flagged-background: #800080;
-    --flagged-text: #FF69B4;
-    --replacement-flagged-background: #550000;
-    --replacement-flagged-text: #ff0d00;
+    
+    /* New and updated colors */
+    --flagged-background: #000080;
+    --flagged-text: #00FFFF;
+    --replacement-flagged-background: #800080;
+    --replacement-flagged-text: #FF00FF;
+    --pod-winner-background: #CC8400;
+    --pod-winner-text: #FFA500;
+    --recently-purged-background: #8B0000;
+    --recently-purged-text: #FF0000;
+    --purged-background: #4D0000;
+    --purged-text: #AA0000;
     --flagged-saved-background: black;
     --flagged-saved-text: #00FFFF;
-    --pod-winner-background: #7b5200;
-    --pod-winner-text: #FFA500;
-    --recently-purged-background: #2F4F4F; /* Dark slate gray */
-    --recently-purged-text: #79A0A0; /* Medium slate gray with green tinge */
+
     --yellow: yellow;
     --purple: purple;
     --orange: orange;
@@ -37,7 +40,8 @@ body {
     font-family: Arial, sans-serif;
     background-color: var(--background-color);
     color: var(--text-color);
-    margin-top: 60px;
+    margin: 0;
+    padding: 0;
 }
 
 @font-face {
@@ -189,8 +193,8 @@ h5 {
 
 #app {
     max-width: 1000px;
-    margin: 60px auto 0;
-    padding: 20px;
+    margin: 0 auto; /* Changed from 60px auto 0 */
+    padding: 10px; /* Reduced from 20px */
 }
 
 #agents {
@@ -675,4 +679,83 @@ input:checked + .slider:before {
     padding: 6px 12px;
     border: 1px solid var(--button-border);
     border-top: none;
+}
+
+.top-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    margin-top: 10px; /* Small top margin if desired */
+}
+
+.back-to-main {
+    position: absolute;
+    left: 10px;
+    top: 0;
+}
+
+.back-to-main a {
+    display: inline-block;
+    padding: 8px 12px;
+    background-color: rgba(51, 51, 51, 0.7);
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    font-size: 14px;
+}
+
+.back-to-main a:hover {
+    background-color: rgba(85, 85, 85, 0.9);
+}
+
+#titleImage {
+    display: block;
+    margin: 0 auto;
+    height: auto;
+    max-width: 15%; /* Reduced from 35% */
+}
+
+#textBox {
+    background-color: var(--textbox-background);
+    padding: 10px;
+    margin-top: 20px;
+    height: 380px;  /* Fixed height, adjust if needed */
+    overflow-y: auto;  /* Enable vertical scrolling */
+    line-height: 1.4;  /* Consistent line spacing */
+    white-space: pre-wrap;  /* Preserve line breaks */
+    font-size: 14px;  /* Adjust font size if needed */
+}
+
+#infoPanel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 100%;
+    background-color: var(--background-color);
+    border-left: 1px solid var(--button-border);
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    overflow-y: auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#infoPanel.visible {
+    transform: translateX(0);
+}
+
+#closeInfoPanelBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-color);
 }

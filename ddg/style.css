@@ -565,3 +565,25 @@ body {
 .inventory-item:hover {
     transform: scale(1.05);
 }
+
+.back-to-main {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+}
+
+.back-to-main a {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #333;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.back-to-main a:hover {
+    background-color: #555;
+}

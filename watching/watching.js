@@ -3,6 +3,7 @@ class WeAreWatching {
         this.numPlayers = 12;
         this.currentWeek = 1;
         this.agents = [];
+        this.flaggedThisWeek = []
         this.purgedAgents = [];
         this.endState = 0;
         this.events = [];
@@ -236,8 +237,8 @@ class WeAreWatching {
         this.OVR.OVR = true;
         this.prevOVR = this.OVR;
     
-        this.printText(`<span style="color: yellow;">${this.OVR.firstName}</span> is the new Overseer. All hail!`);
-        this.updateLabel('ovrLabel', this.OVR.firstName, 'yellow');
+        this.printText(`<span style="color: var(--overseer-text);">${this.OVR.firstName}</span> is the new Overseer. All hail!`);
+        this.updateLabel('ovrLabel', this.OVR.firstName, 'var(--overseer-text)');
     }
 
     selectFlagged() {
@@ -266,6 +267,8 @@ class WeAreWatching {
         this.printText(`${this.colorAgentName(this.OVR.firstName)} has flagged ${flaggedText} for removal.`);
         this.updateLabel('flaggedLabel', flaggedText);
 
+        this.flaggedThisWeek = [...flagged]
+
         return flagged;
     }
 
@@ -284,8 +287,8 @@ class WeAreWatching {
         }
     
         if (this.PODWinner) {
-            this.printText(`<span style="color: orange;">${this.PODWinner.firstName}</span> has won the Power of Disruption!`);
-            this.updateLabel('PODHolderLabel', this.PODWinner.firstName, 'orange');
+            this.printText(`<span style="color: var(--pod-winner-text);">${this.PODWinner.firstName}</span> has won the Power of Disruption!`);
+            this.updateLabel('PODHolderLabel', this.PODWinner.firstName, 'var(--pod-winner-text)');
         }
     
         return potentialPlayers;
@@ -811,10 +814,10 @@ class WeAreWatching {
     updateUI() {
         this.updateAgentList();
         this.updateLabel('ovrLabel', this.OVR ? this.OVR.firstName : '', 'yellow');
-        this.updateLabel('flaggedLabel', this.flagged ? this.flagged.map(n => this.colorAgentName(n.firstName)).join(', ') : '');
+        this.updateLabel('flaggedLabel', this.flaggedThisWeek.map(agent => this.colorAgentName(agent.firstName)).join(', '));
         this.updateLabel('PODHolderLabel', this.PODWinner ? this.PODWinner.firstName : '', 'orange');
         this.updateLabel('replacementFlaggedLabel', this.postDisruptionFlags ? this.postDisruptionFlags.map(n => this.colorAgentName(n.firstName)).join(', ') : '');
-        this.updateLabel('purgedLabel', this.lastPurgedAgent ? this.lastPurgedAgent.firstName : '', 'var(--recently-purged-text)');
+        this.updateLabel('purgedLabel', this.lastPurgedAgent ? this.colorAgentName(this.lastPurgedAgent.firstName) : '');
     }
 
     toggleStepByStepMode() {
@@ -1214,7 +1217,14 @@ document.addEventListener('DOMContentLoaded', function() {
     var finishBtn = document.getElementById('finishBtn');
     finishBtn.addEventListener('click', () => game.finishGame());
 
-    document.getElementById('informationBtn').addEventListener('click', () => game.showInformation());
+    document.getElementById('informationBtn').addEventListener('click', () => {
+        document.getElementById('infoPanel').classList.add('visible');
+        game.updateInfoPanel(); // You'll need to create this method
+    });
+    
+    document.getElementById('closeInfoPanelBtn').addEventListener('click', () => {
+        document.getElementById('infoPanel').classList.remove('visible');
+    });
     document.getElementById('closeInfoDialogBtn').addEventListener('click', () => {
         document.getElementById('informationDialog').style.display = 'none';
     });

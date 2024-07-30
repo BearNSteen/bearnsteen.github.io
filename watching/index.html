@@ -7,55 +7,13 @@
     <link rel="stylesheet" href="watching.css">
 </head>
 <body>
-    <div class="navbar">
-        <div class="navbar-left">
-            <a href="../index.html" class="navbar-item">
-                <img src="../images/home.png" alt="Home" class="navbar-logo">
-                <span>Home</span>
-            </a>
-            <div class="dropdown">
-                <button class="dropbtn navbar-item">
-                    <img src="../images/wearewatchinglogo_navbar.png" alt="WAW" class="navbar-logo">
-                    <span>We Are Watching</span>
-                </button>
-                <div class="dropdown-content">
-                    <a href="#" class="dropdown-header" disabled>We Are Watching</a>
-                    <a href="../watching/index.html">Play</a>
-                    <a href="../watching/about.html">About</a>
-                </div>
-            </div>
-            <div class="dropdown">
-                <button class="dropbtn navbar-item">
-                    <img src="../images/bearlogo_navbar.png" alt="COH" class="navbar-logo">
-                    <span>Creatures of Habbitt</span>
-                </button>
-                <div class="dropdown-content">
-                    <a href="#" class="dropdown-header" disabled>Creatures of Habbitt</a>
-                    <a href="../habbitt/index.html">Home</a>
-                    <a href="../habbitt/characters.html">Characters</a>
-                    <a href="../habbitt/locations.html">Locations</a>
-                    <a href="../habbitt/items.html">Items</a>
-                    <a href="../habbitt/quests.html">Quests</a>
-                </div>
-            </div>
-            <div class="dropdown">
-                <button class="dropbtn navbar-item">
-                    <img src="../images/ddg-logo.jpeg" alt="DDG" class="navbar-logo">
-                    <span>Dungeon Delver's Guild</span>
-                </button>
-                <div class="dropdown-content">
-                    <a href="#" class="dropdown-header" disabled>Dungeon Delver's Guild</a>
-                    <a href="../ddg/index.html">Play</a>
-                </div>
-            </div>
+    <div class="top-row">
+        <div class="back-to-main">
+            <a href="../index.html" title="Back to main site">&#129044; Main Site</a>
         </div>
-        <a href="https://github.com/bearnsteen" target="_blank" class="github-link">
-            <img src="../images/github-mark.png" alt="GitHub" class="github-logo">
-        </a>
-    </div>
-    <div id="app">
         <img src="wearewatchinglogo.png" alt="We Are Watching" id="titleImage">
-        
+    </div>
+    <div id="app">        
         <div id="controls">
             <div id="startScreen">
                 <button id="startBtn">Start Game</button>
@@ -157,6 +115,17 @@
         </div>
         </div>
         <button id="closeInfoDialogBtn">Close</button>
+    </div>
+    <div id="infoPanel" class="hidden">
+        <button id="closeInfoPanelBtn">×</button>
+        <h2>Game Information</h2>
+        <label for="showInfoCheckbox" class="checkbox-label">
+            <input type="checkbox" id="showInfoCheckbox">
+            Auto-update Information
+        </label>
+        <div id="infoPanelContent">
+            <!-- The content from your original informationDialog will go here -->
+        </div>
     </div>
 </body>
 </html>
